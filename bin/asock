@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# ------------------------------------------------------------------------------
+# Help
+#
+# Outputs help for this script.
+#
+
+_help()
+{
+  echo """
+Manage your Asock development.
+
+Common commands:
+
+  arrow install
+    Installs dependencies for asock.
+
+Run \"arrow help <command>\" for more information about a command.
+Run \"arrow help -v\" for verbose help output.""";
+}
+
+# ------------------------------------------------------------------------------
+# Install
+#
+# Installs dependencies for asock
+#
+
+_install()
+{
+  # For unit testing
+  brew install check
+}
+
+# ------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# Executed code...
+
+case $1 in
+  "install")
+    _install $@
+    ;;
+
+  *)
+    _help $@
+    ;;
+esac
