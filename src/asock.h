@@ -10,6 +10,20 @@
 #define ASOCK_H
 
 /**
+ * ASOCK_SOCKET_DESCRIPTOR
+ *
+ * @brief: Socket descriptor type, different for windows. "SOCKET" type
+ */
+#define ASOCK_SOCKET_DESCRIPTOR int
+
+/**
+ * ASOCK_EXT_ALIGNMENT
+ *
+ * @brief: Guaranteed alignment of extension memory.
+ */
+#define ASOCK_EXT_ALIGNMENT 16
+
+/**
  * Library types publicly available
  *
  * @brief: TODO
@@ -19,7 +33,7 @@ typedef struct asock_loop_t asock_loop_t;
 /**
  * asock_socket_context_t
  *
- * @brief TODO
+ * @brief: TODO
  */
 typedef struct asock_socket_context_t
 {
@@ -31,9 +45,9 @@ typedef struct asock_socket_context_t
 asock_socket_context_t;
 
 /**
- * asock__socket_t
+ * asock_socket_t
  *
- * @brief TODO
+ * @brief: TODO
  */
 typedef struct asock_socket_t
 {
@@ -47,7 +61,7 @@ asock_socket_t;
 /**
  * asock_listen_socket_t
  *
- * @brief TODO
+ * @brief: TODO
  */
 typedef struct asock_listen_socket_t
 {
