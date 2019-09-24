@@ -1,4 +1,2 @@
 
-void asock_lol() {
-
-}
+void do_something_two() {}
