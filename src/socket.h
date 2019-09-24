@@ -3,7 +3,6 @@
 
 #include "asock.h"
 
-
 // Unix
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -108,7 +107,5 @@ static inline ASOCK_SOCKET_DESCRIPTOR asock_create_connect_socket(
 
   return fd;
 }
-
-
 
 #endif // ASOCK_SOCKET_H

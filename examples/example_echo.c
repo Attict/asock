@@ -127,6 +127,9 @@ asock_socket_t* on_timeout(asock_socket_t* socket)
  */
 int main(int argc, char* argv[])
 {
+  // The event loop
+  asock_loop_t* loop = asock_create_loop(0, on_wakeup, on_pre, on_post, 0);
+
   if (argc != 2)
   {
     printf("Usage: example_echo <port>\n");

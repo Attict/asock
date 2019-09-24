@@ -9,6 +9,8 @@
 #ifndef ASOCK_H
 #define ASOCK_H
 
+#include <stdalign.h>
+
 /**
  * ASOCK_SOCKET_DESCRIPTOR
  *
@@ -77,6 +79,12 @@ asock_listen_socket_t;
  *
  * @brief: TODO
  */
-asock_loop_t* asock_create_loop(int a, int b, int c, int d, int e);
+asock_loop_t* asock_create_loop(
+  void* hint,
+  void (*wakup_cb)(asock_loop_t *loop),
+  void (*pre_cb)(asock_loop_t *loop),
+  void (*post_cb)(asock_loop_t *loop),
+  unsigned int ext_size
+);
 
 #endif // ASOCK_H
