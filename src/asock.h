@@ -80,6 +80,32 @@ asock_loop_t* asock_create_loop(void* hint,
 ///
 
 /**
+ * asock_socket_t
+ *
+ * @brief: TODO
+ */
+struct asock_socket_t
+{
+  asock_socket_context_t* context;
+  asock_socket_t* prev;
+  asock_socket_t* next;
+  unsigned short timeout;
+};
+
+/**
+ * asock_socket_context_t
+ *
+ * @brief: TODO
+ */
+struct asock_socket_context_t
+{
+  asock_socket_t* head;
+  asock_socket_t* iterator;
+  asock_socket_t* next;
+  asock_socket_t* prev;
+};
+
+/**
  * asock_async
  *
  * @brief: todo
@@ -98,6 +124,27 @@ struct asock_listen_socket_t
 {
   asock_socket_t        socket;
   unsigned int          socket_ext_size;
+};
+
+/**
+ * asock_loop_data_t
+ *
+ * @brief: TODO
+ */
+struct asock_loop_data_t
+{
+  asock_timer_t*                sweep_timer;
+  asock_async*                  wakeup_async;
+  int                           last_write_failed;
+  asock_socket_context_t*       head;
+  asock_socket_context_t*       iterator;
+  char*                         recv_buffer;
+  void*                         ssl_data;
+  void                          (*pre_cb)(asock_loop_t*);
+  void                          (*post_cb)(asock_loop_t*);
+  asock_socket_t*               closed_head;
+  // We do not care if this flips or not, it doesn't matter
+  long long                     iteration_nr;
 };
 
 
@@ -133,27 +180,6 @@ struct asock_loop_t
 };
 
 /**
- * asock_loop_data_t
- *
- * @brief: TODO
- */
-struct asock_loop_data_t
-{
-  asock_timer_t*                sweep_timer;
-  asock_async*                  wakeup_async;
-  int                           last_write_failed;
-  asock_socket_context_t*       head;
-  asock_socket_context_t*       iterator;
-  char*                         recv_buffer;
-  void*                         ssl_data;
-  void                          (*pre_cb)(asock_loop_t*);
-  void                          (*post_cb)(asock_loop_t*);
-  asock_socket_t*               closed_head;
-  // We do not care if this flips or not, it doesn't matter
-  long long                     iteration_nr;
-};
-
-/**
  * asock_poll_t
  *
  * @brief: todo
@@ -168,31 +194,6 @@ struct asock_poll_t
   state;
 };
 
-/**
- * asock_socket_t
- *
- * @brief: TODO
- */
-struct asock_socket_t
-{
-  asock_socket_context_t* context;
-  asock_socket_t* prev;
-  asock_socket_t* next;
-  unsigned short timeout;
-};
-
-/**
- * asock_socket_context_t
- *
- * @brief: TODO
- */
-struct asock_socket_context_t
-{
-  asock_socket_t* head;
-  asock_socket_t* iterator;
-  asock_socket_t* next;
-  asock_socket_t* prev;
-};
 
 /**
  * asock_timer_t
