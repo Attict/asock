@@ -144,3 +144,22 @@ int asock_socket_write(int ssl, asock_socket_t* s, const char* data,
   }
 }
 
+/**
+ * asock_socket_timeout
+ *
+ * @brief: todo
+ */
+void asock_socket_timeout(int ssl, asock_socket_t* s, unsigned int seconds)
+{
+  if (seconds)
+  {
+    unsigned short timeout_sweeps = 0.5f
+        + ((float) seconds) / ((float) ASOCK_TIMEOUT_GRANULARITY);
+    s->timeout = timeout_sweeps ? timeout_sweeps : 1;
+  }
+  else
+  {
+    s->timeout = 0;
+  }
+}
+

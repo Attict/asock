@@ -1,5 +1,6 @@
 #include "../src/asock.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 const int SSL = 0;
 
@@ -66,6 +67,21 @@ asock_socket_t* on_writable(asock_socket_t* s)
 
   // Continue writing on our backpressure
   int written = asock_socket_write(SSL, s, es->backpressure, es->length, 0);
+  if (written != es->length)
+  {
+    char* new_buffer = (char*) malloc(es->length - written);
+    memcpy(new_buffer, es->backpressure, es->length - written);
+    free(es->backpressure);
+    es->backpressure = new_buffer;
+    es->length -= written;
+  }
+  else
+  {
+    free(es->backpressure);
+    es->length = 0;
+  }
+
+  asock_socket_timeout(SSL, s, 30);
 
   return s;
 }

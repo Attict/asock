@@ -23,6 +23,34 @@
 #include <unistd.h>
 
 /**
+ * ASOCK_RECV_BUFFER_LENGTH
+ *
+ * @brief: todo
+ */
+#define ASOCK_RECV_BUFFER_LENGTH 524288
+
+/**
+ * ASOCK_TIMEOUT_GRANULARITY
+ *
+ * @brief: todo
+ */
+#define ASOCK_TIMEOUT_GRANULARITY 4
+
+/**
+ * ASOCK_RECV_BUFFER
+ *
+ * @brief: todo
+ */
+#define ASOCK_RECV_BUFFER_PADDING 32
+
+/**
+ * ASOCK_EXT_ALIGNMENT
+ *
+ * @brief: Guaranteed alignment of extension memory.
+ */
+#define ASOCK_EXT_ALIGNMENT 16
+
+/**
  * SETSOCKOPT_PTR_TYPE
  *
  * @brief: todo
@@ -44,18 +72,23 @@
 #define ASOCK_SOCKET_DESCRIPTOR int
 
 /**
- * ASOCK_EXT_ALIGNMENT
+ * ASOCK_SOCKET_READABLE
  *
- * @brief: Guaranteed alignment of extension memory.
+ * @brief: todo
  */
-#define ASOCK_EXT_ALIGNMENT 16
-
-
 #define ASOCK_SOCKET_READABLE 1
+
+/**
+ * ASOCK_SOCKET_WRITABLE
+ *
+ * @brief: todo
+ */
 #define ASOCK_SOCKET_WRITABLE 2
 
 /**
+ * POLL_TYPES
  *
+ * @brief: todo
  */
 enum
 {
@@ -90,16 +123,28 @@ typedef struct asock_timer_t asock_timer_t;
 ///
 /// @brief: todo
 ///
-asock_loop_t* asock_create_loop(void* hint,
-    void (*wakup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
-    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+
+// Asock
+int asock_send(ASOCK_SOCKET_DESCRIPTOR fd, const char* buffer, int length,
+    int msg_more);
+
+// Socket
 void* asock_socket_ext(int ssl, asock_socket_t* socket);
 int asock_socket_write(int ssl, asock_socket_t* socket, const char* data,
     int length, int msg_more);
+void asock_socket_timeout(int ssll, asock_socket_t* s, unsigned int seconds);
+
+// Loop
+asock_loop_t* asock_create_loop(void* hint,
+    void (*wakup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
+    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+
+// Poll
 ASOCK_SOCKET_DESCRIPTOR asock_poll_fd(asock_poll_t* p);
 int asock_poll_type(asock_poll_t* p);
-int asock_send(ASOCK_SOCKET_DESCRIPTOR fd, const char* buffer, int length,
-    int msg_more);
+int asock_poll_events(asock_poll_t* p);
+void asock_poll_change(asock_poll_t* poll, asock_loop_t* loop, int events);
+
 
 
 /// ----------------------------------------------------------------------------
