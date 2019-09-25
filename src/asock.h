@@ -145,6 +145,10 @@ int asock_poll_type(asock_poll_t* p);
 int asock_poll_events(asock_poll_t* p);
 void asock_poll_change(asock_poll_t* poll, asock_loop_t* loop, int events);
 
+// Eventing
+int asock_kqueue_change(int kqfd, int fd, int old_events, int new_events,
+    void* user_data);
+
 
 
 /// ----------------------------------------------------------------------------

@@ -5,8 +5,7 @@
  *
  * @brief: TODO
  */
-static inline ASOCK_SOCKET_DESCRIPTOR asock_apple_no_sigpipe(
-    ASOCK_SOCKET_DESCRIPTOR fd)
+ASOCK_SOCKET_DESCRIPTOR asock_apple_no_sigpipe(ASOCK_SOCKET_DESCRIPTOR fd)
 {
 #ifdef __APPLE__
   if (fd != ASOCK_SOCKET_ERROR) {
@@ -22,8 +21,7 @@ static inline ASOCK_SOCKET_DESCRIPTOR asock_apple_no_sigpipe(
  *
  * @brief: TODO
  */
-static inline ASOCK_SOCKET_DESCRIPTOR asock_set_nonblocking(
-    ASOCK_SOCKET_DESCRIPTOR fd)
+ASOCK_SOCKET_DESCRIPTOR asock_set_nonblocking(ASOCK_SOCKET_DESCRIPTOR fd)
 {
 #ifdef _WIN32
   // LibUV will set windows sockets as non-blocking
@@ -38,7 +36,7 @@ static inline ASOCK_SOCKET_DESCRIPTOR asock_set_nonblocking(
  *
  * @brief: TODO
  */
-static inline ASOCK_SOCKET_DESCRIPTOR asock_create_socket(int domain,
+ASOCK_SOCKET_DESCRIPTOR asock_create_socket(int domain,
     int type, int protocol)
 {
   int flags = 0;
@@ -57,7 +55,7 @@ static inline ASOCK_SOCKET_DESCRIPTOR asock_create_socket(int domain,
  *
  * @brief: TODO
  */
-static inline ASOCK_SOCKET_DESCRIPTOR asock_create_connect_socket(
+ASOCK_SOCKET_DESCRIPTOR asock_create_connect_socket(
     const char* host, int port, int options)
 {
   struct addrinfo hints;
@@ -139,9 +137,9 @@ int asock_socket_write(int ssl, asock_socket_t* s, const char* data,
     s->context->loop->data.last_write_failed = 1;
     asock_poll_change(&s->poll, s->context->loop,
         ASOCK_SOCKET_READABLE | ASOCK_SOCKET_WRITABLE);
-
-
   }
+
+  return written < 0 ? 0 : written;
 }
 
 /**
@@ -163,3 +161,48 @@ void asock_socket_timeout(int ssl, asock_socket_t* s, unsigned int seconds)
   }
 }
 
+
+/**
+ * asock_socket_shutdown
+ *
+ * @brief: todo
+ */
+void asock_socket_shutdown(int ssl, asock_socket_t* s)
+{
+  // Todo: Should we emit on_close if calling shutdown on an already
+  // half-closed socket?  We need more states in that case, we need to track
+  // RECEIVED_FIN so far, the app has to track this and call close as needed.
+
+  if (!asock_socket_is_closed(ssl, s) && !asock_socket_is_shut_down(ssl, s))
+  {
+    asock_poll_set_type(&s->poll, POLL_TYPE_SOCKET_SHUT_DOWN);
+    asock_poll_change(&s->poll, s->context->loop,
+        asock_poll_events(&s->poll) & ASOCK_SOCKET_READABLE);
+    asock_shutdown_socket(asock_poll_fd((asock_poll_t*) s));
+  }
+}
+
+/**
+ * asock_socket_close
+ *
+ * @brief: todo
+ */
+asock_socket_t* asock_socket_close(int ssl, asock_socket_t* s)
+{
+  if (!asock_socket_is_closed(ssl, s))
+  {
+    asock_socket_context_unlink(s->context, s);
+    asock_poll_stop((asock_poll_t*) s, s->context->loop);
+    asock_close_socket(asock_poll_fd((asock_poll_t*) s));
+
+    // Link this socket ot the close-list and let it be deleted after iteration
+    s->next = s->context->loop->data.closed_head;
+    s->context->loop->data.closed_head = s;
+
+    // Any socket with prev = context is marked as closed
+    s->prev = (asock_socket_t*) s->context;
+    return s->context->on_close(s);
+  }
+
+  return s;
+}

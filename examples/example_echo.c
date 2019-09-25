@@ -91,10 +91,15 @@ asock_socket_t* on_writable(asock_socket_t* s)
  *
  * @brief: TODO
  */
-asock_socket_t* on_close(asock_socket_t* socket)
+asock_socket_t* on_close(asock_socket_t* s)
 {
+  echo_socket* es = (echo_socket*) asock_socket_ext(SSL, s);
 
-  return socket;
+  printf("Client disconnected\n");
+
+  free(es->backpressure);
+
+  return s;
 }
 
 /**
@@ -102,10 +107,10 @@ asock_socket_t* on_close(asock_socket_t* socket)
  *
  * @brief: TODO
  */
-asock_socket_t* on_end(asock_socket_t* socket)
+asock_socket_t* on_end(asock_socket_t* s)
 {
-
-  return socket;
+  asock_socket_shutdown(SSL, s);
+  return asock_socket_close(SSL, s);
 }
 
 /**
