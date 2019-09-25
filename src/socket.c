@@ -88,3 +88,59 @@ static inline ASOCK_SOCKET_DESCRIPTOR asock_create_connect_socket(
 
   return fd;
 }
+
+/**
+ * asock_socket_ext
+ *
+ * @brief: todo
+ * @todo: add ssl
+ */
+void* asock_socket_ext(int ssl, asock_socket_t* s)
+{
+  return s + 1;
+}
+
+/**
+ * asock_socket_is_closed
+ *
+ * @brief: todo
+ */
+int asock_socket_is_closed(int ssl, asock_socket_t* s)
+{
+  return s->prev == (asock_socket_t*) s->context;
+}
+
+/**
+ * asock_socket_is_shut_down
+ *
+ * @brief: todo
+ */
+int asock_socket_is_shut_down(int ssl, asock_socket_t* s)
+{
+  return asock_poll_type(&s->poll) == POLL_TYPE_SOCKET_SHUT_DOWN;
+}
+
+/**
+ * asock_socket_write
+ *
+ * @brief: todo
+ */
+int asock_socket_write(int ssl, asock_socket_t* s, const char* data,
+    int length, int msg_more)
+{
+  if (asock_socket_is_closed(ssl, s) || asock_socket_is_shut_down(ssl, s))
+  {
+    return 0;
+  }
+
+  int written = asock_send(asock_poll_fd(&s->poll), data, length, msg_more);
+  if (written != length)
+  {
+    s->context->loop->data.last_write_failed = 1;
+    asock_poll_change(&s->poll, s->context->loop,
+        ASOCK_SOCKET_READABLE | ASOCK_SOCKET_WRITABLE);
+
+
+  }
+}
+

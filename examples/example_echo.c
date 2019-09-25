@@ -1,28 +1,30 @@
 #include "../src/asock.h"
-#include "stdio.h"
+#include <stdio.h>
 
-const int SSL = 1;
+const int SSL = 0;
 
 /**
  * Extension of socket
  *
  * @brief: TODO
  */
-struct echo_socket
+typedef struct echo_socket
 {
   char *backpressure;
   int length;
-};
+}
+echo_socket;
 
 /**
  * Extension of socket context
  *
  * @brief: TODO
  */
-struct echo_context
+typedef struct echo_context
 {
 
-};
+}
+echo_context;
 
 /**
  * Loop wakeup handler
@@ -58,10 +60,14 @@ void on_post(asock_loop_t* loop)
  *
  * @brief: TODO
  */
-asock_socket_t* on_writable(asock_socket_t* socket)
+asock_socket_t* on_writable(asock_socket_t* s)
 {
+  echo_socket* es = (echo_socket*) asock_socket_ext(SSL, s);
 
-  return socket;
+  // Continue writing on our backpressure
+  int written = asock_socket_write(SSL, s, es->backpressure, es->length, 0);
+
+  return s;
 }
 
 /**

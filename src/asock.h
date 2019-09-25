@@ -50,6 +50,26 @@
  */
 #define ASOCK_EXT_ALIGNMENT 16
 
+
+#define ASOCK_SOCKET_READABLE 1
+#define ASOCK_SOCKET_WRITABLE 2
+
+/**
+ *
+ */
+enum
+{
+  // First two bits
+  POLL_TYPE_SOCKET = 0,
+  POLL_TYPE_SOCKET_SHUT_DOWN = 1,
+  POLL_TYPE_SEMI_SOCKET = 2,
+  POLL_TYPE_CALLBACK = 3,
+
+  // Two last bits
+  POLL_TYPE_POLLING_OUT = 4,
+  POLL_TYPE_POLLING_IN = 8
+};
+
 /// ----------------------------------------------------------------------------
 /// TYPEDEF DECLARATIONS
 ///
@@ -62,6 +82,7 @@ typedef struct asock_loop_data_t asock_loop_data_t;
 typedef struct asock_poll_t asock_poll_t;
 typedef struct asock_socket_t asock_socket_t;
 typedef struct asock_socket_context_t asock_socket_context_t;
+typedef struct asock_ssl_socket_t asock_ssl_socket_t;
 typedef struct asock_timer_t asock_timer_t;
 
 /// ----------------------------------------------------------------------------
@@ -70,8 +91,16 @@ typedef struct asock_timer_t asock_timer_t;
 /// @brief: todo
 ///
 asock_loop_t* asock_create_loop(void* hint,
-  void (*wakup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
-  void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+    void (*wakup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
+    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+void* asock_socket_ext(int ssl, asock_socket_t* socket);
+int asock_socket_write(int ssl, asock_socket_t* socket, const char* data,
+    int length, int msg_more);
+ASOCK_SOCKET_DESCRIPTOR asock_poll_fd(asock_poll_t* p);
+int asock_poll_type(asock_poll_t* p);
+int asock_send(ASOCK_SOCKET_DESCRIPTOR fd, const char* buffer, int length,
+    int msg_more);
+
 
 /// ----------------------------------------------------------------------------
 /// STRUCTS
@@ -80,12 +109,28 @@ asock_loop_t* asock_create_loop(void* hint,
 ///
 
 /**
+ * asock_poll_t
+ *
+ * @brief: todo
+ */
+struct asock_poll_t
+{
+  alignas(ASOCK_EXT_ALIGNMENT) struct
+  {
+    int fd : 28;
+    unsigned int poll_type : 4;
+  }
+  state;
+};
+
+/**
  * asock_socket_t
  *
  * @brief: TODO
  */
 struct asock_socket_t
 {
+  alignas(ASOCK_EXT_ALIGNMENT) asock_poll_t poll;
   asock_socket_context_t* context;
   asock_socket_t* prev;
   asock_socket_t* next;
@@ -99,10 +144,21 @@ struct asock_socket_t
  */
 struct asock_socket_context_t
 {
-  asock_socket_t* head;
-  asock_socket_t* iterator;
-  asock_socket_t* next;
-  asock_socket_t* prev;
+  alignas(ASOCK_EXT_ALIGNMENT) asock_loop_t*    loop;
+  asock_socket_t*                               head;
+  asock_socket_t*                               iterator;
+  asock_socket_t*                               prev;
+  asock_socket_t*                               next;
+
+  asock_socket_t* (*on_open)(asock_socket_t*, int is_client, char* ip,
+      int ip_length);
+  asock_socket_t* (*on_data)(asock_socket_t*, char* data, int length);
+  asock_socket_t* (*on_writable)(asock_socket_t*);
+  asock_socket_t* (*on_close)(asock_socket_t*);
+  asock_socket_t* (*on_socket_timeout)(asock_socket_t*);
+  asock_socket_t* (*on_end)(asock_socket_t*);
+
+  int (*ignore_data)(asock_socket_t*);
 };
 
 /**
@@ -177,21 +233,6 @@ struct asock_loop_t
 #endif
 
 
-};
-
-/**
- * asock_poll_t
- *
- * @brief: todo
- */
-struct asock_poll_t
-{
-  alignas(ASOCK_EXT_ALIGNMENT) struct
-  {
-    int fd : 28;
-    unsigned int poll_type : 4;
-  }
-  state;
 };
 
 
