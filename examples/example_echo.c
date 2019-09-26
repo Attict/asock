@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  asock_socket_context_t *my_context = asock_create_socket_context(
+  asock_socket_context_t *my_context = asock_create_socket_context();
 
   return 0;
 }

@@ -215,8 +215,6 @@ asock_listen_socket_t *asock_socket_context_listen(
     return 0;
   }
 
-  asock_listen_socket_t *ls = (asock_listen_socket_t *) p;
-
 
 }
 
