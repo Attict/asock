@@ -12,11 +12,19 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+
+
 /**
  * asock_socket_t
  *
  */
 struct asock_socket_t
+{
+  struct asock_socket_t *next, *prev;
+  struct asock_socket_context_t *context;
+};
+
+struct asock_socket_context_t
 {
 
 };
