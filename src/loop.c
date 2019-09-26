@@ -25,3 +25,9 @@ asock_loop_t* asock_create_loop(void* hint,
   asock_loop_data_init(loop, wakeup_cb, pre_cb, post_cb);
   return loop;
 }
+
+void asock_loop_update_pending_ready_polls(asock_loop_t* loop, asock_poll_t* p,
+    int x, int old_events, int new_events)
+{
+
+}

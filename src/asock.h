@@ -129,10 +129,12 @@ int asock_send(ASOCK_SOCKET_DESCRIPTOR fd, const char* buffer, int length,
     int msg_more);
 
 // Socket
+asock_socket_t* asock_socket_close(int ssl, asock_socket_t* s);
 void* asock_socket_ext(int ssl, asock_socket_t* socket);
+void asock_socket_shutdown(int ssl, asock_socket_t* s);
+void asock_socket_timeout(int ssll, asock_socket_t* s, unsigned int seconds);
 int asock_socket_write(int ssl, asock_socket_t* socket, const char* data,
     int length, int msg_more);
-void asock_socket_timeout(int ssll, asock_socket_t* s, unsigned int seconds);
 
 // Loop
 asock_loop_t* asock_create_loop(void* hint,
@@ -276,11 +278,8 @@ struct asock_loop_t
 
   //The list of ready polls
 #ifdef ASOCK_USE_EPOLL
-
 #else
-
 #endif
-
 
 };
 

@@ -118,10 +118,29 @@ asock_socket_t* on_end(asock_socket_t* s)
  *
  * @brief: TODO
  */
-asock_socket_t* on_data(asock_socket_t* socket)
+asock_socket_t* on_data(asock_socket_t* s, char* data, int length)
 {
+  echo_socket* es = (echo_socket*) asock_socket_ext(SSL, s);
 
-  return socket;
+  // Print the data we received
+  printf("Client sent <%.*s>\n", length, data);
+
+  // Send it back or buffer it up.
+  int written = asock_socket_write(SSL, s, data, length, 0);
+  if (written != length)
+  {
+    char* new_buffer = (char*) malloc(es->length + length - written);
+    memcpy(new_buffer, es->backpressure, es->length);
+    memcpy(new_buffer + es->length, data + written, length - written);
+    free(es->backpressure);
+    es->backpressure = new_buffer;
+    es->length += length - written;
+  }
+
+  // Client is not boring
+  asock_socket_timeout(SSL, s, 30);
+
+  return s;
 }
 
 /**
@@ -129,11 +148,21 @@ asock_socket_t* on_data(asock_socket_t* socket)
  *
  * @brief: TODO
  */
-asock_socket_t* on_open(asock_socket_t* socket,
-    int is_client, char* ip, int ip_length)
+asock_socket_t* on_open(asock_socket_t* s, int is_client, char* ip,
+    int ip_length)
 {
+  echo_socket* es = (echo_socket*) asock_socket_ext(SSL, s);
 
-  return socket;
+  // Initialize the new socket's extension
+  es->backpressure = 0;
+  es->length = 0;
+
+  // STart a timeout to close the socket if boring
+  asock_socket_timeout(SSL, s, 30);
+
+  printf("Client connected\n");
+
+  return s;
 }
 
 /**
@@ -141,10 +170,10 @@ asock_socket_t* on_open(asock_socket_t* socket,
  *
  * @brief: TODO
  */
-asock_socket_t* on_timeout(asock_socket_t* socket)
+asock_socket_t* on_timeout(asock_socket_t* s)
 {
-
-  return socket;
+  printf("Client was idle for too long\n");
+  return asock_socket_close(SSL, s);
 }
 
 /**

@@ -89,3 +89,28 @@ int asock_kqueue_change(int kqfd, int fd, int old_events, int new_events,
   return ret;
 }
 
+/**
+ *
+ * @brief: todo
+ */
+void asock_poll_set_type(asock_poll_t* p, int poll_type)
+{
+  p->state.poll_type = poll_type | (p->state.poll_type & 12);
+}
+
+/**
+ *
+ * @brief: todo
+ */
+void asock_poll_stop(asock_poll_t* p, asock_loop_t* loop)
+{
+  int old_events = asock_poll_events(p);
+  int new_events = 0;
+  if (old_events)
+  {
+    kqueue_change(loop->fd, p->state.fd, old_events, new_events, NULL);
+  }
+
+  // Disable any instance of us in the pending ready poll list
+  asock_loop_update_pending_ready_polls(loop, p, 0, old_events, new_events);
+}
