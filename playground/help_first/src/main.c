@@ -59,6 +59,16 @@ struct asock_loop_t
 };
 
 /**
+ * asock_close_socket
+ *
+ * @brief: todo
+ */
+void asock_close_socket(int fd)
+{
+  close(fd);
+}
+
+/**
  * asock_loop_run
  *
  * @brief:
@@ -94,8 +104,33 @@ void asock_loop_run(asock_loop_t *loop)
  *
  * @brief: todo
  */
-int asock_create_socket(int a, int b, int c)
+int asock_create_socket(int domain, int type, int protocol)
 {
+  int flags = 0;
+#if defined(SOCK_CLOEXEC) && defined(SOCK_NONBLOCK)
+  flags = SOCK_CLOEXEC | SOCK_NONBLOCK;
+#endif
+
+  int created_fd = socket(domain, type | flags, protocol);
+
+  //
+  // apple_no_sigpipe
+  //
+  // @see: src/internal/networking/bsd.h:49
+  //
+  if (created_fd != -1) {
+    int no_sigpipe = 1;
+    setsockopt(created_fd, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe, sizeof(int));
+  }
+
+  //
+  // bsd_set_nonblocking
+  //
+  // @see: src/internal/networking/bsd.h:59
+  //
+  fcntl(created_fd, F_SETFL, fcntl(created_fd, F_GETFL, 0) | O_NONBLOCK);
+
+  return created_fd;
 
 }
 
@@ -149,6 +184,25 @@ int asock_create_listen_socket(const char *host, int port, int options)
     return -1;
   }
 
+  int enabled = 1;
+  setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR,
+      (int *) &enabled, sizeof(enabled));
+
+#ifdef IPV6_V6ONLY
+  int disabled = 0;
+  setsockopt(listen_fd, IPPROTO_IPV6, IPV6_V6ONLY,
+      (int *) &disabled, sizeof(disabled));
+#endif
+
+  if (bind(listen_fd, listen_addr->ai_addr, listen_addr->ai_addrlen)
+      || listen(listen_fd, 512))
+  {
+    asock_close_socket(listen_fd);
+    return -1;
+  }
+
+  freeaddrinfo(result);
+  return listen_fd;
 }
 
 /**
@@ -158,14 +212,29 @@ int asock_create_listen_socket(const char *host, int port, int options)
  */
 int main()
 {
+  //
+  // use_create_loop
+  //
+  // @see: src/
+  //
   asock_loop_t *loop = (asock_loop_t *) malloc(sizeof(asock_loop_t) + 0);
   loop->num_polls = 0;
   loop->fd = kqueue();
 
-  int listen_socket_fd = asock_create_listen_socket();
+
+  //
+  // us_socket_context_listen
+  //
+  // @see: src/context.c:113
+  //
+  int listen_socket_fd = asock_create_listen_socket(0, 3000, 0);
+  if (listen_socket_fd == -1) {
+    printf("Failed to create listen_socket_fd!\n");
+    return 1;
+  }
 
 
-  if (listen_socket)
+  if (listen_socket_fd)
   {
     printf("Listening on 'localhost:3000'...\n");
     asock_loop_run(loop);
@@ -174,4 +243,6 @@ int main()
   {
     printf("Failed to listen!\n");
   }
+
+  return 0;
 }
