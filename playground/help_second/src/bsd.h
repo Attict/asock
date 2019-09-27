@@ -23,14 +23,6 @@
 // holds everything you need from the bsd/winsock interfaces, only included by internal libusockets.h
 // here everything about the syscalls are inline-wrapped and included
 
-#ifdef _WIN32
-#define NOMINMAX
-#include <WinSock2.h>
-#include <Ws2tcpip.h>
-#pragma comment(lib, "ws2_32.lib")
-#define SETSOCKOPT_PTR_TYPE const char *
-#define LIBUS_SOCKET_ERROR INVALID_SOCKET
-#else
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -44,26 +36,7 @@
 #include <errno.h>
 #define SETSOCKOPT_PTR_TYPE int *
 #define LIBUS_SOCKET_ERROR -1
-#endif
 
-static inline LIBUS_SOCKET_DESCRIPTOR apple_no_sigpipe(LIBUS_SOCKET_DESCRIPTOR fd) {
-#ifdef __APPLE__
-    if (fd != LIBUS_SOCKET_ERROR) {
-        int no_sigpipe = 1;
-        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe, sizeof(int));
-    }
-#endif
-    return fd;
-}
-
-static inline LIBUS_SOCKET_DESCRIPTOR bsd_set_nonblocking(LIBUS_SOCKET_DESCRIPTOR fd) {
-#ifdef _WIN32
-    /* Libuv will set windows sockets as non-blocking */
-#else
-    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
-#endif
-    return fd;
-}
 
 static inline void bsd_socket_nodelay(LIBUS_SOCKET_DESCRIPTOR fd, int enabled) {
     setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *) &enabled, sizeof(enabled));
@@ -77,16 +50,34 @@ static inline void bsd_socket_flush(LIBUS_SOCKET_DESCRIPTOR fd) {
 #endif
 }
 
-static inline LIBUS_SOCKET_DESCRIPTOR bsd_create_socket(int domain, int type, int protocol) {
-    // returns INVALID_SOCKET on error
-    int flags = 0;
-#if defined(SOCK_CLOEXEC) && defined(SOCK_NONBLOCK)
-    flags = SOCK_CLOEXEC | SOCK_NONBLOCK;
-#endif
+/**
+ * bsd_create_socket
+ *
+ * @brief: todo
+ *
+ * @notes:
+ */
+static inline int bsd_create_socket(int domain, int type, int protocol)
+{
+  // returns INVALID_SOCKET on error
+  int flags = 0;
+  int created_fd = socket(domain, type | flags, protocol);
 
-    LIBUS_SOCKET_DESCRIPTOR created_fd = socket(domain, type | flags, protocol);
+  //
+  // apple_no_sigpipe
+  //
+  if (created_fd != -1)
+  {
+    int no_sigpipe = 1;
+    setsockopt(created_fd, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe, sizeof(int));
+  }
 
-    return bsd_set_nonblocking(apple_no_sigpipe(created_fd));
+  //
+  // bsd_set_nonblocking
+  //
+  fcntl(created_fd, F_SETFL, fcntl(created_fd, F_GETFL, 0) | O_NONBLOCK);
+
+  return created_fd;
 }
 
 static inline void bsd_close_socket(LIBUS_SOCKET_DESCRIPTOR fd) {
@@ -142,28 +133,49 @@ static inline int bsd_addr_get_ip_length(struct bsd_addr_t *addr) {
     return addr->ip_length;
 }
 
-// called by dispatch_ready_poll
-static inline LIBUS_SOCKET_DESCRIPTOR bsd_accept_socket(LIBUS_SOCKET_DESCRIPTOR fd, struct bsd_addr_t *addr) {
-    LIBUS_SOCKET_DESCRIPTOR accepted_fd;
-    addr->len = sizeof(addr->mem);
+/**
+ * bsd_accept_socket
+ *
+ * @brief: todo
+ *
+ * @notes: removed calls for `apple_no_sigpipe` and `bsd_set_nonblocking`
+ */
+static inline int bsd_accept_socket(int fd, struct bsd_addr_t *addr)
+{
+  int accepted_fd;
+  addr->len = sizeof(addr->mem);
+  accepted_fd = accept(fd, (struct sockaddr *) addr, &addr->len);
 
-#if defined(SOCK_CLOEXEC) && defined(SOCK_NONBLOCK)
-    // Linux, FreeBSD
-    accepted_fd = accept4(fd, (struct sockaddr *) addr, &addr->len, SOCK_CLOEXEC | SOCK_NONBLOCK);
-#else
-    // Windows, OS X
-    accepted_fd = accept(fd, (struct sockaddr *) addr, &addr->len);
+  internal_finalize_bsd_addr(addr);
 
-#endif
+  //
+  // apple_no_sigpipe
+  //
+  if (accepted_fd != -1)
+  {
+    int no_sigpipe = 1;
+    setsockopt(accepted_fd, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe, sizeof(int));
+  }
 
-    internal_finalize_bsd_addr(addr);
+  //
+  // bsd_set_nonblocking
+  //
+  fcntl(accepted_fd, F_SETFL, fcntl(accepted_fd, F_GETFL, 0) | O_NONBLOCK);
 
-    return bsd_set_nonblocking(apple_no_sigpipe(accepted_fd));
+  // Return after we've set `apple_no_sigpipe` and `bsd_set_nonblocking`
+  return accepted_fd;
 }
 
-static inline int bsd_recv(LIBUS_SOCKET_DESCRIPTOR fd, void *buf, int length, int flags) {
-    return recv(fd, buf, length, flags);
+/**
+ * bsd_recv
+ *
+ * @brief: Receives incoming message from the connected client.
+ */
+static inline int bsd_recv(int fd, void *buffer, int length, int flags)
+{
+  return recv(fd, buffer, length, flags);
 }
+
 
 static inline int bsd_send(LIBUS_SOCKET_DESCRIPTOR fd, const char *buf, int length, int msg_more) {
 

@@ -43,5 +43,4 @@ swift_examples:
 	swiftc -O -I . examples/swift_http_server/main.swift uSockets.a -o swift_http_server
 
 clean:
-	rm -f *.o
-	rm -f *.a
+	rm -rf build
