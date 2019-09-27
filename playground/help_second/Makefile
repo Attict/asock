@@ -25,18 +25,19 @@ ifeq ($(WITH_ASAN),1)
 endif
 
 override CFLAGS += -std=c11 -Isrc
-override LDFLAGS += asock.a
+override LDFLAGS += build/asock.a
 
 # By default we build the uSockets.a static library
 default:
-	rm -f *.o
+	mkdir -p build
 	$(CC) $(CFLAGS) -flto -O3 -c src/*.c
-	$(AR) rvs asock.a *.o
+	$(AR) rvs build/asock.a *.o
+	rm -rf *.o
 
 # Builds all examples
 .PHONY: examples
 examples: default
-	for f in examples/*.c; do $(CC) -flto -O3 $(CFLAGS) -o $$(basename "$$f" ".c") "$$f" $(LDFLAGS); done
+	for f in examples/*.c; do $(CC) -flto -O3 $(CFLAGS) -o build/$$(basename "$$f" ".c") "$$f" $(LDFLAGS); done
 
 swift_examples:
 	swiftc -O -I . examples/swift_http_server/main.swift uSockets.a -o swift_http_server

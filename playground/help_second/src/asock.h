@@ -1,22 +1,10 @@
-/*
- * Authored by Alex Hultman, 2018-2019.
- * Intellectual property of third-party.
+///
+/// asock.h
+/// ~~~~~~~
+///
 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
-
- *     http://www.apache.org/licenses/LICENSE-2.0
-
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-#ifndef LIBUSOCKETS_H
-#define LIBUSOCKETS_H
+#ifndef ASOCK_H
+#define ASOCK_H
 
 /* 512kb shared receive buffer */
 #define LIBUS_RECV_BUFFER_LENGTH 524288
@@ -225,15 +213,6 @@ WIN32_EXPORT void us_socket_remote_address(int ssl, struct us_socket_t *s, char 
 }
 #endif
 
-/* Decide what eventing system to use by default */
-#if !defined(LIBUS_USE_EPOLL) && !defined(LIBUS_USE_LIBUV) && !defined(LIBUS_USE_GCD) && !defined(LIBUS_USE_KQUEUE)
-#if defined(_WIN32)
-#define LIBUS_USE_LIBUV
-#elif defined(__APPLE__)
 #define LIBUS_USE_KQUEUE
-#else
-#define LIBUS_USE_EPOLL
-#endif
-#endif
 
-#endif // LIBUSOCKETS_H
+#endif // ASOCK_H
