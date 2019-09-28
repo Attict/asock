@@ -17,7 +17,7 @@
 
 #include "asock.h"
 #include "core.h"
-#include "internal.h"
+#include "us_internal.h"
 #include <stdlib.h>
 
 /* Shared with SSL */

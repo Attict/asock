@@ -16,7 +16,7 @@
  */
 
 #include "asock.h"
-#include "internal.h"
+#include "us_internal.h"
 #include "core.h"
 #include <stdlib.h>
 

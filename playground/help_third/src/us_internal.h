@@ -19,7 +19,7 @@
 #define INTERNAL_H
 
 /* We only have one networking implementation so far */
-#include "epoll_kqueue.h"
+#include "us_epoll_kqueue.h"
 
 /* Poll type and what it polls for */
 enum {

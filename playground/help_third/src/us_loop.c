@@ -1,7 +1,7 @@
 #include "asock.h"
 #include "core.h"
 
-#include "internal.h"
+#include "us_internal.h"
 #include <stdlib.h>
 
 /* The loop has 2 fallthrough polls */

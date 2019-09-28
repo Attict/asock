@@ -16,7 +16,7 @@
  */
 
 #include "asock.h"
-#include "internal.h"
+#include "us_internal.h"
 #include <stdlib.h>
 
 #if defined(LIBUS_USE_EPOLL) || defined(LIBUS_USE_KQUEUE)
