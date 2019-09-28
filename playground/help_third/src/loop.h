@@ -70,10 +70,10 @@ asock_poll_t;
  * asock_poll_fd
  *
  * @brief todo
+ *
+ * @param poll
+ * @return The poll's state File Descriptor
  */
-static inline int asock_poll_fd(asock_poll_t *p)
-{
-  return p->state.fd;
-}
+int asock_poll_fd(asock_poll_t *poll);
 
 #endif // ASOCK_LOOP_H
