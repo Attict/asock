@@ -1,4 +1,6 @@
 #include "asock.h"
+#include "core.h"
+
 #include "internal.h"
 #include <stdlib.h>
 
@@ -117,7 +119,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                 us_poll_change(p, s->context->loop, LIBUS_SOCKET_READABLE);
 
                 /* We always use nodelay */
-                bsd_socket_nodelay(us_poll_fd(p), 1);
+                asock_core_socket_nodelay(us_poll_fd(p), 1);
 
                 /* We are now a proper socket */
                 us_internal_poll_set_type(p, POLL_TYPE_SOCKET);
@@ -145,7 +147,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         s->context = listen_socket->s.context;
 
                         /* We always use nodelay */
-                        bsd_socket_nodelay(client_fd, 1);
+                        asock_core_socket_nodelay(client_fd, 1);
 
                         us_internal_socket_context_link(listen_socket->s.context, s);
 
