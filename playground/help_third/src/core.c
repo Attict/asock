@@ -6,14 +6,13 @@
 #include <netinet/tcp.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 /**
  * asock_core_create_socket
  *
- * @notes:
+ * @note
  */
 int asock_core_create_socket(int domain, int type, int protocol)
 {
@@ -38,7 +37,7 @@ int asock_core_create_socket(int domain, int type, int protocol)
 /**
  * asock_core_connect_socket
  *
- * @notes:
+ * @note
  */
 int asock_core_connect_socket(const char *host, int port, int options)
 {
@@ -73,7 +72,7 @@ int asock_core_connect_socket(const char *host, int port, int options)
 /**
  * asock_core_listen_socket
  *
- * @notes:
+ * @note
  */
 int asock_core_listen_socket(const char *host, int port, int options)
 {
@@ -147,13 +146,50 @@ int asock_core_listen_socket(const char *host, int port, int options)
 }
 
 /**
+ * asock_core_shutdown_socket
+ *
+ * @note
+ */
+void asock_core_shutdown_socket(int fd)
+{
+  shutdown(fd, SHUT_WR);
+}
+
+/**
+ * asock_core_close_socket
+ *
+ * @note
+ */
+void asock_core_close_socket(int fd)
+{
+  close(fd);
+}
+
+/**
  * asock_core_socket_flush
  *
- * @notes:
+ * @note
  */
 void asock_core_socket_flush(int fd)
 {
-
+#ifdef TCP_CORK
+  int enabled = 0;
+  setsockopt(fd, IPPROTO_TCP, TCP_CORK, &enabled, sizeof(int));
+#endif
 }
 
+/**
+ * asock_core_socket_nodelay
+ *
+ * @note
+ */
+void asock_core_socket_nodelay(int fd, int enabled)
+{
+  setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *) &enabled, sizeof(enabled));
+}
 
+/**
+ * asock_core_socket_addr
+ *
+ * @
+ */
