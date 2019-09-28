@@ -16,18 +16,11 @@
  */
 
 #include "asock.h"
+#include "poll.h"
 #include "us_internal.h"
 #include <stdlib.h>
 
 #if defined(LIBUS_USE_EPOLL) || defined(LIBUS_USE_KQUEUE)
-
-#ifdef LIBUS_USE_EPOLL
-#define GET_READY_POLL(loop, index) (struct us_poll_t *) loop->ready_polls[index].data.ptr
-#define SET_READY_POLL(loop, index, poll) loop->ready_polls[index].data.ptr = poll
-#else
-#define GET_READY_POLL(loop, index) (struct us_poll_t *) loop->ready_polls[index].udata
-#define SET_READY_POLL(loop, index, poll) loop->ready_polls[index].udata = poll
-#endif
 
 /* Loop */
 void us_loop_free(struct us_loop_t *loop) {

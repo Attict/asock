@@ -51,29 +51,21 @@ typedef struct asock_loop_t
 asock_loop_t;
 
 /**
- * asock_poll_t
+ * asock_loop_free
  *
  * @brief todo
+ *
+ * @param loop
  */
-typedef struct asock_poll_t
-{
-    alignas(ASOCK_EXT_ALIGN) struct
-    {
-        int fd : 28;
-        unsigned int poll_type : 4;
-    }
-    state;
-}
-asock_poll_t;
+void asock_loop_free(asock_loop_t *loop);
 
 /**
- * asock_poll_fd
+ * asock_loop_data_free
  *
  * @brief todo
  *
- * @param poll
- * @return The poll's state File Descriptor
+ * @param loop
  */
-int asock_poll_fd(asock_poll_t *poll);
+void asock_loop_data_free(asock_loop_t *loop);
 
 #endif // ASOCK_LOOP_H
