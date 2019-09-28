@@ -195,6 +195,27 @@ void asock_core_socket_nodelay(int fd, int enabled)
  */
 int asock_core_socket_addr(int fd, asock_core_addr_t *addr)
 {
+  addr->len = sizeof(addr->mem);
+  if (getpeername(fd, (struct sockaddr *) &addr->mem, &addr->len))
+  {
+    return -1;
+  }
+
+  // Parse the address
+  if (addr->mem.ss_family == AF_INET6)
+  {
+    addr->ip = (char *) &((struct sockaddr_in6 *) addr)->sin6_addr;
+    addr->ip_length = sizeof(struct in6_addr);
+  }
+  else if (addr->mem.ss_family == AF_INET)
+  {
+    addr->ip = (char *) &((struct sockaddr_in *) addr)->sin_addr;
+    addr->ip_length = sizeof(struct in_addr);
+  }
+  else
+  {
+    addr->ip_length = 0;
+  }
 
   return 0;
 }
