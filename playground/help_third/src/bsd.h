@@ -29,39 +29,6 @@
 #define LIBUS_SOCKET_ERROR -1
 
 
-/**
- * bsd_socket_nodelay
- *
- * @brief: todo
- */
-static inline void bsd_socket_nodelay(int fd, int enabled)
-{
-  setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void *) &enabled, sizeof(enabled));
-}
-
-/**
- * bsd_socket_flush
- *
- * @brief: todo
- *
- * @note: Is this only for Linux?
- */
-static inline void bsd_socket_flush(int fd)
-{
-  // Linux TCP_CORK has the same underlying corking mechanism as with MSG_MORE
-#ifdef TCP_CORK
-  int enabled = 0;
-  setsockopt(fd, IPPROTO_TCP, TCP_CORK, &enabled, sizeof(int));
-#endif
-}
-
-/**
- * bsd_create_socket
- *
- * @brief: todo
- *
- * @notes:
- */
 static inline int bsd_create_socket(int domain, int type, int protocol)
 {
   // returns INVALID_SOCKET on error
@@ -83,28 +50,6 @@ static inline int bsd_create_socket(int domain, int type, int protocol)
   fcntl(created_fd, F_SETFL, fcntl(created_fd, F_GETFL, 0) | O_NONBLOCK);
 
   return created_fd;
-}
-
-/**
- * bsd_close_socket
- *
- * @brief: todo
- *
- */
-static inline void bsd_close_socket(int fd)
-{
-  close(fd);
-}
-
-/**
- * bsd_shutdown_socket
- *
- * @brief: todo
- *
- */
-static inline void bsd_shutdown_socket(int fd)
-{
-  shutdown(fd, SHUT_WR);
 }
 
 /**
