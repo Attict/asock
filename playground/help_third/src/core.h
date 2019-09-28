@@ -13,7 +13,9 @@
 #ifndef ASOCK_CORE_H
 #define ASOCK_CORE_H
 
+#include "asock.h"
 #include <sys/socket.h>
+
 
 /**
  * asock_core_addr_t
@@ -179,5 +181,34 @@ int asock_core_addr_ip_len(asock_core_addr_t *addr);
  */
 char *asock_core_get_ip(asock_core_addr_t *addr);
 
+// -----------------------------------------------------------------------------
+//
+// TODO: MOVE THIS TO POLL FILE
+//
+
+/**
+ * asock_poll_t
+ *
+ * @brief todo
+ */
+typedef struct asock_poll_t
+{
+    alignas(ASOCK_EXT_ALIGN) struct
+    {
+        int fd : 28;
+        unsigned int poll_type : 4;
+    }
+    state;
+}
+asock_poll_t;
+
+static inline int asock_poll_fd(asock_poll_t *p) {
+  return p->state.fd;
+}
+
+//
+// TODO: MOVE THIS TO POLL FILE
+//
+// -----------------------------------------------------------------------------
 
 #endif // ASOCK_CORE_H

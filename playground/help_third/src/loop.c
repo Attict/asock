@@ -127,9 +127,11 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                 s->context->on_open(s, 1, 0, 0);
             } else {
                 struct us_listen_socket_t *listen_socket = (struct us_listen_socket_t *) p;
-                struct bsd_addr_t addr;
 
-                LIBUS_SOCKET_DESCRIPTOR client_fd = bsd_accept_socket(us_poll_fd(p), &addr);
+                asock_core_addr_t addr;
+
+                int client_fd = asock_core_accept_socket(asock_poll_fd(p), &addr);
+
                 if (client_fd == LIBUS_SOCKET_ERROR) {
                     /* Todo: start timer here */
 
@@ -151,14 +153,14 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
                         us_internal_socket_context_link(listen_socket->s.context, s);
 
-                        listen_socket->s.context->on_open(s, 0, bsd_addr_get_ip(&addr), bsd_addr_get_ip_length(&addr));
+                        listen_socket->s.context->on_open(s, 0, asock_core_get_ip(&addr), asock_core_addr_ip_len(&addr));
 
                         /* Exit accept loop if listen socket was closed in on_open handler */
                         if (us_socket_is_closed(0, &listen_socket->s)) {
                             break;
                         }
 
-                    } while ((client_fd = bsd_accept_socket(us_poll_fd(p), &addr)) != LIBUS_SOCKET_ERROR);
+                    } while ((client_fd = asock_core_accept_socket(asock_poll_fd(p), &addr)) != LIBUS_SOCKET_ERROR);
                 }
             }
         }
