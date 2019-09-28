@@ -20,6 +20,7 @@
 
 /* We only have one networking implementation so far */
 #include "us_epoll_kqueue.h"
+#include "async.h"
 
 /* Poll type and what it polls for */
 enum {
