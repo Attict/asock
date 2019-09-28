@@ -53,15 +53,27 @@ asock_loop_t;
 /**
  * asock_poll_t
  *
- * @brief: todo
+ * @brief todo
  */
 typedef struct asock_poll_t
 {
-  alignas(ASOCK_EXT_ALIGN) struct {
-    int fd: 28;
-    unsigned int poll_type: 4;
-  } state;
+    alignas(ASOCK_EXT_ALIGN) struct
+    {
+        int fd : 28;
+        unsigned int poll_type : 4;
+    }
+    state;
 }
 asock_poll_t;
+
+/**
+ * asock_poll_fd
+ *
+ * @brief todo
+ */
+static inline int asock_poll_fd(asock_poll_t *p)
+{
+  return p->state.fd;
+}
 
 #endif // ASOCK_LOOP_H

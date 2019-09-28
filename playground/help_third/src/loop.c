@@ -48,7 +48,7 @@ void us_internal_loop_link(struct us_loop_t *loop, struct us_socket_context_t *c
 
 /* This functions should never run recursively */
 void us_internal_timer_sweep(struct us_loop_t *loop) {
-    struct us_internal_loop_data_t *loop_data = &loop->data;
+    asock_loop_data_t *loop_data = &loop->data;
     for (loop_data->iterator = loop_data->head; loop_data->iterator; loop_data->iterator = loop_data->iterator->next) {
 
         struct us_socket_context_t *context = loop_data->iterator;

@@ -18,7 +18,8 @@
 #ifndef EPOLL_KQUEUE_H
 #define EPOLL_KQUEUE_H
 
-#include "loop_data.h"
+#include "asock.h"
+#include "loop.h"
 
 #ifdef LIBUS_USE_EPOLL
 #include <sys/epoll.h>
@@ -34,8 +35,9 @@
 #define LIBUS_SOCKET_WRITABLE 2
 #endif
 
-struct us_loop_t {
-    alignas(LIBUS_EXT_ALIGNMENT) struct us_internal_loop_data_t data;
+struct us_loop_t
+{
+    alignas(ASOCK_EXT_ALIGN) asock_loop_data_t data;
 
     /* Number of non-fallthrough polls in the loop */
     int num_polls;
