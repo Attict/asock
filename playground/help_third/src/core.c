@@ -191,5 +191,102 @@ void asock_core_socket_nodelay(int fd, int enabled)
 /**
  * asock_core_socket_addr
  *
- * @
+ * @note
  */
+int asock_core_socket_addr(int fd, asock_core_addr_t *addr)
+{
+
+  return 0;
+}
+
+/**
+ * asock_core_accept_socket
+ *
+ * @note
+ */
+int asock_core_accept_socket(int fd, asock_core_addr_t *addr)
+{
+  int accepted_fd;
+  addr->len = sizeof(addr->mem);
+  accepted_fd = accept(fd, (struct sockaddr *) addr, &addr->len);
+
+  // Parse the address
+  if (addr->mem.ss_family == AF_INET6)
+  {
+    addr->ip = (char *) &((struct sockaddr_in6 *) addr)->sin6_addr;
+    addr->ip_length = sizeof(struct in6_addr);
+  }
+  else if (addr->mem.ss_family == AF_INET)
+  {
+    addr->ip = (char *) &((struct sockaddr_in *) addr)->sin_addr;
+    addr->ip_length = sizeof(struct in_addr);
+  }
+  else
+  {
+    addr->ip_length = 0;
+  }
+
+  // No SIGPIPE on Apple
+#ifdef __APPLE__
+  if (accepted_fd != -1)
+  {
+    int no_sigpipe = 1;
+    setsockopt(accepted_fd, SOL_SOCKET, SO_NOSIGPIPE, &no_sigpipe, sizeof(int));
+  }
+#endif
+
+  // Set non-blocking
+  fcntl(accepted_fd, F_SETFL, fcntl(accepted_fd, F_GETFL, 0) | O_NONBLOCK);
+
+  return accepted_fd;
+}
+
+/**
+ * asock_core_recv
+ *
+ * @note
+ */
+int asock_core_recv(int fd, void *buffer, int length, int flags)
+{
+  return recv(fd, buffer, length, flags);
+}
+
+/**
+ * asock_core_send
+ *
+ * @note
+ */
+int asock_core_send(int fd, const char *buffer, int length, int msg_more)
+{
+  return send(fd, buffer, length, 0);
+}
+
+/**
+ * asock_core_would_block
+ *
+ * @note
+ */
+int asock_core_would_block()
+{
+  return errno == EWOULDBLOCK;
+}
+
+/**
+ * asock_core_addr_ip_len
+ *
+ * @note
+ */
+int asock_core_addr_ip_len(asock_core_addr_t *addr)
+{
+  return addr->ip_length;
+}
+
+/**
+ * asock_core_get_ip
+ *
+ * @note
+ */
+char *asock_core_get_ip(asock_core_addr_t *addr)
+{
+  return addr->ip;
+}

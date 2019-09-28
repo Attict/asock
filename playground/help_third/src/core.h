@@ -108,7 +108,8 @@ void asock_core_socket_nodelay(int fd, int enabled);
  *
  * @brief todo
  *
- * @param
+ * @param fd File Descriptor
+ * @param addr
  * @return File Descriptor
  */
 int asock_core_socket_addr(int fd, asock_core_addr_t *addr);
@@ -117,6 +118,10 @@ int asock_core_socket_addr(int fd, asock_core_addr_t *addr);
  * asock_core_accept_socket
  *
  * @brief todo
+ *
+ * @param fd File Descriptor
+ * @param addr
+ * @return File Descriptor
  */
 int asock_core_accept_socket(int fd, asock_core_addr_t *addr);
 
@@ -172,7 +177,7 @@ int asock_core_addr_ip_len(asock_core_addr_t *addr);
  * @param addr
  * @return The ip address of the addr struct
  */
-int asock_core_get_ip(asock_core_addr_t *addr);
+char *asock_core_get_ip(asock_core_addr_t *addr);
 
 
 #endif // ASOCK_CORE_H
