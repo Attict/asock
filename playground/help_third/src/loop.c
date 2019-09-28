@@ -1,6 +1,8 @@
+#include "async.h"
 #include "loop.h"
 #include "timer.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 /**
  * asock_loop_free
@@ -17,6 +19,7 @@ void asock_loop_free(asock_loop_t *loop)
 /**
  * asock_loop_data_free
  *
+ * @note
  */
 void asock_loop_data_free(asock_loop_t *loop)
 {

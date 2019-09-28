@@ -351,43 +351,6 @@ void us_timer_set(struct us_timer_t *t, void (*cb)(struct us_timer_t *t), int ms
 #endif
 
 /* Async (internal helper for loop's wakeup feature) */
-#ifdef LIBUS_USE_EPOLL
-struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
-    struct us_poll_t *p = us_create_poll(loop, fallthrough, sizeof(struct us_internal_callback_t) + ext_size);
-    us_poll_init(p, eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC), POLL_TYPE_CALLBACK);
-
-    struct us_internal_callback_t *cb = (struct us_internal_callback_t *) p;
-    cb->loop = loop;
-    cb->cb_expects_the_loop = 1;
-
-    return (struct us_internal_async *) cb;
-}
-
-// identical code as for timer, make it shared for "callback types"
-void us_internal_async_close(struct us_internal_async *a) {
-    struct us_internal_callback_t *cb = (struct us_internal_callback_t *) a;
-
-    us_poll_stop(&cb->p, cb->loop);
-    close(us_poll_fd(&cb->p));
-
-    /* (regular) sockets are the only polls which are not freed immediately */
-    us_poll_free((struct us_poll_t *) a, cb->loop);
-}
-
-void us_internal_async_set(struct us_internal_async *a, void (*cb)(struct us_internal_async *)) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) a;
-
-    internal_cb->cb = (void (*)(struct us_internal_callback_t *)) cb;
-
-    us_poll_start((struct us_poll_t *) a, internal_cb->loop, LIBUS_SOCKET_READABLE);
-}
-
-void us_internal_async_wakeup(struct us_internal_async *a) {
-    uint64_t one = 1;
-    int written = write(us_poll_fd((struct us_poll_t *) a), &one, 8);
-    (void)written;
-}
-#else
 struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
     struct us_internal_callback_t *cb = malloc(sizeof(struct us_internal_callback_t) + ext_size);
 
@@ -432,6 +395,5 @@ void us_internal_async_wakeup(struct us_internal_async *a) {
     EV_SET(&event, (uintptr_t) internal_cb, EVFILT_USER, EV_ADD | EV_ONESHOT, NOTE_TRIGGER, 0, internal_cb);
     kevent(internal_cb->loop->fd, &event, 1, NULL, 0, NULL);
 }
-#endif
 
 #endif

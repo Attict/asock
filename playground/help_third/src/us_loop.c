@@ -1,5 +1,6 @@
 #include "asock.h"
 #include "core.h"
+#include "loop.h"
 
 #include "us_internal.h"
 #include <stdlib.h>
@@ -34,7 +35,10 @@ void us_internal_loop_data_free(struct us_loop_t *loop) {
 }
 
 void us_wakeup_loop(struct us_loop_t *loop) {
-    us_internal_async_wakeup(loop->data.wakeup_async);
+    asock_loop_t *casted_loop = (asock_loop_t *) loop;
+
+    // FIXME: this should not need to be casted to `asock_async_t`
+    asock_async_wakeup((asock_async_t *)casted_loop->data.wakeup_async);
 }
 
 void us_internal_loop_link(struct us_loop_t *loop, struct us_socket_context_t *context) {
