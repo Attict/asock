@@ -123,7 +123,7 @@ struct us_listen_socket_t *us_socket_context_listen(int ssl, struct us_socket_co
 
   int listen_socket_fd = asock_core_listen_socket(host, port, options);
 
-  if (listen_socket_fd == LIBUS_SOCKET_ERROR) {
+  if (listen_socket_fd == -1) {
     return 0;
   }
 

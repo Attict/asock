@@ -19,7 +19,6 @@
 #define INTERNAL_H
 
 /* We only have one networking implementation so far */
-#include "bsd.h"
 #include "epoll_kqueue.h"
 
 /* Poll type and what it polls for */

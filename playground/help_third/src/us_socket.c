@@ -23,12 +23,12 @@
 /* Shared with SSL */
 
 void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *length) {
-  struct bsd_addr_t addr;
-  if (bsd_socket_addr(us_poll_fd(&s->p), &addr) || *length < bsd_addr_get_ip_length(&addr)) {
+  struct asock_core_addr_t addr;
+  if (asock_core_socket_addr(us_poll_fd(&s->p), &addr) || *length < asock_core_addr_ip_len(&addr)) {
     *length = 0;
   } else {
-    *length = bsd_addr_get_ip_length(&addr);
-    memcpy(buf, bsd_addr_get_ip(&addr), *length);
+    *length = asock_core_addr_addr_ip_len(&addr);
+    memcpy(buf, asock_core_get_ip(&addr), *length);
   }
 }
 
@@ -68,7 +68,7 @@ int us_socket_write(int ssl, struct us_socket_t *s, const char *data, int length
     return 0;
   }
 
-  int written = bsd_send(us_poll_fd(&s->p), data, length, msg_more);
+  int written = asock_core_send(asock_poll_fd(&s->p), data, length, msg_more);
   if (written != length) {
     s->context->loop->data.last_write_failed = 1;
     us_poll_change(&s->p, s->context->loop, LIBUS_SOCKET_READABLE | LIBUS_SOCKET_WRITABLE);

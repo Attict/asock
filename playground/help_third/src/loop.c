@@ -132,7 +132,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
                 int client_fd = asock_core_accept_socket(asock_poll_fd(p), &addr);
 
-                if (client_fd == LIBUS_SOCKET_ERROR) {
+                if (client_fd == -1) {
                     /* Todo: start timer here */
 
                 } else {
@@ -160,7 +160,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                             break;
                         }
 
-                    } while ((client_fd = asock_core_accept_socket(asock_poll_fd(p), &addr)) != LIBUS_SOCKET_ERROR);
+                    } while ((client_fd = asock_core_accept_socket(asock_poll_fd(p), &addr)) != -1);
                 }
             }
         }
@@ -212,7 +212,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         us_poll_change(&s->p, us_socket_context(0, s)->loop, us_poll_events(&s->p) & LIBUS_SOCKET_WRITABLE);
                         s = s->context->on_end(s);
                     }
-                } else if (length == LIBUS_SOCKET_ERROR && !asock_core_would_block()) {
+                } else if (length == -1 && !asock_core_would_block()) {
                     s = us_socket_close(0, s);
                 }
             }
