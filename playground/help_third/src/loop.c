@@ -200,7 +200,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                     break;
                 }
 
-                int length = bsd_recv(us_poll_fd(&s->p), s->context->loop->data.recv_buf + LIBUS_RECV_BUFFER_PADDING, LIBUS_RECV_BUFFER_LENGTH, 0);
+                int length = asock_core_recv(asock_poll_fd(&s->p), s->context->loop->data.recv_buf + LIBUS_RECV_BUFFER_PADDING, LIBUS_RECV_BUFFER_LENGTH, 0);
                 if (length > 0) {
                     s = s->context->on_data(s, s->context->loop->data.recv_buf + LIBUS_RECV_BUFFER_PADDING, length);
                 } else if (!length) {
@@ -212,7 +212,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         us_poll_change(&s->p, us_socket_context(0, s)->loop, us_poll_events(&s->p) & LIBUS_SOCKET_WRITABLE);
                         s = s->context->on_end(s);
                     }
-                } else if (length == LIBUS_SOCKET_ERROR && !bsd_would_block()) {
+                } else if (length == LIBUS_SOCKET_ERROR && !asock_core_would_block()) {
                     s = us_socket_close(0, s);
                 }
             }

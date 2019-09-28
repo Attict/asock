@@ -202,7 +202,13 @@ typedef struct asock_poll_t
 }
 asock_poll_t;
 
-static inline int asock_poll_fd(asock_poll_t *p) {
+/**
+ * asock_poll_fd
+ *
+ * @brief todo
+ */
+static inline int asock_poll_fd(asock_poll_t *p)
+{
   return p->state.fd;
 }
 
