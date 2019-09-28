@@ -2,6 +2,7 @@
 #define ASOCK_POLL_H
 
 #include "asock.h"
+#include "loop.h"
 
 /**
  * GET_READY_POLL
@@ -44,5 +45,15 @@ asock_poll_t;
  * @return The poll's state File Descriptor
  */
 int asock_poll_fd(asock_poll_t *poll);
+
+/**
+ * asock_poll_free
+ *
+ * @brief todo
+ *
+ * @param p
+ * @param loop
+ */
+void asock_poll_free(asock_poll_t *p, asock_loop_t *loop);
 
 #endif // ASOCK_POLL_H

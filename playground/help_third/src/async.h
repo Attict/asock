@@ -37,6 +37,16 @@ asock_callback_t;
 void asock_async_close(asock_async_t *a);
 
 /**
+ * asock_async_set
+ *
+ * @brief todo
+ *
+ * @param a Async Struct to be set
+ * @param cb Callback
+ */
+void asock_async_set(asock_async_t *a, void (*cb)(asock_async_t *));
+
+/**
  * asock_async_wakeup
  *
  * @brief todo

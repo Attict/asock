@@ -381,19 +381,6 @@ void us_internal_async_close(struct us_internal_async *a) {
     us_poll_free((struct us_poll_t *) a, internal_cb->loop);
 }
 
-void us_internal_async_set(struct us_internal_async *a, void (*cb)(struct us_internal_async *)) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) a;
 
-    internal_cb->cb = (void (*)(struct us_internal_callback_t *)) cb;
-}
-
-void us_internal_async_wakeup(struct us_internal_async *a) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) a;
-
-    /* In kqueue you really only need to add a triggered oneshot event */
-    struct kevent event;
-    EV_SET(&event, (uintptr_t) internal_cb, EVFILT_USER, EV_ADD | EV_ONESHOT, NOTE_TRIGGER, 0, internal_cb);
-    kevent(internal_cb->loop->fd, &event, 1, NULL, 0, NULL);
-}
 
 #endif

@@ -20,7 +20,7 @@ void us_internal_loop_data_init(struct us_loop_t *loop, void (*wakeup_cb)(struct
     loop->data.iteration_nr = 0;
 
     loop->data.wakeup_async = us_internal_create_async(loop, 1, 0);
-    us_internal_async_set(loop->data.wakeup_async, (void (*)(struct us_internal_async *)) wakeup_cb);
+    asock_async_set(loop->data.wakeup_async, (void (*)(struct us_internal_async *)) wakeup_cb);
 }
 
 void us_internal_loop_data_free(struct us_loop_t *loop) {
@@ -31,10 +31,11 @@ void us_internal_loop_data_free(struct us_loop_t *loop) {
     free(loop->data.recv_buf);
 
     us_timer_close(loop->data.sweep_timer);
-    us_internal_async_close(loop->data.wakeup_async);
+    asock_async_close(loop->data.wakeup_async);
 }
 
 void us_wakeup_loop(struct us_loop_t *loop) {
+    //us_internal_async_wakeup(loop->data.wakeup_async);
     asock_loop_t *casted_loop = (asock_loop_t *) loop;
 
     // FIXME: this should not need to be casted to `asock_async_t`
@@ -80,7 +81,7 @@ void us_internal_free_closed_sockets(struct us_loop_t *loop) {
     if (loop->data.closed_head) {
         for (struct us_socket_t *s = loop->data.closed_head; s; ) {
             struct us_socket_t *next = s->next;
-            us_poll_free((struct us_poll_t *) s, loop);
+            asock_poll_free((asock_poll_t *) s, loop);
             s = next;
         }
         loop->data.closed_head = 0;

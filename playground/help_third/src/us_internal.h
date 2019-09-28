@@ -49,8 +49,6 @@ void us_internal_loop_post(struct us_loop_t *loop);
 /* Asyncs (old) */
 struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int fallthrough, unsigned int ext_size);
 void us_internal_async_close(struct us_internal_async *a);
-void us_internal_async_set(struct us_internal_async *a, void (*cb)(struct us_internal_async *));
-void us_internal_async_wakeup(struct us_internal_async *a);
 
 /* Eventing related */
 unsigned int us_internal_accept_poll_event(struct us_poll_t *p);
