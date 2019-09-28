@@ -11,11 +11,7 @@
  *
  * @brief todo
  */
-typedef struct asock_async_t
-{
-
-}
-asock_async_t;
+typedef struct asock_async_t asock_async_t;
 
 /**
  * asock_callback_t
