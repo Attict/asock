@@ -17,6 +17,7 @@
 
 #include "asock.h"
 #include "internal.h"
+#include "core.h"
 #include <stdlib.h>
 
 int default_ignore_data_handler(struct us_socket_t *s)
@@ -120,7 +121,7 @@ struct us_listen_socket_t *us_socket_context_listen(int ssl, struct us_socket_co
   }
 #endif
 
-  LIBUS_SOCKET_DESCRIPTOR listen_socket_fd = bsd_create_listen_socket(host, port, options);
+  int listen_socket_fd = asock_core_listen_socket(host, port, options);
 
   if (listen_socket_fd == LIBUS_SOCKET_ERROR) {
     return 0;
@@ -149,8 +150,8 @@ struct us_socket_t *us_socket_context_connect(int ssl, struct us_socket_context_
   }
 #endif
 
-  LIBUS_SOCKET_DESCRIPTOR connect_socket_fd = bsd_create_connect_socket(host, port, options);
-  if (connect_socket_fd == LIBUS_SOCKET_ERROR) {
+  int connect_socket_fd = asock_core_connect_socket(host, port, options);
+  if (connect_socket_fd == -1) {
     return 0;
   }
 
