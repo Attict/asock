@@ -10,7 +10,7 @@
  * @brief todo
  */
 #define GET_READY_POLL(loop, index) \
-    (struct us_poll_t *) loop->ready_polls[index].udata
+    (struct asock_poll_t *) loop->ready_polls[index].udata
 
 /**
  * SET_READY_POLL
@@ -68,7 +68,7 @@ asock_poll_t;
  *
  * @param
  */
-asock_poll_t *asock_poll_create(asock_loop_t *loop,
+asock_poll_t *asock_poll_create(struct asock_loop_t *loop,
     int fallthrough, unsigned int ext_size);
 
 /**
@@ -90,7 +90,7 @@ void asock_poll_init(asock_poll_t *p, int fd, int poll_type);
  * @param p
  * @param loop
  */
-void asock_poll_free(asock_poll_t *p, asock_loop_t *loop);
+void asock_poll_free(asock_poll_t *p, struct asock_loop_t *loop);
 
 /**
  * asock_poll_fd

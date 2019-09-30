@@ -54,8 +54,6 @@ void us_timer_close(struct us_timer_t *timer);
  * Specify 0 as repeat delay to disable repeating. Specify both 0 to disarm. */
 void us_timer_set(struct us_timer_t *timer, void (*cb)(struct us_timer_t *t), int ms, int repeat_ms);
 
-/* Returns the loop for this timer */
-struct us_loop_t *us_timer_loop(struct us_timer_t *t);
 
 /* Public interfaces for contexts */
 

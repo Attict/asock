@@ -1,3 +1,4 @@
+#include "callback.h"
 #include "timer.h"
 
 /**
@@ -36,4 +37,14 @@ void asock_timer_set(
 void *asock_timer_ext(asock_timer_t *timer)
 {
 
+}
+
+/**
+ * asock_timer_loop
+ *
+ */
+asock_loop_t *asock_timer_loop(asock_timer_t *t)
+{
+  asock_callback_t *cb = (asock_callback_t *) t;
+  return cb->loop;
 }

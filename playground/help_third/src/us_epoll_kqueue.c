@@ -39,12 +39,6 @@ void *us_timer_ext(struct us_timer_t *timer) {
     return ((struct us_internal_callback_t *) timer) + 1;
 }
 
-struct us_loop_t *us_timer_loop(struct us_timer_t *t) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) t;
-
-    return internal_cb->loop;
-}
-
 /* Loop */
 struct us_loop_t *us_create_loop(void *hint, void (*wakeup_cb)(struct us_loop_t *loop), void (*pre_cb)(struct us_loop_t *loop), void (*post_cb)(struct us_loop_t *loop), unsigned int ext_size) {
     struct us_loop_t *loop = (struct us_loop_t *) malloc(sizeof(struct us_loop_t) + ext_size);
@@ -103,28 +97,28 @@ void us_loop_run(struct us_loop_t *loop) {
     }
 }
 
-void us_internal_loop_update_pending_ready_polls(struct us_loop_t *loop, struct us_poll_t *old_poll, struct us_poll_t *new_poll, int old_events, int new_events) {
-#ifdef LIBUS_USE_EPOLL
-    /* Epoll only has one ready poll per poll */
-    int num_entries_possibly_remaining = 1;
-#else
-    /* Ready polls may contain same poll twice under kqueue, as one poll may hold two filters */
-    int num_entries_possibly_remaining = 2;//((old_events & LIBUS_SOCKET_READABLE) ? 1 : 0) + ((old_events & LIBUS_SOCKET_WRITABLE) ? 1 : 0);
-#endif
-
-    /* Todo: for kqueue if we track things in us_change_poll it is possible to have a fast path with no seeking in cases of:
-    * current poll being us AND we only poll for one thing */
-
-    for (int i = loop->current_ready_poll; i < loop->num_ready_polls && num_entries_possibly_remaining; i++) {
-        if (GET_READY_POLL(loop, i) == old_poll) {
-
-            // if new events does not contain the ready events of this poll then remove (no we filter that out later on)
-            SET_READY_POLL(loop, i, new_poll);
-
-            num_entries_possibly_remaining--;
-        }
-    }
-}
+////////////void us_internal_loop_update_pending_ready_polls(struct us_loop_t *loop, struct us_poll_t *old_poll, struct us_poll_t *new_poll, int old_events, int new_events) {
+////////////#ifdef LIBUS_USE_EPOLL
+////////////    /* Epoll only has one ready poll per poll */
+////////////    int num_entries_possibly_remaining = 1;
+////////////#else
+////////////    /* Ready polls may contain same poll twice under kqueue, as one poll may hold two filters */
+////////////    int num_entries_possibly_remaining = 2;//((old_events & LIBUS_SOCKET_READABLE) ? 1 : 0) + ((old_events & LIBUS_SOCKET_WRITABLE) ? 1 : 0);
+////////////#endif
+////////////
+////////////    /* Todo: for kqueue if we track things in us_change_poll it is possible to have a fast path with no seeking in cases of:
+////////////    * current poll being us AND we only poll for one thing */
+////////////
+////////////    for (int i = loop->current_ready_poll; i < loop->num_ready_polls && num_entries_possibly_remaining; i++) {
+////////////        if (GET_READY_POLL(loop, i) == old_poll) {
+////////////
+////////////            // if new events does not contain the ready events of this poll then remove (no we filter that out later on)
+////////////            SET_READY_POLL(loop, i, new_poll);
+////////////
+////////////            num_entries_possibly_remaining--;
+////////////        }
+////////////    }
+////////////}
 
 /* Poll */
 
@@ -167,7 +161,7 @@ struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, un
 #endif
 
         /* This is needed for epoll also (us_change_poll doesn't update the old poll) */
-        us_internal_loop_update_pending_ready_polls(loop, p, new_p, events, events);
+        asock_loop_update_pending(loop, p, new_p, events, events);
     }
 
     return new_p;
@@ -218,7 +212,7 @@ void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop) {
 #endif
 
     /* Disable any instance of us in the pending ready poll list */
-    us_internal_loop_update_pending_ready_polls(loop, p, 0, old_events, new_events);
+    asock_loop_update_pending(loop, p, 0, old_events, new_events);
 }
 
 /* Timer */

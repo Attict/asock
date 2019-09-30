@@ -57,10 +57,16 @@ void asock_timer_set(
 void *asock_timer_ext(asock_timer_t *timer);
 
 /**
- * asock_timer_
+ * asock_timer_loop
  *
  * @brief todo
+ *
+ * @param timer
+ * @return
  */
+asock_loop_t *asock_timer_loop(asock_timer_t *timer);
+
+
 
 
 #endif // ASOCK_TIMER_H
