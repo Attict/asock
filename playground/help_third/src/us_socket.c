@@ -97,7 +97,7 @@ struct us_socket_t *us_socket_close(int ssl, struct us_socket_t *s) {
 
   if (!us_socket_is_closed(0, s)) {
     us_internal_socket_context_unlink(s->context, s);
-    us_poll_stop((struct us_poll_t *) s, s->context->loop);
+    asock_poll_stop((struct us_poll_t *) s, s->context->loop);
     asock_core_close_socket(asock_poll_fd((struct us_poll_t *) s));
 
     /* Link this socket to the close-list and let it be deleted after this iteration */

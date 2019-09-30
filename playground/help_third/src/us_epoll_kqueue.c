@@ -34,10 +34,6 @@ void us_internal_poll_set_type(struct us_poll_t *p, int poll_type) {
     p->state.poll_type = poll_type | (p->state.poll_type & 12);
 }
 
-/* Timer */
-void *us_timer_ext(struct us_timer_t *timer) {
-    return ((struct us_internal_callback_t *) timer) + 1;
-}
 
 /* Loop */
 struct us_loop_t *us_create_loop(void *hint, void (*wakeup_cb)(struct us_loop_t *loop), void (*pre_cb)(struct us_loop_t *loop), void (*post_cb)(struct us_loop_t *loop), unsigned int ext_size) {
@@ -96,30 +92,6 @@ void us_loop_run(struct us_loop_t *loop) {
         us_internal_loop_post(loop);
     }
 }
-
-////////////void us_internal_loop_update_pending_ready_polls(struct us_loop_t *loop, struct us_poll_t *old_poll, struct us_poll_t *new_poll, int old_events, int new_events) {
-////////////#ifdef LIBUS_USE_EPOLL
-////////////    /* Epoll only has one ready poll per poll */
-////////////    int num_entries_possibly_remaining = 1;
-////////////#else
-////////////    /* Ready polls may contain same poll twice under kqueue, as one poll may hold two filters */
-////////////    int num_entries_possibly_remaining = 2;//((old_events & LIBUS_SOCKET_READABLE) ? 1 : 0) + ((old_events & LIBUS_SOCKET_WRITABLE) ? 1 : 0);
-////////////#endif
-////////////
-////////////    /* Todo: for kqueue if we track things in us_change_poll it is possible to have a fast path with no seeking in cases of:
-////////////    * current poll being us AND we only poll for one thing */
-////////////
-////////////    for (int i = loop->current_ready_poll; i < loop->num_ready_polls && num_entries_possibly_remaining; i++) {
-////////////        if (GET_READY_POLL(loop, i) == old_poll) {
-////////////
-////////////            // if new events does not contain the ready events of this poll then remove (no we filter that out later on)
-////////////            SET_READY_POLL(loop, i, new_poll);
-////////////
-////////////            num_entries_possibly_remaining--;
-////////////        }
-////////////    }
-////////////}
-
 /* Poll */
 
 #ifdef LIBUS_USE_KQUEUE
@@ -199,22 +171,6 @@ void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events) {
     }
 }
 
-void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop) {
-    int old_events = asock_poll_events(p);
-    int new_events = 0;
-#ifdef LIBUS_USE_EPOLL
-    struct epoll_event event;
-    epoll_ctl(loop->fd, EPOLL_CTL_DEL, p->state.fd, &event);
-#else
-    if (old_events) {
-        kqueue_change(loop->fd, p->state.fd, old_events, new_events, NULL);
-    }
-#endif
-
-    /* Disable any instance of us in the pending ready poll list */
-    asock_loop_update_pending(loop, p, 0, old_events, new_events);
-}
-
 /* Timer */
 #ifdef LIBUS_USE_EPOLL
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
@@ -246,41 +202,6 @@ struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsi
 }
 #endif
 
-#ifdef LIBUS_USE_EPOLL
-void us_timer_close(struct us_timer_t *timer) {
-    struct us_internal_callback_t *cb = (struct us_internal_callback_t *) timer;
-
-    us_poll_stop(&cb->p, cb->loop);
-    close(asock_poll_fd(&cb->p));
-
-    /* (regular) sockets are the only polls which are not freed immediately */
-    asock_poll_free((struct asock_poll_t *) timer, cb->loop);
-}
-
-void us_timer_set(struct us_timer_t *t, void (*cb)(struct us_timer_t *t), int ms, int repeat_ms) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) t;
-
-    internal_cb->cb = (void (*)(struct us_internal_callback_t *)) cb;
-
-    struct itimerspec timer_spec = {
-        {repeat_ms / 1000, ((long)repeat_ms * 1000000) % 1000000000},
-        {ms / 1000, ((long)ms * 1000000) % 1000000000}
-    };
-
-    timerfd_settime(asock_poll_fd((struct us_poll_t *) t), 0, &timer_spec, NULL);
-    us_poll_start((struct us_poll_t *) t, internal_cb->loop, LIBUS_SOCKET_READABLE);
-}
-#else
-void us_timer_close(struct us_timer_t *timer) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) timer;
-
-    struct kevent event;
-    EV_SET(&event, (uintptr_t) internal_cb, EVFILT_TIMER, EV_DELETE, 0, 0, internal_cb);
-    kevent(internal_cb->loop->fd, &event, 1, NULL, 0, NULL);
-
-    /* (regular) sockets are the only polls which are not freed immediately */
-    asock_poll_free((struct asock_poll_t *) timer, internal_cb->loop);
-}
 
 void us_timer_set(struct us_timer_t *t, void (*cb)(struct us_timer_t *t), int ms, int repeat_ms) {
     struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) t;
@@ -312,4 +233,3 @@ struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int f
     return (struct us_internal_async *) cb;
 }
 
-#endif

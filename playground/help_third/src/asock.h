@@ -44,11 +44,7 @@ struct us_poll_t;
 /* Create a new high precision, low performance timer. May fail and return null */
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size);
 
-/* Returns user data extension for this timer */
-void *us_timer_ext(struct us_timer_t *timer);
 
-/* */
-void us_timer_close(struct us_timer_t *timer);
 
 /* Arm a timer with a delay from now and eventually a repeat delay.
  * Specify 0 as repeat delay to disable repeating. Specify both 0 to disarm. */
@@ -144,7 +140,6 @@ long long us_loop_iteration_number(struct us_loop_t *loop);
 /* Start, change and stop polling for events */
 void us_poll_start(struct us_poll_t *p, struct us_loop_t *loop, int events);
 void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events);
-void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop);
 
 
 
