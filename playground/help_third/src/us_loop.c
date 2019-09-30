@@ -147,7 +147,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
                     do {
                         struct us_poll_t *p = asock_poll_create(us_socket_context(0, &listen_socket->s)->loop, 0, sizeof(struct us_socket_t) - sizeof(struct us_poll_t) + listen_socket->socket_ext_size);
-                        us_poll_init(p, client_fd, POLL_TYPE_SOCKET);
+                        asock_poll_init(p, client_fd, POLL_TYPE_SOCKET);
                         us_poll_start(p, listen_socket->s.context->loop, LIBUS_SOCKET_READABLE);
 
                         struct us_socket_t *s = (struct us_socket_t *) p;

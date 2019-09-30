@@ -36,12 +36,6 @@ void us_poll_free(struct us_poll_t *p, struct us_loop_t *loop) {
     free(p);
 }
 
-/* Todo: why have us_poll_create AND us_poll_init!? libuv legacy! */
-void us_poll_init(struct us_poll_t *p, LIBUS_SOCKET_DESCRIPTOR fd, int poll_type) {
-    p->state.fd = fd;
-    p->state.poll_type = poll_type;
-}
-
 int us_poll_events(struct us_poll_t *p) {
     return ((p->state.poll_type & POLL_TYPE_POLLING_IN) ? LIBUS_SOCKET_READABLE : 0) | ((p->state.poll_type & POLL_TYPE_POLLING_OUT) ? LIBUS_SOCKET_WRITABLE : 0);
 }
@@ -246,7 +240,7 @@ void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop) {
 #ifdef LIBUS_USE_EPOLL
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
     struct us_poll_t *p = asock_poll_create(loop, fallthrough, sizeof(struct us_internal_callback_t) + ext_size);
-    us_poll_init(p, timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK | TFD_CLOEXEC), POLL_TYPE_CALLBACK);
+    asock_poll_init(p, timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK | TFD_CLOEXEC), POLL_TYPE_CALLBACK);
 
     struct us_internal_callback_t *cb = (struct us_internal_callback_t *) p;
     cb->loop = loop;

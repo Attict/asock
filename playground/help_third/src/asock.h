@@ -142,8 +142,6 @@ long long us_loop_iteration_number(struct us_loop_t *loop);
 /* Public interfaces for polls */
 
 
-/* Associate this poll with a socket descriptor and poll type */
-void us_poll_init(struct us_poll_t *p, LIBUS_SOCKET_DESCRIPTOR fd, int poll_type);
 
 /* Start, change and stop polling for events */
 void us_poll_start(struct us_poll_t *p, struct us_loop_t *loop, int events);
