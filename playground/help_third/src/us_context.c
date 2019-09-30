@@ -197,7 +197,7 @@ struct us_socket_t *us_socket_context_adopt_socket(int ssl, struct us_socket_con
   /* This properly updates the iterator if in on_timeout */
   us_internal_socket_context_unlink(s->context, s);
 
-  struct us_socket_t *new_s = (struct us_socket_t *) us_poll_resize(&s->p, s->context->loop, sizeof(struct us_socket_t) + ext_size);
+  struct us_socket_t *new_s = (struct us_socket_t *) asock_poll_resize(&s->p, s->context->loop, sizeof(struct us_socket_t) + ext_size);
 
   us_internal_socket_context_link(context, new_s);
 

@@ -175,5 +175,24 @@ int asock_poll_kqueue_change(int kqfd, int fd, int old_events,
   // ret should be 0 in most cases (not guaranteed when removing async)
 
   return ret;
+}
 
+/**
+ * asock_poll_resize
+ *
+ */
+asock_poll_t *asock_poll_resize(asock_poll_t *p, asock_loop_t *loop,
+    unsigned int ext_size)
+{
+  int events = asock_poll_events(p);
+  asock_poll_t *new_p = realloc(p, sizeof(asock_poll_t) + ext_size);
+
+  if (p != new_p && events)
+  {
+    // Forcefully update poll by resetting them with new_p as user data.
+    asock_poll_kqueue_change(loop->fd, new_p->state.fd, 0, events, new_p);
+    asock_loop_update_pending(loop, p, new_p, events, events);
+  }
+
+  return new_p;
 }

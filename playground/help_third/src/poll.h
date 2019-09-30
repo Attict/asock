@@ -186,8 +186,18 @@ void asock_poll_change(asock_poll_t *p, asock_loop_t *loop, int events);
 int asock_poll_kqueue_change(int kqfd, int fd, int old_events,
     int new_events, void *user_data);
 
-
-
+/**
+ * asock_poll_resize
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ * @param loop Loop
+ * @param ext_size Extension size for returning object
+ * @return Re-allocated object
+ */
+asock_poll_t *asock_poll_resize(asock_poll_t *p, asock_loop_t *loop,
+    unsigned int ext_size);
 
 
 

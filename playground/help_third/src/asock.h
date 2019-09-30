@@ -131,13 +131,6 @@ long long us_loop_iteration_number(struct us_loop_t *loop);
 
 
 
-
-
-
-
-/* Resize an active poll */
-struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, unsigned int ext_size);
-
 /* Public interfaces for sockets */
 
 /* Write up to length bytes of data. Returns actual bytes written.

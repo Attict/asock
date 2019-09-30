@@ -113,21 +113,6 @@ int kqueue_change(int kqfd, int fd, int old_events, int new_events, void *user_d
 }
 #endif
 
-struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, unsigned int ext_size) {
-    int events = asock_poll_events(p);
-
-    struct us_poll_t *new_p = realloc(p, sizeof(struct us_poll_t) + ext_size);
-    if (p != new_p && events) {
-        /* Forcefully update poll by resetting them with new_p as user data */
-        kqueue_change(loop->fd, new_p->state.fd, 0, events, new_p);
-
-        /* This is needed for epoll also (us_change_poll doesn't update the old poll) */
-        asock_loop_update_pending(loop, p, new_p, events, events);
-    }
-
-    return new_p;
-}
-
 /* Timer */
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
     struct us_internal_callback_t *cb = malloc(sizeof(struct us_internal_callback_t) + ext_size);
