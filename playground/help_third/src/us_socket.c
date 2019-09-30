@@ -136,6 +136,6 @@ void us_socket_shutdown(int ssl, struct us_socket_t *s) {
   if (!us_socket_is_closed(ssl, s) && !us_socket_is_shut_down(ssl, s)) {
     asock_poll_set_type(&s->p, POLL_TYPE_SOCKET_SHUT_DOWN);
     asock_poll_change(&s->p, s->context->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
-    asock_core_shutdown_socket(asock_poll_fd((struct us_poll_t *) s));
+    asock_core_shutdown_socket(asock_poll_fd((asock_poll_t *) s));
   }
 }

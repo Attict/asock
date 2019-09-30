@@ -1,4 +1,5 @@
 #include "callback.h"
+#include "context.h"
 #include "timer.h"
 #include <stdlib.h>
 #include <sys/event.h>
@@ -74,4 +75,18 @@ asock_loop_t *asock_timer_loop(asock_timer_t *t)
 {
   asock_callback_t *cb = (asock_callback_t *) t;
   return cb->loop;
+}
+
+/**
+ * asock_timer_sweep
+ *
+ */
+void asock_timer_sweep(asock_loop_t *loop)
+{
+  asock_loop_data_t *loop_data = &loop->data;
+  for (loop_data->iterator = loop_data->head; loop_data->iterator;
+      loop_data->iterator = loop_data->iterator->next)
+  {
+    asock_context_t *context = loop_data->iterator;
+  }
 }

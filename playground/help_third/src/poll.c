@@ -1,3 +1,4 @@
+#include "context.h"
 #include "poll.h"
 #include <stdlib.h>
 #include <sys/event.h>

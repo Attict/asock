@@ -39,15 +39,9 @@ enum {
 void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events);
 void us_internal_timer_sweep(struct us_loop_t *loop);
 void us_internal_free_closed_sockets(struct us_loop_t *loop);
-void us_internal_loop_link(struct us_loop_t *loop, struct us_socket_context_t *context);
-void us_internal_loop_data_init(struct us_loop_t *loop, void (*wakeup_cb)(struct us_loop_t *loop),
-    void (*pre_cb)(struct us_loop_t *loop), void (*post_cb)(struct us_loop_t *loop));
+void us_internal_loop_link(asock_loop_t *loop, asock_context_t *context);
 void us_internal_loop_pre(struct us_loop_t *loop);
 void us_internal_loop_post(struct us_loop_t *loop);
-
-/* Asyncs (old) */
-struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int fallthrough, unsigned int ext_size);
-void us_internal_async_close(struct us_internal_async *a);
 
 
 /* SSL loop data */

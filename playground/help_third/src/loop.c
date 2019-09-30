@@ -1,8 +1,25 @@
-#include "async.h"
+#include "callback.h"
 #include "loop.h"
 #include "timer.h"
 #include <stdlib.h>
 #include <unistd.h>
+
+/**
+ * asock_loop_create
+ *
+ */
+asock_loop_t *asock_loop_create(void *hint,
+    void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
+    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size)
+{
+  asock_loop_t *loop = (asock_loop_t *) malloc(sizeof(asock_loop_t) + ext_size);
+  loop->num_polls = 0;
+
+  loop->fd = kqueue();
+
+  asock_loop_data_init(loop, wakeup_cb, pre_cb, post_cb);
+  return loop;
+}
 
 /**
  * asock_loop_data_init
@@ -93,4 +110,40 @@ void asock_loop_wakeup(asock_loop_t *loop)
 {
   asock_loop_t *casted_loop = (asock_loop_t *) loop;
   asock_async_wakeup((asock_async_t *) casted_loop->data.wakeup_async);
+}
+
+/**
+ * asock_loop_integrate
+ *
+ */
+void asock_loop_integrate(asock_loop_t *loop)
+{
+  asock_timer_set(loop->data.sweep_timer,
+      (void (*)(asock_timer_t *)) asock_loop_sweep_timer_cb,
+      ASOCK_TIMEOUT_GRANULARITY * 1000,
+      ASOCK_TIMEOUT_GRANULARITY * 1000);
+}
+
+/**
+ * asock_loop_sweep_timer_cb
+ *
+ */
+void asock_loop_sweep_timer_cb(asock_callback_t *cb)
+{
+  asock_timer_sweep(cb->loop);
+}
+
+/**
+ * asock_loop_run
+ *
+ */
+void asock_loop_run(asock_loop_t *loop)
+{
+  asock_loop_integrate(loop);
+
+  // While we ahve non-fallthrough polls we shouldn't fall through
+  while (loop->num_polls)
+  {
+
+  }
 }

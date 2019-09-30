@@ -2,23 +2,22 @@
 #define ASOCK_LOOP_H
 
 #include "asock.h"
-#include "poll.h"
 #include <stdalign.h>
 #include <sys/event.h>
 
 /** FIXME **/
 typedef struct asock_loop_data_t
 {
-    struct us_timer_t *sweep_timer;
-    struct us_internal_async *wakeup_async;
+    asock_timer_t *sweep_timer;
+    struct asock_async_t *wakeup_async;
     int last_write_failed;
-    struct us_socket_context_t *head;
-    struct us_socket_context_t *iterator;
+    asock_context_t *head;
+    asock_context_t *iterator;
     char *recv_buf;
     void *ssl_data;
-    void (*pre_cb)(struct us_loop_t *);
-    void (*post_cb)(struct us_loop_t *);
-    struct us_socket_t *closed_head;
+    void (*pre_cb)(asock_loop_t *);
+    void (*post_cb)(asock_loop_t *);
+    asock_socket_t *closed_head;
     /* We do not care if this flips or not, it doesn't matter */
     long long iteration_nr;
 }
@@ -50,6 +49,36 @@ typedef struct asock_loop_t
   struct kevent ready_polls[1024];
 }
 asock_loop_t;
+
+/**
+ * asock_loop_create
+ *
+ * @brief todo
+ *
+ * @param hint
+ * @param wakeup_cb
+ * @param pre_cb
+ * @param post_cb
+ * @param ext_size
+ * @return
+ */
+asock_loop_t *asock_loop_create(void *hint,
+    void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
+    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+
+/**
+ * asock_loop_data_init
+ *
+ * @brief todo
+ *
+ * @param loop
+ * @param wakeup_cb
+ * @param pre_cb
+ * @param post_cb
+ * @return
+ */
+void asock_loop_data_init(asock_loop_t *loop, void (*wakeup_cb)(asock_loop_t *),
+    void (*pre_cb)(asock_loop_t *), void (*post_cb)(asock_loop_t *loop));
 
 /**
  * asock_loop_free
@@ -95,7 +124,23 @@ void asock_loop_update_pending(asock_loop_t *loop, asock_poll_t *old_poll,
  */
 void asock_loop_wakeup(asock_loop_t *loop);
 
+/**
+ * asock_loop_integrate
+ *
+ * @brief todo
+ *
+ * @param loop
+ */
+void asock_loop_integrate(asock_loop_t *loop);
 
+/**
+ * asock_loop_sweep_timer_cb
+ *
+ * @brief todo
+ *
+ * @param cb
+ */
+void asock_loop_sweep_timer_cb(asock_callback_t *cb);
 
 
 

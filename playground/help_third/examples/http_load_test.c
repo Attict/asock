@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
     connections = atoi(argv[1]);
 
     /* Create the event loop */
-    struct us_loop_t *loop = us_create_loop(0, on_wakeup, on_pre, on_post, 0);
+    struct us_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
 
     /* Create a socket context for HTTP */
     struct us_socket_context_options_t options = {};

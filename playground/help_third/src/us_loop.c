@@ -1,6 +1,7 @@
 #include "asock.h"
 #include "async.h"
 #include "core.h"
+#include "context.h"
 #include "loop.h"
 #include "poll.h"
 #include "timer.h"
@@ -8,25 +9,7 @@
 #include "us_internal.h"
 #include <stdlib.h>
 
-/* The loop has 2 fallthrough polls */
-void us_internal_loop_data_init(struct us_loop_t *loop, void (*wakeup_cb)(struct us_loop_t *loop),
-    void (*pre_cb)(struct us_loop_t *loop), void (*post_cb)(struct us_loop_t *loop)) {
-    loop->data.sweep_timer = asock_timer_create(loop, 1, 0);
-    loop->data.recv_buf = malloc(LIBUS_RECV_BUFFER_LENGTH + LIBUS_RECV_BUFFER_PADDING * 2);
-    loop->data.ssl_data = 0;
-    loop->data.head = 0;
-    loop->data.iterator = 0;
-    loop->data.closed_head = 0;
-
-    loop->data.pre_cb = pre_cb;
-    loop->data.post_cb = post_cb;
-    loop->data.iteration_nr = 0;
-
-    loop->data.wakeup_async = us_internal_create_async(loop, 1, 0);
-    asock_async_set(loop->data.wakeup_async, (void (*)(struct us_internal_async *)) wakeup_cb);
-}
-
-void us_internal_loop_link(struct us_loop_t *loop, struct us_socket_context_t *context) {
+void us_internal_loop_link(asock_loop_t *loop, asock_context_t *context) {
     context->next = loop->data.head;
     context->prev = 0;
     if (loop->data.head) {

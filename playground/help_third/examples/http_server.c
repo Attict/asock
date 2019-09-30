@@ -89,7 +89,7 @@ struct us_socket_t *on_http_socket_timeout(struct us_socket_t *s) {
 
 int main() {
 	/* Create the event loop */
-	struct us_loop_t *loop = us_create_loop(0, on_wakeup, on_pre, on_post, 0);
+	struct us_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
 
 	/* Create a socket context for HTTP */
 	struct us_socket_context_options_t options = {};

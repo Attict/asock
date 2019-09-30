@@ -43,5 +43,5 @@ us_socket_context_on_data(0, context) { (s, data, length) -> OpaquePointer? in
 })
 
 /* Integrate with existing CoreFoundation/GCD event-loop */
-us_loop_integrate(loop)
+asock_loop_integrate(loop)
 CFRunLoopRun()
