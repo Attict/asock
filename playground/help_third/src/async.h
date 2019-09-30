@@ -11,21 +11,14 @@
  *
  * @brief todo
  */
-typedef struct asock_async_t asock_async_t;
-
-/**
- * asock_callback_t
- *
- * @brief todo
- */
-typedef struct asock_callback_t
+typedef struct asock_async_t
 {
   alignas(ASOCK_EXT_ALIGN) asock_poll_t p;
   asock_loop_t *loop;
   int cb_expects_the_loop;
   void (*cb)(struct asock_callback_t *cb);
 }
-asock_callback_t;
+asock_async_t;
 
 /**
  * asock_async_close

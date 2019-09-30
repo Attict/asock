@@ -118,45 +118,14 @@ struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, un
 
     struct us_poll_t *new_p = realloc(p, sizeof(struct us_poll_t) + ext_size);
     if (p != new_p && events) {
-#ifdef LIBUS_USE_EPOLL
-        /* Hack: forcefully update poll by stripping away already set events */
-        new_p->state.poll_type = asock_poll_type(new_p);
-        us_poll_change(new_p, loop, events);
-#else
         /* Forcefully update poll by resetting them with new_p as user data */
         kqueue_change(loop->fd, new_p->state.fd, 0, events, new_p);
-#endif
 
         /* This is needed for epoll also (us_change_poll doesn't update the old poll) */
         asock_loop_update_pending(loop, p, new_p, events, events);
     }
 
     return new_p;
-}
-
-void us_poll_start(struct us_poll_t *p, struct us_loop_t *loop, int events) {
-    p->state.poll_type = asock_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
-
-#ifdef LIBUS_USE_EPOLL
-    struct epoll_event event;
-    event.events = events;
-    event.data.ptr = p;
-    epoll_ctl(loop->fd, EPOLL_CTL_ADD, p->state.fd, &event);
-#else
-    kqueue_change(loop->fd, p->state.fd, 0, events, p);
-#endif
-}
-
-void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events) {
-    int old_events = asock_poll_events(p);
-    if (old_events != events) {
-
-        p->state.poll_type = asock_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
-
-        kqueue_change(loop->fd, p->state.fd, old_events, events, p);
-        /* Set all removed events to null-polls in pending ready poll list */
-        //us_internal_loop_update_pending_ready_polls(loop, p, p, old_events, events);
-    }
 }
 
 /* Timer */

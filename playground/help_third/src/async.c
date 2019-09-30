@@ -1,5 +1,7 @@
 #include "async.h"
+#include "callback.h"
 #include "poll.h"
+#include <stdlib.h>
 #include <stdint.h>
 #include <sys/event.h>
 #include <unistd.h>
@@ -9,7 +11,7 @@
  *
  * @bug Type is only changed by `asock_poll_set_type`
  */
-struct asock_async_t *asock_async_create(asock_loop_t *loop,
+asock_async_t *asock_async_create(asock_loop_t *loop,
     int fallthrough, unsigned int ext_size)
 {
   asock_callback_t *cb = malloc(sizeof(asock_callback_t) + ext_size);
@@ -24,7 +26,7 @@ struct asock_async_t *asock_async_create(asock_loop_t *loop,
     loop->num_polls++;
   }
 
-  return (struct asock_async_t *) cb;
+  return (asock_async_t *) cb;
 }
 
 /**

@@ -160,4 +160,37 @@ int asock_poll_events(asock_poll_t *p);
  */
 void asock_poll_set_type(asock_poll_t *p, int poll_type);
 
+/**
+ * asock_poll_change
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ * @param loop Loop
+ * @param events
+ */
+void asock_poll_change(asock_poll_t *p, asock_loop_t *loop, int events);
+
+/**
+ * asock_kqueue_change
+ *
+ * @brief todo
+ *
+ * @param kqfd
+ * @param fd
+ * @param old_events
+ * @param new_events
+ * @param user_data
+ * @return
+ */
+int asock_poll_kqueue_change(int kqfd, int fd, int old_events,
+    int new_events, void *user_data);
+
+
+
+
+
+
+
+
 #endif // ASOCK_POLL_H

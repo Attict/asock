@@ -131,9 +131,6 @@ long long us_loop_iteration_number(struct us_loop_t *loop);
 
 
 
-/* Start, change and stop polling for events */
-void us_poll_start(struct us_poll_t *p, struct us_loop_t *loop, int events);
-void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events);
 
 
 

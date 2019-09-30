@@ -122,7 +122,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
             if (asock_poll_events(p) == LIBUS_SOCKET_WRITABLE) {
                 struct us_socket_t *s = (struct us_socket_t *) p;
 
-                us_poll_change(p, s->context->loop, LIBUS_SOCKET_READABLE);
+                asock_poll_change(p, s->context->loop, LIBUS_SOCKET_READABLE);
 
                 /* We always use nodelay */
                 asock_core_socket_nodelay(asock_poll_fd(p), 1);
@@ -148,7 +148,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                     do {
                         struct us_poll_t *p = asock_poll_create(us_socket_context(0, &listen_socket->s)->loop, 0, sizeof(struct us_socket_t) - sizeof(struct us_poll_t) + listen_socket->socket_ext_size);
                         asock_poll_init(p, client_fd, POLL_TYPE_SOCKET);
-                        us_poll_start(p, listen_socket->s.context->loop, LIBUS_SOCKET_READABLE);
+                        asock_poll_start(p, listen_socket->s.context->loop, LIBUS_SOCKET_READABLE);
 
                         struct us_socket_t *s = (struct us_socket_t *) p;
 
@@ -195,7 +195,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
                 /* If we have no failed write or if we shut down, then stop polling for more writable */
                 if (!s->context->loop->data.last_write_failed || us_socket_is_shut_down(0, s)) {
-                    us_poll_change(&s->p, us_socket_context(0, s)->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
+                    asock_poll_change(&s->p, us_socket_context(0, s)->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
                 }
             }
 
@@ -215,7 +215,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         s = us_socket_close(0, s);
                     } else {
                         /* We got FIN, so stop polling for readable */
-                        us_poll_change(&s->p, us_socket_context(0, s)->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_WRITABLE);
+                        asock_poll_change(&s->p, us_socket_context(0, s)->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_WRITABLE);
                         s = s->context->on_end(s);
                     }
                 } else if (length == -1 && !asock_core_would_block()) {

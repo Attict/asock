@@ -17,12 +17,13 @@ asock_timer_t;
 /**
  * asock_create_timer
  *
- * @brief todo
+ * @brief Creates a new high precision, low performance timer.
+ *        May fail and return null.
  *
  * @param loop
  * @param fallthrough
  * @param ext_size
- * @return Newly created timer
+ * @return Newly created timer, or if fails, then NULL.
  */
 asock_timer_t *asock_timer_create(
     asock_loop_t *loop, int fallthrough, unsigned int ext_size);

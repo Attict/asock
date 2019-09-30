@@ -27,6 +27,19 @@ void asock_poll_init(asock_poll_t *p, int fd, int poll_type)
 }
 
 /**
+ * asock_poll_start
+ *
+ */
+void asock_poll_start(asock_poll_t *p, asock_loop_t *loop, int events)
+{
+  p->state.poll_type = asock_poll_type(p)
+      | ((events & ASOCK_SOCKET_READABLE) ? ASOCK_POLL_IN : 0)
+      | ((events & ASOCK_SOCKET_WRITABLE) ? ASOCK_POLL_OUT : 0);
+
+  asock_poll_kqueue_change(loop->fd, p->state.fd, 0, events, p);
+}
+
+/**
  * asock_poll_stop
  *
  */
@@ -110,4 +123,57 @@ int asock_poll_events(asock_poll_t *p)
 void asock_poll_set_type(asock_poll_t *p, int poll_type)
 {
   p->state.poll_type = poll_type | (p->state.poll_type & 12);
+}
+
+/**
+ * asock_poll_change
+ *
+ */
+void asock_poll_change(asock_poll_t *p, asock_loop_t *loop, int events)
+{
+  int old_events = asock_poll_events(p);
+  if (old_events != events)
+  {
+    p->state.poll_type = asock_poll_type(p)
+      | ((events & ASOCK_SOCKET_WRITABLE) ? ASOCK_POLL_IN : 0)
+      | ((events & ASOCK_SOCKET_READABLE) ? ASOCK_POLL_OUT : 0);
+
+    asock_poll_kqueue_change(loop->fd, p->state.fd, old_events, events, p);
+  }
+}
+
+/**
+ * asock_kqueue_change
+ *
+ */
+int asock_poll_kqueue_change(int kqfd, int fd, int old_events,
+    int new_events, void *user_data)
+{
+  struct kevent change_list[2];
+  int change_length = 0;
+
+  // Do they differ in readable?
+  if ((new_events & ASOCK_SOCKET_READABLE)
+      != (old_events & ASOCK_SOCKET_READABLE))
+  {
+    EV_SET(&change_list[change_length++], fd, EVFILT_READ,
+        (new_events & ASOCK_SOCKET_READABLE) ? EV_ADD : EV_DELETE,
+        0, 0, user_data);
+  }
+
+  // Do they differ in writable?
+  if ((new_events & ASOCK_SOCKET_WRITABLE)
+      != (old_events & ASOCK_SOCKET_WRITABLE))
+  {
+    EV_SET(&change_list[change_length++], fd, EVFILT_WRITE,
+        (new_events & ASOCK_SOCKET_WRITABLE) ? EV_ADD : EV_DELETE,
+        0, 0, user_data);
+  }
+
+  int ret = kevent(kqfd, change_list, change_length, NULL, 0, NULL);
+
+  // ret should be 0 in most cases (not guaranteed when removing async)
+
+  return ret;
+
 }
