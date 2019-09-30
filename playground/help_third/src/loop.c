@@ -5,6 +5,30 @@
 #include <unistd.h>
 
 /**
+ * asock_loop_data_init
+ *
+ */
+void asock_loop_data_init(asock_loop_t *loop, void (*wakeup_cb)(asock_loop_t *),
+    void (*pre_cb)(asock_loop_t *), void (*post_cb)(asock_loop_t *loop))
+{
+  loop->data.sweep_timer = asock_timer_create(loop, 1, 0);
+  loop->data.recv_buf = malloc(
+      ASOCK_RECV_BUFFER_LENGTH + ASOCK_RECV_BUFFER_PADDING * 2);
+  loop->data.ssl_data = 0;
+  loop->data.head = 0;
+  loop->data.iterator = 0;
+  loop->data.closed_head = 0;
+
+  loop->data.pre_cb = pre_cb;
+  loop->data.post_cb = post_cb;
+  loop->data.iteration_nr = 0;
+  loop->data.wakeup_async = asock_async_create(loop, 1, 0);
+
+  asock_async_set(
+      loop->data.wakeup_async, (void (*)(asock_async_t *)) wakeup_cb);
+}
+
+/**
  * asock_loop_free
  *
  * @note

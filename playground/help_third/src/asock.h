@@ -8,6 +8,9 @@
 
 #define ASOCK_EXT_ALIGN 16
 
+#define ASOCK_RECV_BUFFER_LENGTH 524288
+#define ASOCK_RECV_BUFFER_PADDING 32
+
 /* 512kb shared receive buffer */
 #define LIBUS_RECV_BUFFER_LENGTH 524288
 /* A timeout granularity of 4 seconds means give or take 4 seconds from set timeout */
