@@ -295,7 +295,7 @@ int main() {
 
     us_socket_context_free(SSL, websocket_context);
     us_socket_context_free(SSL, http_context);
-    us_loop_free(loop);
+    asock_loop_free(loop);
     free(long_buffer);
     printf("Done, shutting down now\n");
 }

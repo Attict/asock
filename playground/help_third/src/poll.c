@@ -50,7 +50,7 @@ void asock_poll_stop(asock_poll_t *p, asock_loop_t *loop)
 
   if (old_events)
   {
-    kqueue_change(loop->fd, p->state.fd, old_events, new_events, NULL);
+    asock_poll_kqueue_change(loop->fd, p->state.fd, old_events, new_events, NULL);
   }
 
   // Disable any instance of us in the pending ready poll list

@@ -24,17 +24,6 @@ void us_internal_loop_data_init(struct us_loop_t *loop, void (*wakeup_cb)(struct
     asock_async_set(loop->data.wakeup_async, (void (*)(struct us_internal_async *)) wakeup_cb);
 }
 
-void us_internal_loop_data_free(struct us_loop_t *loop) {
-#ifndef LIBUS_NO_SSL
-    us_internal_free_loop_ssl_data(loop);
-#endif
-
-    free(loop->data.recv_buf);
-
-    asock_timer_close(loop->data.sweep_timer);
-    asock_async_close(loop->data.wakeup_async);
-}
-
 void us_wakeup_loop(struct us_loop_t *loop) {
     //us_internal_async_wakeup(loop->data.wakeup_async);
     asock_loop_t *casted_loop = (asock_loop_t *) loop;

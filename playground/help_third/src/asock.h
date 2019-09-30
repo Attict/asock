@@ -25,6 +25,7 @@
 extern "C" {
 #endif
 
+
 enum {
     /* No meaning, default listen option */
     LIBUS_LISTEN_DEFAULT,
@@ -180,5 +181,6 @@ void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *le
 typedef struct asock_callback_t asock_callback_t;
 typedef struct asock_loop_t asock_loop_t;
 typedef struct asock_poll_t asock_poll_t;
+
 
 #endif // ASOCK_H

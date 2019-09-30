@@ -42,7 +42,6 @@ void us_internal_free_closed_sockets(struct us_loop_t *loop);
 void us_internal_loop_link(struct us_loop_t *loop, struct us_socket_context_t *context);
 void us_internal_loop_data_init(struct us_loop_t *loop, void (*wakeup_cb)(struct us_loop_t *loop),
     void (*pre_cb)(struct us_loop_t *loop), void (*post_cb)(struct us_loop_t *loop));
-void us_internal_loop_data_free(struct us_loop_t *loop);
 void us_internal_loop_pre(struct us_loop_t *loop);
 void us_internal_loop_post(struct us_loop_t *loop);
 

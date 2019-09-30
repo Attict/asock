@@ -22,13 +22,6 @@
 
 #if defined(LIBUS_USE_EPOLL) || defined(LIBUS_USE_KQUEUE)
 
-/* Loop */
-void us_loop_free(struct us_loop_t *loop) {
-    us_internal_loop_data_free(loop);
-    close(loop->fd);
-    free(loop);
-}
-
 
 /* Loop */
 struct us_loop_t *us_create_loop(void *hint, void (*wakeup_cb)(struct us_loop_t *loop), void (*pre_cb)(struct us_loop_t *loop), void (*post_cb)(struct us_loop_t *loop), unsigned int ext_size) {
@@ -89,29 +82,6 @@ void us_loop_run(struct us_loop_t *loop) {
 }
 /* Poll */
 
-#ifdef LIBUS_USE_KQUEUE
-/* Helper function for setting or updating EVFILT_READ and EVFILT_WRITE */
-int kqueue_change(int kqfd, int fd, int old_events, int new_events, void *user_data) {
-    struct kevent change_list[2];
-    int change_length = 0;
-
-    /* Do they differ in readable? */
-    if ((new_events & LIBUS_SOCKET_READABLE) != (old_events & LIBUS_SOCKET_READABLE)) {
-        EV_SET(&change_list[change_length++], fd, EVFILT_READ, (new_events & LIBUS_SOCKET_READABLE) ? EV_ADD : EV_DELETE, 0, 0, user_data);
-    }
-
-    /* Do they differ in writable? */
-    if ((new_events & LIBUS_SOCKET_WRITABLE) != (old_events & LIBUS_SOCKET_WRITABLE)) {
-        EV_SET(&change_list[change_length++], fd, EVFILT_WRITE, (new_events & LIBUS_SOCKET_WRITABLE) ? EV_ADD : EV_DELETE, 0, 0, user_data);
-    }
-
-    int ret = kevent(kqfd, change_list, change_length, NULL, 0, NULL);
-
-    // ret should be 0 in most cases (not guaranteed when removing async)
-
-    return ret;
-}
-#endif
 
 /* Timer */
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
