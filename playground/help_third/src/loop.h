@@ -80,8 +80,7 @@ void asock_loop_data_free(asock_loop_t *loop);
  * @param old_events
  * @param new_events
  */
-void asock_loop_update_pending(asock_loop_t *loop,
-    struct asock_poll_t *old_poll, struct asock_poll_t *new_poll,
-    int old_events, int new_events);
+void asock_loop_update_pending(asock_loop_t *loop, asock_poll_t *old_poll,
+    asock_poll_t *new_poll, int old_events, int new_events);
 
 #endif // ASOCK_LOOP_H

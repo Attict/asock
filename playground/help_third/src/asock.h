@@ -193,4 +193,13 @@ void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *le
 
 #define LIBUS_USE_KQUEUE
 
+
+//
+// New Code
+//
+
+typedef struct asock_callback_t asock_callback_t;
+typedef struct asock_loop_t asock_loop_t;
+typedef struct asock_poll_t asock_poll_t;
+
 #endif // ASOCK_H

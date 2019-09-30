@@ -1,5 +1,6 @@
 #include "poll.h"
 #include <stdlib.h>
+#include <sys/event.h>
 
 /**
  * asock_poll_create
@@ -23,6 +24,24 @@ void asock_poll_init(asock_poll_t *p, int fd, int poll_type)
 {
   p->state.fd = fd;
   p->state.poll_type = poll_type;
+}
+
+/**
+ * asock_poll_stop
+ *
+ */
+void asock_poll_stop(asock_poll_t *p, asock_loop_t *loop)
+{
+  int old_events = asock_poll_events(p);
+  int new_events = 0;
+
+  if (old_events)
+  {
+    kqueue_change(loop->fd, p->state.fd, old_events, new_events, NULL);
+  }
+
+  // Disable any instance of us in the pending ready poll list
+  asock_loop_update_pending(loop, p, 0, old_events, new_events);
 }
 
 /**
