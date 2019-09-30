@@ -29,13 +29,6 @@ void us_loop_free(struct us_loop_t *loop) {
     free(loop);
 }
 
-/* Poll */
-struct us_poll_t *us_create_poll(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
-    if (!fallthrough) {
-        loop->num_polls++;
-    }
-    return malloc(sizeof(struct us_poll_t) + ext_size);
-}
 
 /* Todo: this one should be us_internal_poll_free */
 void us_poll_free(struct us_poll_t *p, struct us_loop_t *loop) {
@@ -55,11 +48,6 @@ int us_poll_events(struct us_poll_t *p) {
 
 LIBUS_SOCKET_DESCRIPTOR us_poll_fd(struct us_poll_t *p) {
     return p->state.fd;
-}
-
-/* Returns any of listen socket, socket, shut down socket or callback */
-int us_internal_poll_type(struct us_poll_t *p) {
-    return p->state.poll_type & 3;
 }
 
 /* Bug: doesn't really SET, rather read and change, so needs to be inited first! */
@@ -192,7 +180,7 @@ struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, un
     if (p != new_p && events) {
 #ifdef LIBUS_USE_EPOLL
         /* Hack: forcefully update poll by stripping away already set events */
-        new_p->state.poll_type = us_internal_poll_type(new_p);
+        new_p->state.poll_type = asock_poll_type(new_p);
         us_poll_change(new_p, loop, events);
 #else
         /* Forcefully update poll by resetting them with new_p as user data */
@@ -207,7 +195,7 @@ struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, un
 }
 
 void us_poll_start(struct us_poll_t *p, struct us_loop_t *loop, int events) {
-    p->state.poll_type = us_internal_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
+    p->state.poll_type = asock_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
 
 #ifdef LIBUS_USE_EPOLL
     struct epoll_event event;
@@ -223,7 +211,7 @@ void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events) {
     int old_events = us_poll_events(p);
     if (old_events != events) {
 
-        p->state.poll_type = us_internal_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
+        p->state.poll_type = asock_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
 
 #ifdef LIBUS_USE_EPOLL
         struct epoll_event event;
@@ -254,23 +242,10 @@ void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop) {
     us_internal_loop_update_pending_ready_polls(loop, p, 0, old_events, new_events);
 }
 
-unsigned int us_internal_accept_poll_event(struct us_poll_t *p) {
-#ifdef LIBUS_USE_EPOLL
-    int fd = us_poll_fd(p);
-    uint64_t buf;
-    int read_length = read(fd, &buf, 8);
-    (void)read_length;
-    return buf;
-#else
-    /* Kqueue has no underlying FD for timers or user events */
-    return 0;
-#endif
-}
-
 /* Timer */
 #ifdef LIBUS_USE_EPOLL
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
-    struct us_poll_t *p = us_create_poll(loop, fallthrough, sizeof(struct us_internal_callback_t) + ext_size);
+    struct us_poll_t *p = asock_poll_create(loop, fallthrough, sizeof(struct us_internal_callback_t) + ext_size);
     us_poll_init(p, timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK | TFD_CLOEXEC), POLL_TYPE_CALLBACK);
 
     struct us_internal_callback_t *cb = (struct us_internal_callback_t *) p;

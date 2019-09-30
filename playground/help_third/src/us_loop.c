@@ -111,7 +111,7 @@ void us_internal_loop_post(struct us_loop_t *loop) {
 void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events) {
     switch (asock_poll_type(p)) {
     case POLL_TYPE_CALLBACK: {
-            us_internal_accept_poll_event(p);
+            asock_poll_accept_event(p);
             struct us_internal_callback_t *cb = (struct us_internal_callback_t *) p;
             cb->cb(cb->cb_expects_the_loop ? (struct us_internal_callback_t *) cb->loop : (struct us_internal_callback_t *) &cb->p);
         }
@@ -146,7 +146,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                     /* Todo: stop timer if any */
 
                     do {
-                        struct us_poll_t *p = us_create_poll(us_socket_context(0, &listen_socket->s)->loop, 0, sizeof(struct us_socket_t) - sizeof(struct us_poll_t) + listen_socket->socket_ext_size);
+                        struct us_poll_t *p = asock_poll_create(us_socket_context(0, &listen_socket->s)->loop, 0, sizeof(struct us_socket_t) - sizeof(struct us_poll_t) + listen_socket->socket_ext_size);
                         us_poll_init(p, client_fd, POLL_TYPE_SOCKET);
                         us_poll_start(p, listen_socket->s.context->loop, LIBUS_SOCKET_READABLE);
 

@@ -51,8 +51,6 @@ struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int f
 void us_internal_async_close(struct us_internal_async *a);
 
 /* Eventing related */
-unsigned int us_internal_accept_poll_event(struct us_poll_t *p);
-int us_internal_poll_type(struct us_poll_t *p);
 void us_internal_poll_set_type(struct us_poll_t *p, int poll_type);
 
 /* SSL loop data */

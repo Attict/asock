@@ -61,3 +61,13 @@ int asock_poll_type(asock_poll_t *p)
 {
   return p->state.poll_type & 3;
 }
+
+/**
+ * asock_poll_accept_event
+ *
+ * @todo EPOLL handling
+ */
+unsigned int asock_poll_accept_event(asock_poll_t *p)
+{
+  return 0;
+}

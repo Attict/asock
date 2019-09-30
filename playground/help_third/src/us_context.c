@@ -127,7 +127,7 @@ struct us_listen_socket_t *us_socket_context_listen(int ssl, struct us_socket_co
     return 0;
   }
 
-  struct us_poll_t *p = us_create_poll(context->loop, 0, sizeof(struct us_listen_socket_t));
+  struct us_poll_t *p = asock_poll_create(context->loop, 0, sizeof(struct us_listen_socket_t));
   us_poll_init(p, listen_socket_fd, POLL_TYPE_SEMI_SOCKET);
   us_poll_start(p, context->loop, LIBUS_SOCKET_READABLE);
 
@@ -156,7 +156,7 @@ struct us_socket_t *us_socket_context_connect(int ssl, struct us_socket_context_
   }
 
   /* Connect sockets are semi-sockets just like listen sockets */
-  struct us_poll_t *p = us_create_poll(context->loop, 0, sizeof(struct us_socket_t) + socket_ext_size);
+  struct us_poll_t *p = asock_poll_create(context->loop, 0, sizeof(struct us_socket_t) + socket_ext_size);
   us_poll_init(p, connect_socket_fd, POLL_TYPE_SEMI_SOCKET);
   us_poll_start(p, context->loop, LIBUS_SOCKET_WRITABLE);
 

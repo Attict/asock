@@ -87,5 +87,23 @@ int asock_poll_fd(asock_poll_t *poll);
  */
 void *asock_poll_ext(asock_poll_t *p);
 
+/**
+ * asock_poll_type
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ * @return
+ */
+int asock_poll_type(asock_poll_t *p);
+
+/**
+ * asock_poll_accept_event
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ */
+unsigned int asock_poll_accept_event(asock_poll_t *p);
 
 #endif // ASOCK_POLL_H

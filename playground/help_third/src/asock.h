@@ -141,9 +141,6 @@ long long us_loop_iteration_number(struct us_loop_t *loop);
 
 /* Public interfaces for polls */
 
-/* A fallthrough poll does not keep the loop running, it falls through */
-struct us_poll_t *us_create_poll(struct us_loop_t *loop, int fallthrough, unsigned int ext_size);
-
 
 /* Associate this poll with a socket descriptor and poll type */
 void us_poll_init(struct us_poll_t *p, LIBUS_SOCKET_DESCRIPTOR fd, int poll_type);
