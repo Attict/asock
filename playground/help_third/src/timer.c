@@ -1,5 +1,7 @@
 #include "callback.h"
 #include "timer.h"
+#include <stdlib.h>
+#include <sys/event.h>
 
 /**
  * asock_create_timer
@@ -31,9 +33,16 @@ void asock_timer_close(asock_timer_t *timer)
  *
  */
 void asock_timer_set(
-    asock_timer_t *timer, void (*cb)(asock_timer_t *t), int ms, int repeat_ms)
+    asock_timer_t *t, void (*cb)(asock_timer_t *t), int ms, int repeat_ms)
 {
+  asock_callback_t *parent = (asock_callback_t *) t;
+  parent->cb = (void (*)(asock_callback_t *)) cb;
 
+  // Bug: repeat_ms must be the same as ms, or 0
+  struct kevent event;
+  EV_SET(&event, (uintptr_t) parent,
+      EVFILT_TIMER, EV_ADD  | (repeat_ms ? 0 : EV_ONESHOT), 0, ms, parent);
+  kevent(parent->loop->fd, &event, 1, NULL, 0, NULL);
 }
 
 /**

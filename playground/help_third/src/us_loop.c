@@ -128,7 +128,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                 asock_core_socket_nodelay(asock_poll_fd(p), 1);
 
                 /* We are now a proper socket */
-                us_internal_poll_set_type(p, POLL_TYPE_SOCKET);
+                asock_poll_set_type(p, POLL_TYPE_SOCKET);
 
                 s->context->on_open(s, 1, 0, 0);
             } else {
@@ -229,7 +229,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
 /* Integration only requires the timer to be set up */
 void us_loop_integrate(struct us_loop_t *loop) {
-    us_timer_set(loop->data.sweep_timer, (void (*)(struct us_timer_t *)) sweep_timer_cb, LIBUS_TIMEOUT_GRANULARITY * 1000, LIBUS_TIMEOUT_GRANULARITY * 1000);
+    asock_timer_set(loop->data.sweep_timer, (void (*)(struct us_timer_t *)) sweep_timer_cb, LIBUS_TIMEOUT_GRANULARITY * 1000, LIBUS_TIMEOUT_GRANULARITY * 1000);
 }
 
 void *us_loop_ext(struct us_loop_t *loop) {

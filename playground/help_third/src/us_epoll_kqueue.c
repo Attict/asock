@@ -29,11 +29,6 @@ void us_loop_free(struct us_loop_t *loop) {
     free(loop);
 }
 
-/* Bug: doesn't really SET, rather read and change, so needs to be inited first! */
-void us_internal_poll_set_type(struct us_poll_t *p, int poll_type) {
-    p->state.poll_type = poll_type | (p->state.poll_type & 12);
-}
-
 
 /* Loop */
 struct us_loop_t *us_create_loop(void *hint, void (*wakeup_cb)(struct us_loop_t *loop), void (*pre_cb)(struct us_loop_t *loop), void (*post_cb)(struct us_loop_t *loop), unsigned int ext_size) {
@@ -158,32 +153,13 @@ void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events) {
 
         p->state.poll_type = asock_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
 
-#ifdef LIBUS_USE_EPOLL
-        struct epoll_event event;
-        event.events = events;
-        event.data.ptr = p;
-        epoll_ctl(loop->fd, EPOLL_CTL_MOD, p->state.fd, &event);
-#else
         kqueue_change(loop->fd, p->state.fd, old_events, events, p);
-#endif
         /* Set all removed events to null-polls in pending ready poll list */
         //us_internal_loop_update_pending_ready_polls(loop, p, p, old_events, events);
     }
 }
 
 /* Timer */
-#ifdef LIBUS_USE_EPOLL
-struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
-    struct us_poll_t *p = asock_poll_create(loop, fallthrough, sizeof(struct us_internal_callback_t) + ext_size);
-    asock_poll_init(p, timerfd_create(CLOCK_REALTIME, TFD_NONBLOCK | TFD_CLOEXEC), POLL_TYPE_CALLBACK);
-
-    struct us_internal_callback_t *cb = (struct us_internal_callback_t *) p;
-    cb->loop = loop;
-    cb->cb_expects_the_loop = 0;
-
-    return (struct us_timer_t *) cb;
-}
-#else
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size) {
     struct us_internal_callback_t *cb = malloc(sizeof(struct us_internal_callback_t) + ext_size);
 
@@ -192,7 +168,7 @@ struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsi
 
     /* Bug: us_internal_poll_set_type does not SET the type, it only CHANGES it */
     cb->p.state.poll_type = POLL_TYPE_POLLING_IN;
-    us_internal_poll_set_type((struct us_poll_t *) cb, POLL_TYPE_CALLBACK);
+    asock_poll_set_type((struct us_poll_t *) cb, POLL_TYPE_CALLBACK);
 
     if (!fallthrough) {
         loop->num_polls++;
@@ -200,19 +176,7 @@ struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsi
 
     return (struct us_timer_t *) cb;
 }
-#endif
 
-
-void us_timer_set(struct us_timer_t *t, void (*cb)(struct us_timer_t *t), int ms, int repeat_ms) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) t;
-
-    internal_cb->cb = (void (*)(struct us_internal_callback_t *)) cb;
-
-    /* Bug: repeat_ms must be the same as ms, or 0 */
-    struct kevent event;
-    EV_SET(&event, (uintptr_t) internal_cb, EVFILT_TIMER, EV_ADD | (repeat_ms ? 0 : EV_ONESHOT), 0, ms, internal_cb);
-    kevent(internal_cb->loop->fd, &event, 1, NULL, 0, NULL);
-}
 #endif
 
 /* Async (internal helper for loop's wakeup feature) */
@@ -224,7 +188,7 @@ struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int f
 
     /* Bug: us_internal_poll_set_type does not SET the type, it only CHANGES it */
     cb->p.state.poll_type = POLL_TYPE_POLLING_IN;
-    us_internal_poll_set_type((struct us_poll_t *) cb, POLL_TYPE_CALLBACK);
+    asock_poll_set_type((struct us_poll_t *) cb, POLL_TYPE_CALLBACK);
 
     if (!fallthrough) {
         loop->num_polls++;

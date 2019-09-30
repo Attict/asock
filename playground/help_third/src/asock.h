@@ -45,12 +45,6 @@ struct us_poll_t;
 struct us_timer_t *us_create_timer(struct us_loop_t *loop, int fallthrough, unsigned int ext_size);
 
 
-
-/* Arm a timer with a delay from now and eventually a repeat delay.
- * Specify 0 as repeat delay to disable repeating. Specify both 0 to disarm. */
-void us_timer_set(struct us_timer_t *timer, void (*cb)(struct us_timer_t *t), int ms, int repeat_ms);
-
-
 /* Public interfaces for contexts */
 
 struct us_socket_context_options_t {

@@ -150,4 +150,14 @@ unsigned int asock_poll_accept_event(asock_poll_t *p);
  */
 int asock_poll_events(asock_poll_t *p);
 
+/**
+ * asock_poll_set_type
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ * @param poll_type
+ */
+void asock_poll_set_type(asock_poll_t *p, int poll_type);
+
 #endif // ASOCK_POLL_H

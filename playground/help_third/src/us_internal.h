@@ -50,8 +50,6 @@ void us_internal_loop_post(struct us_loop_t *loop);
 struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int fallthrough, unsigned int ext_size);
 void us_internal_async_close(struct us_internal_async *a);
 
-/* Eventing related */
-void us_internal_poll_set_type(struct us_poll_t *p, int poll_type);
 
 /* SSL loop data */
 void us_internal_init_loop_ssl_data(struct us_loop_t *loop);

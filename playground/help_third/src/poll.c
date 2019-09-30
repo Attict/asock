@@ -100,3 +100,14 @@ int asock_poll_events(asock_poll_t *p)
   return ((p->state.poll_type & ASOCK_POLL_IN) ? ASOCK_SOCKET_READABLE : 0)
       | ((p->state.poll_type & ASOCK_POLL_OUT) ? ASOCK_SOCKET_WRITABLE : 0);
 }
+
+/**
+ * asock_poll_set_type
+ *
+ * @bug Doesn't really SET, rather read and change, so needs to be
+ *      initiated first!
+ */
+void asock_poll_set_type(asock_poll_t *p, int poll_type)
+{
+  p->state.poll_type = poll_type | (p->state.poll_type & 12);
+}

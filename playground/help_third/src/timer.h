@@ -37,15 +37,17 @@ void asock_timer_close(asock_timer_t *timer);
 /**
  * asock_timer_set
  *
- * @brief todo
+ * @brief Arms a timer with a delay from now, and eventually a repeat delay.
+ *        Specify 0 as repeat delay to disable repeating.
+ *        Specify both 0 to disarm.
  *
- * @param timer
- * @param cb
- * @param ms
- * @param repeat_ms
+ * @param t Timer
+ * @param cb Callback
+ * @param ms Milliseconds
+ * @param repeat_ms Repeat Milliseconds
  */
 void asock_timer_set(
-    asock_timer_t *timer, void (*cb)(asock_timer_t *t), int ms, int repeat_ms);
+    asock_timer_t *t, void (*cb)(asock_timer_t *t), int ms, int repeat_ms);
 
 /**
  * asock_timer_ext

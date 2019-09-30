@@ -134,7 +134,7 @@ void us_socket_shutdown(int ssl, struct us_socket_t *s) {
    * We need more states in that case, we need to track RECEIVED_FIN
    * so far, the app has to track this and call close as needed */
   if (!us_socket_is_closed(ssl, s) && !us_socket_is_shut_down(ssl, s)) {
-    us_internal_poll_set_type(&s->p, POLL_TYPE_SOCKET_SHUT_DOWN);
+    asock_poll_set_type(&s->p, POLL_TYPE_SOCKET_SHUT_DOWN);
     us_poll_change(&s->p, s->context->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
     asock_core_shutdown_socket(asock_poll_fd((struct us_poll_t *) s));
   }
