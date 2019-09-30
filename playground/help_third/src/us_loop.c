@@ -24,14 +24,6 @@ void us_internal_loop_data_init(struct us_loop_t *loop, void (*wakeup_cb)(struct
     asock_async_set(loop->data.wakeup_async, (void (*)(struct us_internal_async *)) wakeup_cb);
 }
 
-void us_wakeup_loop(struct us_loop_t *loop) {
-    //us_internal_async_wakeup(loop->data.wakeup_async);
-    asock_loop_t *casted_loop = (asock_loop_t *) loop;
-
-    // FIXME: this should not need to be casted to `asock_async_t`
-    asock_async_wakeup((asock_async_t *)casted_loop->data.wakeup_async);
-}
-
 void us_internal_loop_link(struct us_loop_t *loop, struct us_socket_context_t *context) {
     context->next = loop->data.head;
     context->prev = 0;

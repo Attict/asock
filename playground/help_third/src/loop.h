@@ -83,4 +83,20 @@ void asock_loop_data_free(asock_loop_t *loop);
 void asock_loop_update_pending(asock_loop_t *loop, asock_poll_t *old_poll,
     asock_poll_t *new_poll, int old_events, int new_events);
 
+/**
+ * asock_loop_wakeup
+ *
+ * @brief Signals the loop from any thread to wake up and execute its
+ *        wakeup handler from the loops own running thread.
+ *        This is the only fully thread-safe function, and serves as the
+ *        basis for thread safety.
+ *
+ * @param loop Loop
+ */
+void asock_loop_wakeup(asock_loop_t *loop);
+
+
+
+
+
 #endif // ASOCK_LOOP_H

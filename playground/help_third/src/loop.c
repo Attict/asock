@@ -60,3 +60,13 @@ void asock_loop_update_pending(asock_loop_t *loop, asock_poll_t *old_poll,
     }
   }
 }
+
+/**
+ * asock_loop_wakeup
+ *
+ */
+void asock_loop_wakeup(asock_loop_t *loop)
+{
+  asock_loop_t *casted_loop = (asock_loop_t *) loop;
+  asock_async_wakeup((asock_async_t *) casted_loop->data.wakeup_async);
+}
