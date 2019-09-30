@@ -119,13 +119,13 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
     case POLL_TYPE_SEMI_SOCKET: {
             /* Both connect and listen sockets are semi-sockets
              * but they poll for different events */
-            if (us_poll_events(p) == LIBUS_SOCKET_WRITABLE) {
+            if (asock_poll_events(p) == LIBUS_SOCKET_WRITABLE) {
                 struct us_socket_t *s = (struct us_socket_t *) p;
 
                 us_poll_change(p, s->context->loop, LIBUS_SOCKET_READABLE);
 
                 /* We always use nodelay */
-                asock_core_socket_nodelay(us_poll_fd(p), 1);
+                asock_core_socket_nodelay(asock_poll_fd(p), 1);
 
                 /* We are now a proper socket */
                 us_internal_poll_set_type(p, POLL_TYPE_SOCKET);
@@ -195,7 +195,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
                 /* If we have no failed write or if we shut down, then stop polling for more writable */
                 if (!s->context->loop->data.last_write_failed || us_socket_is_shut_down(0, s)) {
-                    us_poll_change(&s->p, us_socket_context(0, s)->loop, us_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
+                    us_poll_change(&s->p, us_socket_context(0, s)->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
                 }
             }
 
@@ -215,7 +215,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         s = us_socket_close(0, s);
                     } else {
                         /* We got FIN, so stop polling for readable */
-                        us_poll_change(&s->p, us_socket_context(0, s)->loop, us_poll_events(&s->p) & LIBUS_SOCKET_WRITABLE);
+                        us_poll_change(&s->p, us_socket_context(0, s)->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_WRITABLE);
                         s = s->context->on_end(s);
                     }
                 } else if (length == -1 && !asock_core_would_block()) {

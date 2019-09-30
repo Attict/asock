@@ -29,21 +29,6 @@ void us_loop_free(struct us_loop_t *loop) {
     free(loop);
 }
 
-
-/* Todo: this one should be us_internal_poll_free */
-void us_poll_free(struct us_poll_t *p, struct us_loop_t *loop) {
-    loop->num_polls--;
-    free(p);
-}
-
-int us_poll_events(struct us_poll_t *p) {
-    return ((p->state.poll_type & POLL_TYPE_POLLING_IN) ? LIBUS_SOCKET_READABLE : 0) | ((p->state.poll_type & POLL_TYPE_POLLING_OUT) ? LIBUS_SOCKET_WRITABLE : 0);
-}
-
-LIBUS_SOCKET_DESCRIPTOR us_poll_fd(struct us_poll_t *p) {
-    return p->state.fd;
-}
-
 /* Bug: doesn't really SET, rather read and change, so needs to be inited first! */
 void us_internal_poll_set_type(struct us_poll_t *p, int poll_type) {
     p->state.poll_type = poll_type | (p->state.poll_type & 12);
@@ -107,7 +92,7 @@ void us_loop_run(struct us_loop_t *loop) {
                 int error = loop->ready_polls[loop->current_ready_poll].flags & (EV_ERROR | EV_EOF);
 #endif
                 /* Always filter all polls by what they actually poll for (callback polls always poll for readable) */
-                events &= us_poll_events(poll);
+                events &= asock_poll_events(poll);
                 if (events || error) {
                     us_internal_dispatch_ready_poll(poll, error, events);
                 }
@@ -168,7 +153,7 @@ int kqueue_change(int kqfd, int fd, int old_events, int new_events, void *user_d
 #endif
 
 struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, unsigned int ext_size) {
-    int events = us_poll_events(p);
+    int events = asock_poll_events(p);
 
     struct us_poll_t *new_p = realloc(p, sizeof(struct us_poll_t) + ext_size);
     if (p != new_p && events) {
@@ -202,7 +187,7 @@ void us_poll_start(struct us_poll_t *p, struct us_loop_t *loop, int events) {
 }
 
 void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events) {
-    int old_events = us_poll_events(p);
+    int old_events = asock_poll_events(p);
     if (old_events != events) {
 
         p->state.poll_type = asock_poll_type(p) | ((events & LIBUS_SOCKET_READABLE) ? POLL_TYPE_POLLING_IN : 0) | ((events & LIBUS_SOCKET_WRITABLE) ? POLL_TYPE_POLLING_OUT : 0);
@@ -221,7 +206,7 @@ void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events) {
 }
 
 void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop) {
-    int old_events = us_poll_events(p);
+    int old_events = asock_poll_events(p);
     int new_events = 0;
 #ifdef LIBUS_USE_EPOLL
     struct epoll_event event;
@@ -272,7 +257,7 @@ void us_timer_close(struct us_timer_t *timer) {
     struct us_internal_callback_t *cb = (struct us_internal_callback_t *) timer;
 
     us_poll_stop(&cb->p, cb->loop);
-    close(us_poll_fd(&cb->p));
+    close(asock_poll_fd(&cb->p));
 
     /* (regular) sockets are the only polls which are not freed immediately */
     asock_poll_free((struct asock_poll_t *) timer, cb->loop);
@@ -288,7 +273,7 @@ void us_timer_set(struct us_timer_t *t, void (*cb)(struct us_timer_t *t), int ms
         {ms / 1000, ((long)ms * 1000000) % 1000000000}
     };
 
-    timerfd_settime(us_poll_fd((struct us_poll_t *) t), 0, &timer_spec, NULL);
+    timerfd_settime(asock_poll_fd((struct us_poll_t *) t), 0, &timer_spec, NULL);
     us_poll_start((struct us_poll_t *) t, internal_cb->loop, LIBUS_SOCKET_READABLE);
 }
 #else

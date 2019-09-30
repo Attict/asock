@@ -148,12 +148,8 @@ void us_poll_start(struct us_poll_t *p, struct us_loop_t *loop, int events);
 void us_poll_change(struct us_poll_t *p, struct us_loop_t *loop, int events);
 void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop);
 
-/* Return what events we are polling for */
-int us_poll_events(struct us_poll_t *p);
 
 
-/* Get associated socket descriptor from a poll */
-int us_poll_fd(struct us_poll_t *p);
 
 /* Resize an active poll */
 struct us_poll_t *us_poll_resize(struct us_poll_t *p, struct us_loop_t *loop, unsigned int ext_size);

@@ -34,7 +34,7 @@ void us_listen_socket_close(int ssl, struct us_listen_socket_t *ls)
   {
     us_internal_socket_context_unlink(ls->s.context, &ls->s);
     us_poll_stop((struct us_poll_t *) &ls->s, ls->s.context->loop);
-    asock_core_close_socket(us_poll_fd((struct us_poll_t *) &ls->s));
+    asock_core_close_socket(asock_poll_fd((struct us_poll_t *) &ls->s));
 
     /* Link this socket to the close-list and let it be deleted after this iteration */
     ls->s.next = ls->s.context->loop->data.closed_head;

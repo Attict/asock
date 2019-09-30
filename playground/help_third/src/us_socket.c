@@ -25,7 +25,7 @@
 
 void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *length) {
   struct asock_core_addr_t addr;
-  if (asock_core_socket_addr(us_poll_fd(&s->p), &addr) || *length < asock_core_addr_ip_len(&addr)) {
+  if (asock_core_socket_addr(asock_poll_fd(&s->p), &addr) || *length < asock_core_addr_ip_len(&addr)) {
     *length = 0;
   } else {
     *length = asock_core_addr_addr_ip_len(&addr);
@@ -48,7 +48,7 @@ void us_socket_timeout(int ssl, struct us_socket_t *s, unsigned int seconds) {
 
 void us_socket_flush(int ssl, struct us_socket_t *s) {
   if (!us_socket_is_shut_down(0, s)) {
-    asock_core_socket_flush(us_poll_fd((struct us_poll_t *) s));
+    asock_core_socket_flush(asock_poll_fd((struct us_poll_t *) s));
   }
 }
 
@@ -98,7 +98,7 @@ struct us_socket_t *us_socket_close(int ssl, struct us_socket_t *s) {
   if (!us_socket_is_closed(0, s)) {
     us_internal_socket_context_unlink(s->context, s);
     us_poll_stop((struct us_poll_t *) s, s->context->loop);
-    asock_core_close_socket(us_poll_fd((struct us_poll_t *) s));
+    asock_core_close_socket(asock_poll_fd((struct us_poll_t *) s));
 
     /* Link this socket to the close-list and let it be deleted after this iteration */
     s->next = s->context->loop->data.closed_head;
@@ -135,7 +135,7 @@ void us_socket_shutdown(int ssl, struct us_socket_t *s) {
    * so far, the app has to track this and call close as needed */
   if (!us_socket_is_closed(ssl, s) && !us_socket_is_shut_down(ssl, s)) {
     us_internal_poll_set_type(&s->p, POLL_TYPE_SOCKET_SHUT_DOWN);
-    us_poll_change(&s->p, s->context->loop, us_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
-    asock_core_shutdown_socket(us_poll_fd((struct us_poll_t *) s));
+    us_poll_change(&s->p, s->context->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
+    asock_core_shutdown_socket(asock_poll_fd((struct us_poll_t *) s));
   }
 }

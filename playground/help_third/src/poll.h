@@ -21,6 +21,31 @@
     loop->ready_polls[index].udata = poll
 
 /**
+ * ASOCK_SOCKET_READABLE
+ * ASOCK_SOCKET_WRITABLE
+ *
+ * @brief todo
+ */
+#define ASOCK_SOCKET_READABLE 1
+#define ASOCK_SOCKET_WRITABLE 2
+
+/**
+ * ASOCK_POLL ENUM
+ *
+ * @brief todo
+ */
+enum
+{
+  ASOCK_POLL_TYPE_SOCKET = 0,
+  ASOCK_POLL_TYPE_SHUTDOWN = 1,
+  ASOCK_POLL_TYPE_SEMI = 2,
+  ASOCK_POLL_TYPE_CALLBACK = 3,
+
+  ASOCK_POLL_OUT = 4,
+  ASOCK_POLL_IN = 8
+};
+
+/**
  * asock_poll_t
  *
  * @brief todo
@@ -105,5 +130,14 @@ int asock_poll_type(asock_poll_t *p);
  * @param p Poll
  */
 unsigned int asock_poll_accept_event(asock_poll_t *p);
+
+/**
+ * asock_poll_events
+ *
+ * @brief todo
+ *
+ * @param
+ */
+int asock_poll_events(asock_poll_t *p);
 
 #endif // ASOCK_POLL_H

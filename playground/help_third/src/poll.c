@@ -71,3 +71,13 @@ unsigned int asock_poll_accept_event(asock_poll_t *p)
 {
   return 0;
 }
+
+/**
+ * asock_poll_events
+ *
+ */
+int asock_poll_events(asock_poll_t *p)
+{
+  return ((p->state.poll_type & ASOCK_POLL_IN) ? ASOCK_SOCKET_READABLE : 0)
+      | ((p->state.poll_type & ASOCK_POLL_OUT) ? ASOCK_SOCKET_WRITABLE : 0);
+}
