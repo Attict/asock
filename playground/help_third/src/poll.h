@@ -37,14 +37,25 @@ typedef struct asock_poll_t
 asock_poll_t;
 
 /**
- * asock_poll_fd
+ * asock_poll_create
  *
  * @brief todo
  *
- * @param poll
- * @return The poll's state File Descriptor
+ * @param
  */
-int asock_poll_fd(asock_poll_t *poll);
+asock_poll_t *asock_poll_create(asock_loop_t *loop,
+    int fallthrough, unsigned int ext_size);
+
+/**
+ * asock_poll_init
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ * @param fd File Descriptor
+ * @param poll_type
+ */
+void asock_poll_init(asock_poll_t *p, int fd, int poll_type);
 
 /**
  * asock_poll_free
@@ -55,5 +66,26 @@ int asock_poll_fd(asock_poll_t *poll);
  * @param loop
  */
 void asock_poll_free(asock_poll_t *p, asock_loop_t *loop);
+
+/**
+ * asock_poll_fd
+ *
+ * @brief todo
+ *
+ * @param poll
+ * @return The poll's state File Descriptor
+ */
+int asock_poll_fd(asock_poll_t *poll);
+
+/**
+ * asock_poll_ext
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ * @return The next poll in memory
+ */
+void *asock_poll_ext(asock_poll_t *p);
+
 
 #endif // ASOCK_POLL_H

@@ -144,8 +144,6 @@ long long us_loop_iteration_number(struct us_loop_t *loop);
 /* A fallthrough poll does not keep the loop running, it falls through */
 struct us_poll_t *us_create_poll(struct us_loop_t *loop, int fallthrough, unsigned int ext_size);
 
-/* After stopping a poll you must manually free the memory */
-void us_poll_free(struct us_poll_t *p, struct us_loop_t *loop);
 
 /* Associate this poll with a socket descriptor and poll type */
 void us_poll_init(struct us_poll_t *p, LIBUS_SOCKET_DESCRIPTOR fd, int poll_type);
@@ -158,8 +156,6 @@ void us_poll_stop(struct us_poll_t *p, struct us_loop_t *loop);
 /* Return what events we are polling for */
 int us_poll_events(struct us_poll_t *p);
 
-/* Returns the user data extension of this poll */
-void *us_poll_ext(struct us_poll_t *p);
 
 /* Get associated socket descriptor from a poll */
 int us_poll_fd(struct us_poll_t *p);

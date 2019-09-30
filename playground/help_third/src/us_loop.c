@@ -1,6 +1,7 @@
 #include "asock.h"
 #include "core.h"
 #include "loop.h"
+#include "poll.h"
 
 #include "us_internal.h"
 #include <stdlib.h>
@@ -108,7 +109,7 @@ void us_internal_loop_post(struct us_loop_t *loop) {
 }
 
 void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events) {
-    switch (us_internal_poll_type(p)) {
+    switch (asock_poll_type(p)) {
     case POLL_TYPE_CALLBACK: {
             us_internal_accept_poll_event(p);
             struct us_internal_callback_t *cb = (struct us_internal_callback_t *) p;

@@ -17,6 +17,7 @@
 
 #include "asock.h"
 #include "core.h"
+#include "poll.h"
 #include "us_internal.h"
 #include <stdlib.h>
 
@@ -118,7 +119,7 @@ int us_socket_is_shut_down(int ssl, struct us_socket_t *s) {
   }
 #endif
 
-  return us_internal_poll_type(&s->p) == POLL_TYPE_SOCKET_SHUT_DOWN;
+  return asock_poll_type(&s->p) == POLL_TYPE_SOCKET_SHUT_DOWN;
 }
 
 void us_socket_shutdown(int ssl, struct us_socket_t *s) {

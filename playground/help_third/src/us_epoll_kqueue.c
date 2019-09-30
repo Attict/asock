@@ -43,10 +43,6 @@ void us_poll_free(struct us_poll_t *p, struct us_loop_t *loop) {
     free(p);
 }
 
-void *us_poll_ext(struct us_poll_t *p) {
-    return p + 1;
-}
-
 /* Todo: why have us_poll_create AND us_poll_init!? libuv legacy! */
 void us_poll_init(struct us_poll_t *p, LIBUS_SOCKET_DESCRIPTOR fd, int poll_type) {
     p->state.fd = fd;
@@ -310,7 +306,7 @@ void us_timer_close(struct us_timer_t *timer) {
     close(us_poll_fd(&cb->p));
 
     /* (regular) sockets are the only polls which are not freed immediately */
-    us_poll_free((struct us_poll_t *) timer, cb->loop);
+    asock_poll_free((struct asock_poll_t *) timer, cb->loop);
 }
 
 void us_timer_set(struct us_timer_t *t, void (*cb)(struct us_timer_t *t), int ms, int repeat_ms) {
@@ -335,7 +331,7 @@ void us_timer_close(struct us_timer_t *timer) {
     kevent(internal_cb->loop->fd, &event, 1, NULL, 0, NULL);
 
     /* (regular) sockets are the only polls which are not freed immediately */
-    us_poll_free((struct us_poll_t *) timer, internal_cb->loop);
+    asock_poll_free((struct asock_poll_t *) timer, internal_cb->loop);
 }
 
 void us_timer_set(struct us_timer_t *t, void (*cb)(struct us_timer_t *t), int ms, int repeat_ms) {
@@ -367,20 +363,5 @@ struct us_internal_async *us_internal_create_async(struct us_loop_t *loop, int f
 
     return (struct us_internal_async *) cb;
 }
-
-// identical code as for timer, make it shared for "callback types"
-void us_internal_async_close(struct us_internal_async *a) {
-    struct us_internal_callback_t *internal_cb = (struct us_internal_callback_t *) a;
-
-    /* Note: This will fail most of the time as there probably is no pending trigger */
-    struct kevent event;
-    EV_SET(&event, (uintptr_t) internal_cb, EVFILT_USER, EV_DELETE, 0, 0, internal_cb);
-    kevent(internal_cb->loop->fd, &event, 1, NULL, 0, NULL);
-
-    /* (regular) sockets are the only polls which are not freed immediately */
-    us_poll_free((struct us_poll_t *) a, internal_cb->loop);
-}
-
-
 
 #endif
