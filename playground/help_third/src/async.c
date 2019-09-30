@@ -10,6 +10,8 @@
  * asock_async_create
  *
  * @bug Type is only changed by `asock_poll_set_type`
+ *
+ * @note Ayncs (old)
  */
 asock_async_t *asock_async_create(asock_loop_t *loop,
     int fallthrough, unsigned int ext_size)
@@ -32,7 +34,7 @@ asock_async_t *asock_async_create(asock_loop_t *loop,
 /**
  * asock_async_close
  *
- * @note
+ * @note Asyncs (old)
  */
 void asock_async_close(asock_async_t *a)
 {

@@ -25,7 +25,7 @@ ifeq ($(WITH_ASAN),1)
 	override LDFLAGS += -lasan
 endif
 
-override CFLAGS += -std=c11 -Isrc
+override CFLAGS += -std=c11 -Wno-everything -Isrc
 override LDFLAGS += build/asock.a
 
 # By default we build the uSockets.a static library

@@ -2,7 +2,6 @@
 #define ASOCK_POLL_H
 
 #include "asock.h"
-#include "loop.h"
 
 /**
  * GET_READY_POLL

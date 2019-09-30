@@ -21,6 +21,19 @@ typedef struct asock_async_t
 asock_async_t;
 
 /**
+ * asock_async_create
+ *
+ * @brief todo
+ *
+ * @param loop
+ * @param fallthrough
+ * @param ext_size
+ * @return
+ */
+asock_async_t *asock_async_create(asock_loop_t *loop,
+    int fallthrough, unsigned int ext_size);
+
+/**
  * asock_async_close
  *
  * @brief todo

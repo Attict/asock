@@ -7,9 +7,9 @@
 #define ASOCK_H
 
 #define ASOCK_EXT_ALIGN 16
-
 #define ASOCK_RECV_BUFFER_LENGTH 524288
 #define ASOCK_RECV_BUFFER_PADDING 32
+#define ASOCK_TIMEOUT_GRANULARITY 4
 
 /* 512kb shared receive buffer */
 #define LIBUS_RECV_BUFFER_LENGTH 524288
@@ -180,11 +180,18 @@ void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *le
 // New Code
 //
 
+typedef struct asock_async_t asock_async_t;
 typedef struct asock_callback_t asock_callback_t;
 typedef struct asock_context_t asock_context_t;
 typedef struct asock_loop_t asock_loop_t;
 typedef struct asock_poll_t asock_poll_t;
 typedef struct asock_socket_t asock_socket_t;
+typedef struct asock_timer_t asock_timer_t;
+
+
+asock_loop_t *asock_loop_create(void *hint,
+    void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
+    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
 
 
 #endif // ASOCK_H

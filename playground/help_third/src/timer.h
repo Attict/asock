@@ -69,6 +69,14 @@ void *asock_timer_ext(asock_timer_t *timer);
  */
 asock_loop_t *asock_timer_loop(asock_timer_t *timer);
 
+/**
+ * asock_timer_sweep
+ *
+ * @brief todo
+ *
+ * @param loop
+ */
+void asock_timer_sweep(asock_loop_t *loop);
 
 
 

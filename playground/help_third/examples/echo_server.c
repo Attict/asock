@@ -121,7 +121,7 @@ struct us_socket_t *on_echo_socket_timeout(struct us_socket_t *s) {
 
 int main() {
 	/* The event loop */
-	struct us_loop_t *loop = us_create_loop(0, on_wakeup, on_pre, on_post, 0);
+	struct us_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
 
 	/* Socket context */
 	struct us_socket_context_options_t options = {};
