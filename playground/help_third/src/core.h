@@ -15,6 +15,7 @@
 
 #include "asock.h"
 #include "loop.h"
+#include "socket.h"
 #include <sys/socket.h>
 
 /**
@@ -31,6 +32,18 @@ typedef struct asock_core_addr_t
 
 }
 asock_core_addr_t;
+
+/**
+ * asock_core_listen_t
+ *
+ * @brief Listening socket
+ */
+typedef struct asock_core_listen_t
+{
+  alignas(ASOCK_EXT_ALIGN) asock_socket_t s;
+  unsigned int socket_ext_size;
+}
+asock_core_listen_t;
 
 /**
  * asock_core_create_socket
@@ -67,6 +80,16 @@ int asock_core_connect_socket(const char *host, int port, int options);
  * @return The newly created file descriptor.
  */
 int asock_core_listen_socket(const char *host, int port, int options);
+
+/**
+ * asock_core_listen_close
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param ls Listen socket
+ */
+void asock_core_listen_close(int ssl, asock_core_listen_t *ls);
 
 /**
  * asock_core_shutdown_socket

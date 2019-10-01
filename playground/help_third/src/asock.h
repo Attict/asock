@@ -153,9 +153,6 @@ void us_socket_flush(int ssl, struct us_socket_t *s);
 /* Shuts down the connection by sending FIN and/or close_notify */
 void us_socket_shutdown(int ssl, struct us_socket_t *s);
 
-/* Returns whether the socket has been shut down or not */
-int us_socket_is_shut_down(int ssl, struct us_socket_t *s);
-
 /* Immediately closes the socket */
 struct us_socket_t *us_socket_close(int ssl, struct us_socket_t *s);
 

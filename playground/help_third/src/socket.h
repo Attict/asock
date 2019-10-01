@@ -5,11 +5,6 @@
 #include "context.h"
 #include "loop.h"
 
-static inline int asock_core_create_listen(const char *host, int port, int options)
-{
-  return 0;
-}
-
 /**
  * asock_socket_t
  *
@@ -25,16 +20,14 @@ typedef struct asock_socket_t
 asock_socket_t;
 
 /**
- * asock_listen_socket_t
+ * asock_socket_shutdown
  *
  * @brief todo
+ *
+ * @param ssl True (1) | False (0)
+ * @param s Socket
  */
-typedef struct asock_listen_socket_t
-{
-  alignas(ASOCK_EXT_ALIGN) asock_socket_t s;
-  unsigned int socket_ext_size;
-}
-asock_listen_socket_t;
+void asock_socket_shutdown(int ssl, asock_socket_t *s);
 
 /**
  * asock_socket_free_closed
@@ -73,15 +66,5 @@ int asock_socket_is_shutdown(int ssl, asock_socket_t *s);
  *
  */
 void asock_socket_remote_addr(int ssl, asock_socket_t *s, char *buf, int *len);
-
-/**
- * asock_listen_socket_close
- *
- * @brief todo
- *
- * @param ssl
- * @param ls Listen socket
- */
-void asock_listen_socket_close(int ssl, asock_listen_socket_t *ls);
 
 #endif

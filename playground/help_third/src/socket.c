@@ -3,6 +3,24 @@
 #include <string.h>
 
 /**
+ * asock_socket_shutdown
+ *
+ */
+void asock_socket_shutdown(int ssl, asock_socket_t *s)
+{
+  // Todo: should we emit on_close if calling shutdown on an already
+  // half-closed socket?  We need more states in that case, we need to track
+  // RECEIVED_FIN so far, the app has to track this and call close as needed
+  if (!asock_socket_is_closed(ssl, s) && !asock_socket_is_shutdown(ssl, s))
+  {
+    asock_poll_set_type(&s->p, ASOCK_POLL_TYPE_SHUTDOWN);
+    asock_poll_change(&s->p, s->context->loop,
+        asock_poll_events(&s->p) & ASOCK_SOCKET_READABLE);
+    asock_core_shutdown_socket(asock_poll_fd((asock_poll_t *) s));
+  }
+}
+
+/**
  * asock_socket_free_closed
  *
  */
@@ -56,32 +74,5 @@ void asock_socket_remote_addr(int ssl, asock_socket_t *s, char *buf, int *len)
     *len = asock_core_addr_ip_len(&addr);
     memcpy(buf, asock_core_get_ip(&addr), *len);
   }
-}
-
-/**
- * asock_listen_socket_close
- *
- */
-void asock_listen_socket_close(int ssl, asock_listen_socket_t *ls)
-{
-  // asock_listen_socket_t extends asock_socket_t so we close in similar ways
-
-  if (!asock_socket_is_closed(0, &ls->s))
-  {
-    asock_context_unlink(ls->s.context, &ls->s);
-    asock_poll_stop((asock_poll_t *) &ls->s, ls->s.context->loop);
-    asock_core_close_socket(asock_poll_fd((asock_poll_t *) &ls->s));
-
-    // Link this socket to the close-list and
-    // let it be deleted after this iteration
-    ls->s.next = ls->s.context->loop->data.closed_head;
-    ls->s.context->loop->data.closed_head = &ls->s;
-
-    // Any socket with prev = context is marked as closed
-    ls->s.prev = (asock_socket_t *) ls->s.context;
-  }
-
-  // We cannot immediately free a listen socket
-  // as we can be inside an accept loop
 }
 

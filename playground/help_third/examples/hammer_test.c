@@ -148,7 +148,7 @@ struct us_socket_t *on_web_socket_close(struct us_socket_t *s) {
     printf("Opened: %d\nClosed: %d\n\n", opened_connections, closed_connections);
 
     if (closed_connections == 10000) {
-        asock_listen_socket_close(SSL, listen_socket);
+        asock_core_listen_close(SSL, listen_socket);
     } else {
         return perform_random_operation(s);
     }
@@ -162,7 +162,7 @@ struct us_socket_t *on_http_socket_close(struct us_socket_t *s) {
     printf("Opened: %d\nClosed: %d\n\n", opened_connections, closed_connections);
 
     if (closed_connections == 10000) {
-        asock_listen_socket_close(SSL, listen_socket);
+        asock_core_listen_close(SSL, listen_socket);
     } else {
         return perform_random_operation(s);
     }

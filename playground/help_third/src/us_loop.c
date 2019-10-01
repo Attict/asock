@@ -160,7 +160,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                 }
 
                 /* If we have no failed write or if we shut down, then stop polling for more writable */
-                if (!s->context->loop->data.last_write_failed || us_socket_is_shut_down(0, s)) {
+                if (!s->context->loop->data.last_write_failed || asock_socket_is_shutdown(0, s)) {
                     asock_poll_change(&s->p, us_socket_context(0, s)->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
                 }
             }
@@ -176,7 +176,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                 if (length > 0) {
                     s = s->context->on_data(s, s->context->loop->data.recv_buf + LIBUS_RECV_BUFFER_PADDING, length);
                 } else if (!length) {
-                    if (us_socket_is_shut_down(0, s)) {
+                    if (asock_socket_is_shutdown(0, s)) {
                         /* We got FIN back after sending it */
                         s = us_socket_close(0, s);
                     } else {
