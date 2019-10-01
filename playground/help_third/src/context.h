@@ -88,4 +88,88 @@ void asock_context_unlink(asock_context_t *context, asock_socket_t *s);
  */
 asock_loop_t *asock_context_loop(int ssl, asock_context_t *context);
 
+/**
+ * asock_context_ext
+ *
+ * @brieft todo
+ *
+ * @param ssl
+ * @param context
+ * @Return Next context
+ */
+void *asock_context_ext(int ssl, asock_context_t *context);
+
+/**
+ * asock_context_on_end
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param on_end
+ */
+void asock_context_on_end(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_end)(asock_socket_t *));
+
+/**
+ * asock_context_on_timeout
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param on_timeout
+ */
+void asock_context_on_timeout(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_timeout)(asock_socket_t *));
+
+/**
+ * asock_context_on_writable
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param on_writable
+ */
+void asock_context_on_writable(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_writable)(asock_socket_t *s));
+
+/**
+ * asock_context_on_data
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param on_data
+ */
+void asock_context_on_data(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_data)(asock_socket_t *s, char *data, int length));
+
+/**
+ * asock_context_on_close
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param on_close
+ */
+void asock_context_on_close(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_close)(asock_socket_t *s));
+
+/**
+ * asock_context_on_open
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param on_open
+ */
+void asock_context_on_open(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_open)(asock_socket_t *s,
+      int is_client, char *ip, int ip_length));
+
 #endif // ASOCK_CONTEXT_H

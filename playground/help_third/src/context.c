@@ -79,3 +79,73 @@ asock_loop_t *asock_context_loop(int ssl, asock_context_t *context)
 {
   return context->loop;
 }
+
+/**
+ * asock_context_ext
+ *
+ */
+void *asock_context_ext(int ssl, asock_context_t *context)
+{
+  return context + 1;
+}
+
+/**
+ * asock_context_on_end
+ *
+ */
+void asock_context_on_end(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_end)(asock_socket_t *))
+{
+  context->on_end = on_end;
+}
+
+/**
+ * asock_context_on_timeout
+ *
+ */
+void asock_context_on_timeout(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_timeout)(asock_socket_t *))
+{
+  context->on_socket_timeout = on_timeout;
+}
+
+/**
+ * asock_context_on_writable
+ *
+ */
+void asock_context_on_writable(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_writable)(asock_socket_t *s))
+{
+  context->on_writable = on_writable;
+}
+
+/**
+ * asock_context_on_data
+ *
+ */
+void asock_context_on_data(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_data)(asock_socket_t *s, char *data, int length))
+{
+  context->on_data = on_data;
+}
+
+/**
+ * asock_context_on_close
+ *
+ */
+void asock_context_on_close(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_close)(asock_socket_t *s))
+{
+  context->on_close = on_close;
+}
+
+/**
+ * asock_context_on_open
+ *
+ */
+void asock_context_on_open(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_open)(asock_socket_t *s,
+      int is_client, char *ip, int ip_length))
+{
+  context->on_open = on_open;
+}
