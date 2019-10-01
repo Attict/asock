@@ -3,6 +3,56 @@
 #include <string.h>
 
 /**
+ * asock_socket_write
+ *
+ */
+int asock_socket_write(int ssl, asock_socket_t *s,
+    const char *data, int length, int msg_more)
+{
+  if (asock_socket_is_closed(ssl, s) || asock_socket_is_shutdown(ssl, s))
+  {
+    return 0;
+  }
+
+  int written = asock_core_send(asock_poll_fd(&s->p), data, length, msg_more);
+  if (written != length)
+  {
+    s->context->loop->data.last_write_failed = 1;
+    asock_poll_change(&s->p, s->context->loop,
+        ASOCK_SOCKET_READABLE | ASOCK_SOCKET_WRITABLE);
+  }
+
+  return written < 0 ? 0 : written;
+}
+
+
+/**
+ * asock_socket_close
+ *
+ */
+asock_socket_t *asock_socket_close(int ssl, asock_socket_t *s)
+{
+  if (!asock_socket_is_closed(0, s))
+  {
+    asock_context_unlink(s->context, s);
+    asock_poll_stop((asock_poll_t *) s, s->context->loop);
+    asock_core_close_socket(asock_poll_fd((asock_poll_t *) s));
+
+    // Link this socket to the close-list and let it be deleted after
+    // this iteration.
+    s->next = s->context->loop->data.closed_head;
+    s->context->loop->data.closed_head = s;
+
+    // Any socket with prev = context is marked as closed
+    s->prev = (asock_socket_t *) s->context;
+
+    return s->context->on_close(s);
+  }
+
+  return s;
+}
+
+/**
  * asock_socket_shutdown
  *
  */
@@ -36,6 +86,36 @@ void asock_socket_free_closed(asock_loop_t *loop)
       s = next;
     }
     loop->data.closed_head = 0;
+  }
+}
+
+/**
+ * asock_socket_timeout
+ *
+ */
+void asock_socket_timeout(int ssl, asock_socket_t *s, unsigned int seconds)
+{
+  if (seconds)
+  {
+    unsigned short timeout_sweeps = 0.5f
+        + ((float) seconds) / ((float) ASOCK_TIMEOUT_GRANULARITY);
+    s->timeout = timeout_sweeps ? timeout_sweeps : 1;
+  }
+  else
+  {
+    s->timeout = 0;
+  }
+}
+
+/**
+ * asock_socket_flush
+ *
+ */
+void asock_socket_flush(int ssl, asock_socket_t *s)
+{
+  if (!asock_socket_is_shutdown(0, s))
+  {
+    asock_core_socket_flush(asock_poll_fd((asock_poll_t *) s));
   }
 }
 
