@@ -108,11 +108,11 @@ int main() {
 	http_context_ext->length = snprintf(http_context_ext->response, 128 + sizeof(body) - 1, "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\n\r\n%s", sizeof(body) - 1, body);
 
 	/* Set up event handlers */
-	us_socket_context_on_open(SSL, http_context, on_http_socket_open);
-	us_socket_context_on_data(SSL, http_context, on_http_socket_data);
-	us_socket_context_on_writable(SSL, http_context, on_http_socket_writable);
-	us_socket_context_on_close(SSL, http_context, on_http_socket_close);
-	us_socket_context_on_timeout(SSL, http_context, on_http_socket_timeout);
+	asock_context_on_open(SSL, http_context, on_http_socket_open);
+	asock_context_on_data(SSL, http_context, on_http_socket_data);
+	asock_context_on_writable(SSL, http_context, on_http_socket_writable);
+	asock_context_on_close(SSL, http_context, on_http_socket_close);
+	asock_context_on_timeout(SSL, http_context, on_http_socket_timeout);
 	asock_context_on_end(SSL, http_context, on_http_socket_end);
 
 	/* Start serving HTTP connections */

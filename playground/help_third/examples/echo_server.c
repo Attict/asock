@@ -133,11 +133,11 @@ int main() {
       sizeof(struct echo_context), options);
 
 	/* Registering event handlers */
-	us_socket_context_on_open(SSL, echo_context, on_echo_socket_open);
-	us_socket_context_on_data(SSL, echo_context, on_echo_socket_data);
-	us_socket_context_on_writable(SSL, echo_context, on_echo_socket_writable);
-	us_socket_context_on_close(SSL, echo_context, on_echo_socket_close);
-	us_socket_context_on_timeout(SSL, echo_context, on_echo_socket_timeout);
+	asock_context_on_open(SSL, echo_context, on_echo_socket_open);
+	asock_context_on_data(SSL, echo_context, on_echo_socket_data);
+	asock_context_on_writable(SSL, echo_context, on_echo_socket_writable);
+	asock_context_on_close(SSL, echo_context, on_echo_socket_close);
+	asock_context_on_timeout(SSL, echo_context, on_echo_socket_timeout);
 	asock_context_on_end(SSL, echo_context, on_echo_socket_end);
 
 	/* Start accepting echo sockets */

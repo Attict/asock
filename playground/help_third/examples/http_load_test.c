@@ -117,11 +117,11 @@ int main(int argc, char **argv) {
     struct us_socket_context_t *http_context = us_create_socket_context(SSL, loop, 0, options);
 
     /* Set up event handlers */
-    us_socket_context_on_open(SSL, http_context, on_http_socket_open);
-    us_socket_context_on_data(SSL, http_context, on_http_socket_data);
-    us_socket_context_on_writable(SSL, http_context, on_http_socket_writable);
-    us_socket_context_on_close(SSL, http_context, on_http_socket_close);
-    us_socket_context_on_timeout(SSL, http_context, on_http_socket_timeout);
+    asock_context_on_open(SSL, http_context, on_http_socket_open);
+    asock_context_on_data(SSL, http_context, on_http_socket_data);
+    asock_context_on_writable(SSL, http_context, on_http_socket_writable);
+    asock_context_on_close(SSL, http_context, on_http_socket_close);
+    asock_context_on_timeout(SSL, http_context, on_http_socket_timeout);
     asock_context_on_end(SSL, http_context, on_http_socket_end);
 
     /* Start making HTTP connections */

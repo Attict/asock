@@ -104,19 +104,6 @@ asock_context_t *us_create_socket_context(int ssl, asock_loop_t *loop,
 /* Delete resources allocated at creation time. */
 void us_socket_context_free(int ssl, struct us_socket_context_t *context);
 
-/* Setters of various async callbacks */
-void us_socket_context_on_open(int ssl, struct us_socket_context_t *context,
-    struct us_socket_t *(*on_open)(struct us_socket_t *s, int is_client, char *ip, int ip_length));
-void us_socket_context_on_close(int ssl, struct us_socket_context_t *context,
-    struct us_socket_t *(*on_close)(struct us_socket_t *s));
-void us_socket_context_on_data(int ssl, struct us_socket_context_t *context,
-    struct us_socket_t *(*on_data)(struct us_socket_t *s, char *data, int length));
-void us_socket_context_on_writable(int ssl, struct us_socket_context_t *context,
-    struct us_socket_t *(*on_writable)(struct us_socket_t *s));
-void us_socket_context_on_timeout(int ssl, struct us_socket_context_t *context,
-    struct us_socket_t *(*on_timeout)(struct us_socket_t *s));
-
-
 /* Returns user data extension for this socket context */
 void *us_socket_context_ext(int ssl, struct us_socket_context_t *context);
 
