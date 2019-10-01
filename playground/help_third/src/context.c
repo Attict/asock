@@ -21,6 +21,15 @@ asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
 }
 
 /**
+ * asock_context_free
+ *
+ */
+void asock_context_free(int ssl, asock_context_t *context)
+{
+  free(context);
+}
+
+/**
  * asock_context_link
  *
  */
@@ -157,4 +166,13 @@ void asock_context_on_open(int ssl, asock_context_t *context,
 asock_context_t *asock_context(int ssl, asock_socket_t *s)
 {
   return s->context;
+}
+
+/**
+ * asock_context_ignore_data_handler
+ *
+ */
+int asock_context_ignore_data_handler(asock_socket_t *s)
+{
+  return 0;
 }

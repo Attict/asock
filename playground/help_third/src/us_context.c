@@ -20,11 +20,6 @@
 #include "core.h"
 #include <stdlib.h>
 
-int default_ignore_data_handler(struct us_socket_t *s)
-{
-  return 0;
-}
-
 struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *loop, int context_ext_size, struct us_socket_context_options_t options) {
 #ifndef LIBUS_NO_SSL
   if (ssl) {
@@ -37,7 +32,7 @@ struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *
   context->head = 0;
   context->iterator = 0;
   context->next = 0;
-  context->ignore_data = default_ignore_data_handler;
+  context->ignore_data = asock_context_ignore_data_handler;
 
   asock_loop_link(loop, context);
   return context;

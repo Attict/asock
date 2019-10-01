@@ -58,6 +58,15 @@ asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
     int ext_size, asock_context_options_t options);
 
 /**
+ * asock_context_free
+ *
+ * @brief Frees allocated memory for a context.
+ *
+ * @param context Context to be freed.
+ */
+void asock_context_free(int ssl, asock_context_t *context);
+
+/**
  * asock_context_link
  *
  * @brief todo
@@ -182,5 +191,15 @@ void asock_context_on_open(int ssl, asock_context_t *context,
  * @return Context
  */
 asock_context_t *asock_socket_context(int ssl, asock_socket_t *s);
+
+/**
+ * asock_context_ignore_data_handler
+ *
+ * @brief todo
+ *
+ * @param s Socket
+ * @return 0
+ */
+int asock_context_ignore_data_handler(asock_socket_t *s);
 
 #endif // ASOCK_CONTEXT_H
