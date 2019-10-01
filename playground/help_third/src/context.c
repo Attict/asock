@@ -149,3 +149,12 @@ void asock_context_on_open(int ssl, asock_context_t *context,
 {
   context->on_open = on_open;
 }
+
+/**
+ * asock_context
+ *
+ */
+asock_context_t *asock_context(int ssl, asock_socket_t *s)
+{
+  return s->context;
+}

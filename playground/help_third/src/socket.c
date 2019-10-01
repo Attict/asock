@@ -1,4 +1,6 @@
+#include "core.h"
 #include "socket.h"
+#include <string.h>
 
 /**
  * asock_socket_free_closed
@@ -29,6 +31,34 @@ int asock_socket_is_closed(int ssl, asock_socket_t *s)
 }
 
 /**
+ * asock_socket_is_shutdown
+ *
+ */
+int asock_socket_is_shutdown(int ssl, asock_socket_t *s)
+{
+  return asock_poll_type(&s->p) == ASOCK_POLL_TYPE_SHUTDOWN;
+}
+
+/**
+ * asock_socket_remote_addr
+ *
+ */
+void asock_socket_remote_addr(int ssl, asock_socket_t *s, char *buf, int *len)
+{
+  asock_core_addr_t addr;
+  if (asock_core_socket_addr(asock_poll_fd(&s->p), &addr)
+      || *len < asock_core_addr_ip_len(&addr))
+  {
+    *len = 0;
+  }
+  else
+  {
+    *len = asock_core_addr_ip_len(&addr);
+    memcpy(buf, asock_core_get_ip(&addr), *len);
+  }
+}
+
+/**
  * asock_listen_socket_close
  *
  */
@@ -54,3 +84,4 @@ void asock_listen_socket_close(int ssl, asock_listen_socket_t *ls)
   // We cannot immediately free a listen socket
   // as we can be inside an accept loop
 }
+

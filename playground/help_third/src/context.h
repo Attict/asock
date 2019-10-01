@@ -172,4 +172,15 @@ void asock_context_on_open(int ssl, asock_context_t *context,
     asock_socket_t *(*on_open)(asock_socket_t *s,
       int is_client, char *ip, int ip_length));
 
+/**
+ * asock_context
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param socket
+ * @return Context
+ */
+asock_context_t *asock_socket_context(int ssl, asock_socket_t *s);
+
 #endif // ASOCK_CONTEXT_H

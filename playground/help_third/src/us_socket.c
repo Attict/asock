@@ -21,18 +21,6 @@
 #include "us_internal.h"
 #include <stdlib.h>
 
-/* Shared with SSL */
-
-void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *length) {
-  struct asock_core_addr_t addr;
-  if (asock_core_socket_addr(asock_poll_fd(&s->p), &addr) || *length < asock_core_addr_ip_len(&addr)) {
-    *length = 0;
-  } else {
-    *length = asock_core_addr_addr_ip_len(&addr);
-    memcpy(buf, asock_core_get_ip(&addr), *length);
-  }
-}
-
 struct us_socket_context_t *us_socket_context(int ssl, struct us_socket_t *s) {
   return s->context;
 }
@@ -47,7 +35,7 @@ void us_socket_timeout(int ssl, struct us_socket_t *s, unsigned int seconds) {
 }
 
 void us_socket_flush(int ssl, struct us_socket_t *s) {
-  if (!us_socket_is_shut_down(0, s)) {
+  if (!asock_socket_is_shutdown(0, s)) {
     asock_core_socket_flush(asock_poll_fd((struct us_poll_t *) s));
   }
 }

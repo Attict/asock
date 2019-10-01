@@ -53,9 +53,26 @@ void asock_socket_free_closed(asock_loop_t *loop);
  *
  * @param
  * @param
- * @return
+ * @return True (1) | False (0)
  */
 int asock_socket_is_closed(int ssl, asock_socket_t *s);
+
+/**
+ * asock_socket_is_shutdown
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param s
+ * @return True (1) | False (0)
+ */
+int asock_socket_is_shutdown(int ssl, asock_socket_t *s);
+
+/**
+ * asock_socket_remote_addr
+ *
+ */
+void asock_socket_remote_addr(int ssl, asock_socket_t *s, char *buf, int *len);
 
 /**
  * asock_listen_socket_close
