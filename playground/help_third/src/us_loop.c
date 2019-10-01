@@ -46,8 +46,8 @@ void us_internal_timer_sweep(struct us_loop_t *loop) {
 void us_internal_free_closed_sockets(struct us_loop_t *loop) {
     /* Free all closed sockets (maybe it is better to reverse order?) */
     if (loop->data.closed_head) {
-        for (struct us_socket_t *s = loop->data.closed_head; s; ) {
-            struct us_socket_t *next = s->next;
+        for (asock_socket_t *s = loop->data.closed_head; s; ) {
+            asock_socket_t *next = s->next;
             asock_poll_free((asock_poll_t *) s, loop);
             s = next;
         }
@@ -86,7 +86,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
             /* Both connect and listen sockets are semi-sockets
              * but they poll for different events */
             if (asock_poll_events(p) == LIBUS_SOCKET_WRITABLE) {
-                struct us_socket_t *s = (struct us_socket_t *) p;
+                asock_socket_t *s = (asock_socket_t *) p;
 
                 asock_poll_change(p, s->context->loop, LIBUS_SOCKET_READABLE);
 
@@ -98,7 +98,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
                 s->context->on_open(s, 1, 0, 0);
             } else {
-                struct us_listen_socket_t *listen_socket = (struct us_listen_socket_t *) p;
+                asock_core_listen_t *listen_socket = (asock_core_listen_t *) p;
 
                 asock_core_addr_t addr;
 
@@ -116,7 +116,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         asock_poll_init(p, client_fd, POLL_TYPE_SOCKET);
                         asock_poll_start(p, listen_socket->s.context->loop, LIBUS_SOCKET_READABLE);
 
-                        struct us_socket_t *s = (struct us_socket_t *) p;
+                        asock_socket_t *s = (asock_socket_t *) p;
 
                         s->context = listen_socket->s.context;
 

@@ -133,7 +133,7 @@ int BIO_s_custom_read(BIO *bio, char *dst, int length) {
 }
 
 struct us_internal_ssl_socket_t *ssl_on_open(struct us_internal_ssl_socket_t *s, int is_client, char *ip, int ip_length) {
-    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) us_socket_context(0, &s->s);
+    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) asock_context(0, &s->s);
 
     struct us_loop_t *loop = us_socket_context_loop(0, &context->sc);
     struct loop_ssl_data *loop_ssl_data = (struct loop_ssl_data *) loop->data.ssl_data;
@@ -155,7 +155,7 @@ struct us_internal_ssl_socket_t *ssl_on_open(struct us_internal_ssl_socket_t *s,
 }
 
 struct us_internal_ssl_socket_t *ssl_on_close(struct us_internal_ssl_socket_t *s) {
-    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) us_socket_context(0, &s->s);
+    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) asock_context(0, &s->s);
 
     SSL_free(s->ssl);
 
@@ -163,7 +163,7 @@ struct us_internal_ssl_socket_t *ssl_on_close(struct us_internal_ssl_socket_t *s
 }
 
 struct us_internal_ssl_socket_t *ssl_on_end(struct us_internal_ssl_socket_t *s) {
-    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) us_socket_context(0, &s->s);
+    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) asock_context(0, &s->s);
 
     // whatever state we are in, a TCP FIN is always an answered shutdown
     return us_internal_ssl_socket_close(s);
@@ -172,7 +172,7 @@ struct us_internal_ssl_socket_t *ssl_on_end(struct us_internal_ssl_socket_t *s) 
 // this whole function needs a complete clean-up
 struct us_internal_ssl_socket_t *ssl_on_data(struct us_internal_ssl_socket_t *s, void *data, int length) {
     // note: this context can change when we adopt the socket!
-    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) us_socket_context(0, &s->s);
+    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) asock_context(0, &s->s);
 
     struct us_loop_t *loop = us_socket_context_loop(0, &context->sc);
     struct loop_ssl_data *loop_ssl_data = (struct loop_ssl_data *) loop->data.ssl_data;
@@ -257,7 +257,7 @@ struct us_internal_ssl_socket_t *ssl_on_data(struct us_internal_ssl_socket_t *s,
         s->ssl_write_wants_read = 0;
 
         // make sure to update context before we call (context can change if the user adopts the socket!)
-        context = (struct us_internal_ssl_socket_context_t *) us_socket_context(0, &s->s);
+        context = (struct us_internal_ssl_socket_context_t *) asock_context(0, &s->s);
 
         s = (struct us_internal_ssl_socket_t *) context->sc.on_writable(&s->s); // cast here!
         // if we are closed here, then exit
@@ -498,7 +498,7 @@ int us_internal_ssl_socket_write(struct us_internal_ssl_socket_t *s, const char 
         return 0;
     }
 
-    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) us_socket_context(0, &s->s);
+    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) asock_context(0, &s->s);
 
     struct us_loop_t *loop = us_socket_context_loop(0, &context->sc);
     struct loop_ssl_data *loop_ssl_data = (struct loop_ssl_data *) loop->data.ssl_data;
@@ -549,7 +549,7 @@ int us_internal_ssl_socket_is_shut_down(struct us_internal_ssl_socket_t *s) {
 
 void us_internal_ssl_socket_shutdown(struct us_internal_ssl_socket_t *s) {
     if (!asock_socket_is_closed(0, &s->s) && !us_internal_ssl_socket_is_shut_down(s)) {
-        struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) us_socket_context(0, &s->s);
+        struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) asock_context(0, &s->s);
         struct us_loop_t *loop = us_socket_context_loop(0, &context->sc);
         struct loop_ssl_data *loop_ssl_data = (struct loop_ssl_data *) loop->data.ssl_data;
 

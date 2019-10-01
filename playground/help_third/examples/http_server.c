@@ -34,7 +34,7 @@ void on_post(struct us_loop_t *loop) {
 
 struct us_socket_t *on_http_socket_writable(struct us_socket_t *s) {
 	struct http_socket *http_socket = (struct http_socket *) us_socket_ext(SSL, s);
-	struct http_context *http_context = (struct http_context *) us_socket_context_ext(SSL, us_socket_context(SSL, s));
+	struct http_context *http_context = (struct http_context *) us_socket_context_ext(SSL, asock_context(SSL, s));
 
 	/* Stream whatever is remaining of the response */
 	http_socket->offset += us_socket_write(SSL, s, http_context->response + http_socket->offset, http_context->length - http_socket->offset, 0);
@@ -57,7 +57,7 @@ struct us_socket_t *on_http_socket_end(struct us_socket_t *s) {
 struct us_socket_t *on_http_socket_data(struct us_socket_t *s, char *data, int length) {
 	/* Get socket extension and the socket's context's extension */
 	struct http_socket *http_socket = (struct http_socket *) us_socket_ext(SSL, s);
-	struct http_context *http_context = (struct http_context *) us_socket_context_ext(SSL, us_socket_context(SSL, s));
+	struct http_context *http_context = (struct http_context *) us_socket_context_ext(SSL, asock_context(SSL, s));
 
 	/* We treat all data events as a request */
 	http_socket->offset = us_socket_write(SSL, s, http_context->response, http_context->length, 0);

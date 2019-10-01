@@ -73,7 +73,7 @@ struct us_socket_t *on_http_socket_open(struct us_socket_t *s, int is_client, ch
     us_socket_write(SSL, s, request, sizeof(request) - 1, 0);
 
     if (--connections) {
-        us_socket_context_connect(SSL, us_socket_context(SSL, s), host, port, 0, sizeof(struct http_socket));
+        us_socket_context_connect(SSL, asock_context(SSL, s), host, port, 0, sizeof(struct http_socket));
     } else {
         printf("Running benchmark now...\n");
 
