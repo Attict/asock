@@ -1,6 +1,6 @@
 /* This is a basic TCP/TLS echo server. */
 
-#include <asock.h>
+#include "../src/asock.h"
 const int SSL = 1;
 
 #include <stdio.h>
@@ -19,17 +19,17 @@ struct echo_context {
 };
 
 /* Loop wakeup handler */
-void on_wakeup(struct us_loop_t *loop) {
+void on_wakeup(asock_loop_t *loop) {
 
 }
 
 /* Loop pre iteration handler */
-void on_pre(struct us_loop_t *loop) {
+void on_pre(asock_loop_t *loop) {
 
 }
 
 /* Loop post iteration handler */
-void on_post(struct us_loop_t *loop) {
+void on_post(asock_loop_t *loop) {
 
 }
 
@@ -141,7 +141,7 @@ int main() {
 	asock_context_on_end(SSL, echo_context, on_echo_socket_end);
 
 	/* Start accepting echo sockets */
-	struct us_listen_socket_t *listen_socket = asock_context_listen(SSL, echo_context, 0, 3000, 0, sizeof(struct echo_socket));
+	asock_core_listen_t *listen_socket = asock_context_listen(SSL, echo_context, 0, 3000, 0, sizeof(struct echo_socket));
 
 	if (listen_socket) {
 		printf("Listening on port 3000...\n");

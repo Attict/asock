@@ -57,11 +57,32 @@ typedef struct asock_options_t
 asock_options_t;
 
 
+// Loop
 asock_loop_t *asock_loop_create(void *hint,
     void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
     void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+
+// Context
 asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
     int ext_size, asock_options_t options);
+asock_core_listen_t *asock_context_listen(int ssl, asock_context_t *context,
+    const char *host, int port, int options, int ext_size);
+void asock_context_on_open(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_open)(asock_socket_t *s,
+        int is_client, char *ip, int ip_length));
+void asock_context_on_close(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_close)(asock_socket_t *s));
+void asock_context_on_data(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_data)(asock_socket_t *s, char *data, int length));
+void asock_context_on_writable(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_writable)(asock_socket_t *s));
+void asock_context_on_timeout(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_timeout)(asock_socket_t *));
+void asock_context_on_end(int ssl, asock_context_t *context,
+    asock_socket_t *(*on_end)(asock_socket_t *));
+
+// Socket
+asock_socket_t *asock_socket_close(int ssl, asock_socket_t *s);
 
 ///
 /// NEW CODE

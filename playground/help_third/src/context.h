@@ -163,7 +163,7 @@ void asock_context_on_close(int ssl, asock_context_t *context,
  */
 void asock_context_on_open(int ssl, asock_context_t *context,
     asock_socket_t *(*on_open)(asock_socket_t *s,
-      int is_client, char *ip, int ip_length));
+        int is_client, char *ip, int ip_length));
 
 /**
  * asock_context
