@@ -58,9 +58,11 @@ asock_options_t;
 
 
 // Loop
+void asock_loop_run(asock_loop_t *loop);
 asock_loop_t *asock_loop_create(void *hint,
     void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
     void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+
 
 // Context
 asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
@@ -83,6 +85,12 @@ void asock_context_on_end(int ssl, asock_context_t *context,
 
 // Socket
 asock_socket_t *asock_socket_close(int ssl, asock_socket_t *s);
+void asock_socket_shutdown(int ssl, asock_socket_t *s);
+void *asock_socket_ext(int ssl, asock_socket_t *s);
+int asock_socket_write(int ssl, asock_socket_t *s,
+    const char *data, int length, int msg_more);
+void asock_socket_timeout(int ssl, asock_socket_t *s, unsigned int seconds);
+
 
 ///
 /// NEW CODE

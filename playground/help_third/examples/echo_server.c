@@ -8,34 +8,40 @@ const int SSL = 1;
 #include <string.h>
 
 /* Our socket extension */
-struct echo_socket {
+struct echo_socket
+{
 	char *backpressure;
 	int length;
 };
 
 /* Our socket context extension */
-struct echo_context {
+struct echo_context
+{
 
 };
 
 /* Loop wakeup handler */
-void on_wakeup(asock_loop_t *loop) {
+void on_wakeup(asock_loop_t *loop)
+{
 
 }
 
 /* Loop pre iteration handler */
-void on_pre(asock_loop_t *loop) {
+void on_pre(asock_loop_t *loop)
+{
 
 }
 
 /* Loop post iteration handler */
-void on_post(asock_loop_t *loop) {
+void on_post(asock_loop_t *loop)
+{
 
 }
 
 /* Socket writable handler */
-struct us_socket_t *on_echo_socket_writable(struct us_socket_t *s) {
-	struct echo_socket *es = (struct echo_socket *) us_socket_ext(SSL, s);
+asock_socket_t *on_echo_socket_writable(asock_socket_t *s)
+{
+	struct echo_socket *es = (struct echo_socket *) asock_socket_ext(SSL, s);
 
 	/* Continue writing out our backpressure */
 	int written = asock_socket_write(SSL, s, es->backpressure, es->length, 0);
@@ -57,8 +63,8 @@ struct us_socket_t *on_echo_socket_writable(struct us_socket_t *s) {
 }
 
 /* Socket closed handler */
-struct us_socket_t *on_echo_socket_close(struct us_socket_t *s) {
-	struct echo_socket *es = (struct echo_socket *) us_socket_ext(SSL, s);
+asock_socket_t *on_echo_socket_close(asock_socket_t *s) {
+	struct echo_socket *es = (struct echo_socket *) asock_socket_ext(SSL, s);
 
 	printf("Client disconnected\n");
 
@@ -68,21 +74,23 @@ struct us_socket_t *on_echo_socket_close(struct us_socket_t *s) {
 }
 
 /* Socket half-closed handler */
-struct us_socket_t *on_echo_socket_end(struct us_socket_t *s) {
+asock_socket_t *on_echo_socket_end(asock_socket_t *s) {
 	asock_socket_shutdown(SSL, s);
 	return asock_socket_close(SSL, s);
 }
 
 /* Socket data handler */
-struct us_socket_t *on_echo_socket_data(struct us_socket_t *s, char *data, int length) {
-	struct echo_socket *es = (struct echo_socket *) us_socket_ext(SSL, s);
+asock_socket_t *on_echo_socket_data(asock_socket_t *s, char *data, int length)
+{
+	struct echo_socket *es = (struct echo_socket *) asock_socket_ext(SSL, s);
 
 	/* Print the data we received */
 	printf("Client sent <%.*s>\n", length, data);
 
 	/* Send it back or buffer it up */
 	int written = asock_socket_write(SSL, s, data, length, 0);
-	if (written != length) {
+	if (written != length)
+    {
 		char *new_buffer = (char *) malloc(es->length + length - written);
 		memcpy(new_buffer, es->backpressure, es->length);
 		memcpy(new_buffer + es->length, data + written, length - written);
@@ -98,8 +106,10 @@ struct us_socket_t *on_echo_socket_data(struct us_socket_t *s, char *data, int l
 }
 
 /* Socket opened handler */
-struct us_socket_t *on_echo_socket_open(struct us_socket_t *s, int is_client, char *ip, int ip_length) {
-	struct echo_socket *es = (struct echo_socket *) us_socket_ext(SSL, s);
+asock_socket_t *on_echo_socket_open(asock_socket_t *s, int is_client,
+    char *ip, int ip_length)
+{
+	struct echo_socket *es = (struct echo_socket *) asock_socket_ext(SSL, s);
 
 	/* Initialize the new socket's extension */
 	es->backpressure = 0;
@@ -114,12 +124,14 @@ struct us_socket_t *on_echo_socket_open(struct us_socket_t *s, int is_client, ch
 }
 
 /* Socket timeout handler */
-struct us_socket_t *on_echo_socket_timeout(struct us_socket_t *s) {
+asock_socket_t *on_echo_socket_timeout(asock_socket_t *s)
+{
 	printf("Client was idle for too long\n");
 	return asock_socket_close(SSL, s);
 }
 
-int main() {
+int main()
+{
 	/* The event loop */
 	asock_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
 
