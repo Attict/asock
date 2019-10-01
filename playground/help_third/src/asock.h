@@ -97,9 +97,6 @@ struct us_socket_context_options_t {
     int ssl_prefer_low_memory_usage;
 };
 
-/* A socket context holds shared callbacks and user data extension for associated sockets */
-asock_context_t *us_create_socket_context(int ssl, asock_loop_t *loop,
-    int ext_size, asock_options_t options);
 
 /* Delete resources allocated at creation time. */
 void us_socket_context_free(int ssl, struct us_socket_context_t *context);

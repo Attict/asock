@@ -360,7 +360,7 @@ int ssl_ignore_data(struct us_internal_ssl_socket_t *s) {
 struct us_internal_ssl_socket_context_t *us_internal_create_child_ssl_socket_context(struct us_internal_ssl_socket_context_t *context, int context_ext_size) {
     struct us_socket_context_options_t options = {0};
 
-    struct us_internal_ssl_socket_context_t *child_context = (struct us_internal_ssl_socket_context_t *) us_create_socket_context(0, context->sc.loop, sizeof(struct us_internal_ssl_socket_context_t) + context_ext_size, options);
+    struct us_internal_ssl_socket_context_t *child_context = (struct us_internal_ssl_socket_context_t *) asock_context_create(0, context->sc.loop, sizeof(struct us_internal_ssl_socket_context_t) + context_ext_size, options);
 
     // I think this is the only thing being shared
     child_context->ssl_context = context->ssl_context;
@@ -375,7 +375,7 @@ struct us_internal_ssl_socket_context_t *us_internal_create_ssl_socket_context(s
 
     struct us_socket_context_options_t no_options = {0};
 
-    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) us_create_socket_context(0, loop, sizeof(struct us_internal_ssl_socket_context_t) + context_ext_size, no_options);
+    struct us_internal_ssl_socket_context_t *context = (struct us_internal_ssl_socket_context_t *) asock_context_create(0, loop, sizeof(struct us_internal_ssl_socket_context_t) + context_ext_size, no_options);
 
     context->ssl_context = SSL_CTX_new(TLS_method());
     context->is_parent = 1;

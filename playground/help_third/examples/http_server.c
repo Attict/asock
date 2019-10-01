@@ -97,7 +97,7 @@ int main() {
 	options.cert_file_name = "/home/alexhultman/uWebSockets.js/misc/cert.pem";
 	options.passphrase = "1234";
 
-	struct us_socket_context_t *http_context = us_create_socket_context(SSL, loop, sizeof(struct http_context), options);
+	struct us_socket_context_t *http_context = asock_context_create(SSL, loop, sizeof(struct http_context), options);
 
 
 	/* Generate the shared response */

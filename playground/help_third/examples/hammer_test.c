@@ -263,7 +263,7 @@ int main() {
     options.cert_file_name = "/home/alexhultman/uWebSockets.js/misc/cert.pem";
     options.passphrase = "1234";
 
-    http_context = us_create_socket_context(SSL, loop, sizeof(struct http_context), options);
+    http_context = asock_context_create(SSL, loop, sizeof(struct http_context), options);
 
 
     asock_context_on_open(SSL, http_context, on_http_socket_open);

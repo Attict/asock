@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     options.key_file_name = "/home/alexhultman/uWebSockets.js/misc/key.pem";
     options.cert_file_name = "/home/alexhultman/uWebSockets.js/misc/cert.pem";
     options.passphrase = "1234";
-    struct us_socket_context_t *http_context = us_create_socket_context(SSL, loop, 0, options);
+    struct us_socket_context_t *http_context = asock_context_create(SSL, loop, 0, options);
 
     /* Set up event handlers */
     asock_context_on_open(SSL, http_context, on_http_socket_open);
