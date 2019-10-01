@@ -32,7 +32,7 @@ void us_listen_socket_close(int ssl, struct us_listen_socket_t *ls)
   /* us_listen_socket_t extends us_socket_t so we close in similar ways */
   if (!us_socket_is_closed(0, &ls->s))
   {
-    us_internal_socket_context_unlink(ls->s.context, &ls->s);
+    asock_context_unlink(ls->s.context, &ls->s);
     asock_poll_stop((struct us_poll_t *) &ls->s, ls->s.context->loop);
     asock_core_close_socket(asock_poll_fd((struct us_poll_t *) &ls->s));
 
@@ -47,41 +47,6 @@ void us_listen_socket_close(int ssl, struct us_listen_socket_t *ls)
   /* We cannot immediately free a listen socket as we can be inside an accept loop */
 }
 
-void us_internal_socket_context_unlink(struct us_socket_context_t *context, struct us_socket_t *s) {
-  /* We have to properly update the iterator used to sweep sockets for timeouts */
-  if (s == context->iterator) {
-    context->iterator = s->next;
-  }
-
-  if (s->prev == s->next) {
-    context->head = 0;
-  } else {
-    if (s->prev) {
-      s->prev->next = s->next;
-    } else {
-      context->head = s->next;
-    }
-    if (s->next) {
-      s->next->prev = s->prev;
-    }
-  }
-}
-
-/* We always add in the top, so we don't modify any s.next */
-void us_internal_socket_context_link(struct us_socket_context_t *context, struct us_socket_t *s) {
-  s->context = context;
-  s->timeout = 0;
-  s->next = context->head;
-  s->prev = 0;
-  if (context->head) {
-    context->head->prev = s;
-  }
-  context->head = s;
-}
-
-struct us_loop_t *us_socket_context_loop(int ssl, struct us_socket_context_t *context) {
-  return context->loop;
-}
 
 /* Not shared with SSL */
 
@@ -136,7 +101,7 @@ struct us_listen_socket_t *us_socket_context_listen(int ssl, struct us_socket_co
   ls->s.context = context;
   ls->s.timeout = 0;
   ls->s.next = 0;
-  us_internal_socket_context_link(context, &ls->s);
+  asock_context_link(context, &ls->s);
 
   ls->socket_ext_size = socket_ext_size;
 
@@ -164,7 +129,7 @@ struct us_socket_t *us_socket_context_connect(int ssl, struct us_socket_context_
 
   /* Link it into context so that timeout fires properly */
   connect_socket->context = context;
-  us_internal_socket_context_link(context, connect_socket);
+  asock_context_link(context, connect_socket);
 
   return connect_socket;
 }
@@ -195,11 +160,11 @@ struct us_socket_t *us_socket_context_adopt_socket(int ssl, struct us_socket_con
   }
 
   /* This properly updates the iterator if in on_timeout */
-  us_internal_socket_context_unlink(s->context, s);
+  asock_context_unlink(s->context, s);
 
   struct us_socket_t *new_s = (struct us_socket_t *) asock_poll_resize(&s->p, s->context->loop, sizeof(struct us_socket_t) + ext_size);
 
-  us_internal_socket_context_link(context, new_s);
+  asock_context_link(context, new_s);
 
   return new_s;
 }

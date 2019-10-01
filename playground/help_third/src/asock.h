@@ -95,8 +95,6 @@ void us_listen_socket_close(int ssl, struct us_listen_socket_t *ls);
 struct us_socket_t *us_socket_context_connect(int ssl, struct us_socket_context_t *context,
     const char *host, int port, int options, int socket_ext_size);
 
-/* Returns the loop for this socket context. */
-struct us_loop_t *us_socket_context_loop(int ssl, struct us_socket_context_t *context);
 
 /* Invalidates passed socket, returning a new resized socket which belongs to a different socket context.
  * Used mainly for "socket upgrades" such as when transitioning from HTTP to WebSocket. */

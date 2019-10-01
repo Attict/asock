@@ -1,5 +1,6 @@
 #include "async.h"
 #include "callback.h"
+#include "context.h"
 #include "loop.h"
 #include "timer.h"
 #include <stdlib.h>
@@ -44,6 +45,21 @@ void asock_loop_data_init(asock_loop_t *loop, void (*wakeup_cb)(asock_loop_t *),
 
   asock_async_set(
       loop->data.wakeup_async, (void (*)(asock_async_t *)) wakeup_cb);
+}
+
+/**
+ * asock_loop_link
+ *
+ */
+void asock_loop_link(asock_loop_t *loop, asock_context_t *context)
+{
+  context->next = loop->data.head;
+  context->prev = 0;
+  if (loop->data.head)
+  {
+    loop->data.head->prev = context;
+  }
+  loop->data.head = context;
 }
 
 /**

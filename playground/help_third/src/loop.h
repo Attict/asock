@@ -81,6 +81,16 @@ void asock_loop_data_init(asock_loop_t *loop, void (*wakeup_cb)(asock_loop_t *),
     void (*pre_cb)(asock_loop_t *), void (*post_cb)(asock_loop_t *loop));
 
 /**
+ * asock_loop_link
+ *
+ * @brief todo
+ *
+ * @param loop
+ * @param context
+ */
+void asock_loop_link(asock_loop_t *loop, asock_context_t *context);
+
+/**
  * asock_loop_free
  *
  * @brief todo

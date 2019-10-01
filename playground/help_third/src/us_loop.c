@@ -123,7 +123,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         /* We always use nodelay */
                         asock_core_socket_nodelay(client_fd, 1);
 
-                        us_internal_socket_context_link(listen_socket->s.context, s);
+                        asock_context_link(listen_socket->s.context, s);
 
                         listen_socket->s.context->on_open(s, 0, asock_core_get_ip(&addr), asock_core_addr_ip_len(&addr));
 

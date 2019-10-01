@@ -48,9 +48,6 @@ void us_internal_loop_post(struct us_loop_t *loop);
 void us_internal_init_loop_ssl_data(struct us_loop_t *loop);
 void us_internal_free_loop_ssl_data(struct us_loop_t *loop);
 
-/* Socket context related */
-void us_internal_socket_context_link(struct us_socket_context_t *context, struct us_socket_t *s);
-void us_internal_socket_context_unlink(struct us_socket_context_t *context, struct us_socket_t *s);
 
 /* Sockets are polls */
 struct us_socket_t {
