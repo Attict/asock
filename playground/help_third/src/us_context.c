@@ -22,31 +22,6 @@
 
 
 
-struct us_socket_t *us_socket_context_connect(int ssl, struct us_socket_context_t *context, const char *host, int port, int options, int socket_ext_size) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    return (struct us_socket_t *) us_internal_ssl_socket_context_connect((struct us_internal_ssl_socket_context_t *) context, host, port, options, socket_ext_size);
-  }
-#endif
-
-  int connect_socket_fd = asock_core_connect_socket(host, port, options);
-  if (connect_socket_fd == -1) {
-    return 0;
-  }
-
-  /* Connect sockets are semi-sockets just like listen sockets */
-  struct us_poll_t *p = asock_poll_create(context->loop, 0, sizeof(struct us_socket_t) + socket_ext_size);
-  asock_poll_init(p, connect_socket_fd, POLL_TYPE_SEMI_SOCKET);
-  asock_poll_start(p, context->loop, LIBUS_SOCKET_WRITABLE);
-
-  struct us_socket_t *connect_socket = (struct us_socket_t *) p;
-
-  /* Link it into context so that timeout fires properly */
-  connect_socket->context = context;
-  asock_context_link(context, connect_socket);
-
-  return connect_socket;
-}
 
 struct us_socket_context_t *us_create_child_socket_context(int ssl, struct us_socket_context_t *context, int context_ext_size) {
 #ifndef LIBUS_NO_SSL
