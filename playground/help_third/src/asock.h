@@ -144,14 +144,6 @@ void us_loop_integrate(struct us_loop_t *loop);
 
 
 
-
-/* Public interfaces for sockets */
-
-/* Write up to length bytes of data. Returns actual bytes written.
- * Will call the on_writable callback of active socket context on failure to write everything off in one go.
- * Set hint msg_more if you have more immediate data to write. */
-int us_socket_write(int ssl, struct us_socket_t *s, const char *data, int length, int msg_more);
-
 /* Set a low precision, high performance timer on a socket. A socket can only have one single active timer
  * at any given point in time. Will remove any such pre set timer */
 void us_socket_timeout(int ssl, struct us_socket_t *s, unsigned int seconds);
@@ -163,7 +155,7 @@ void *us_socket_ext(int ssl, struct us_socket_t *s);
 struct us_socket_context_t *us_socket_context(int ssl, struct us_socket_t *s);
 
 /* Withdraw any msg_more status and flush any pending data */
-void us_socket_flush(int ssl, struct us_socket_t *s);
+//void us_socket_flush(int ssl, struct us_socket_t *s);
 
 /* Copy remote (IP) address of socket, or fail with zero length. */
 void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *length);

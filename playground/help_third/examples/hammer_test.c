@@ -90,7 +90,7 @@ struct us_socket_t *perform_random_operation(struct us_socket_t *s) {
         }
         case 2: {
             // write
-            us_socket_write(SSL, s, (char *) long_buffer, rand() % long_length, 0);
+            asock_socket_write(SSL, s, (char *) long_buffer, rand() % long_length, 0);
         }
         break;
         case 3: {

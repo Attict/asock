@@ -37,7 +37,7 @@ struct us_socket_t *on_http_socket_writable(struct us_socket_t *s) {
     struct http_socket *http_socket = (struct http_socket *) us_socket_ext(SSL, s);
 
     /* Stream whatever is remaining of the request */
-    http_socket->offset += us_socket_write(SSL, s, request + http_socket->offset, (sizeof(request) - 1) - http_socket->offset, 0);
+    http_socket->offset += asock_socket_write(SSL, s, request + http_socket->offset, (sizeof(request) - 1) - http_socket->offset, 0);
 
     return s;
 }
@@ -55,7 +55,7 @@ struct us_socket_t *on_http_socket_data(struct us_socket_t *s, char *data, int l
     struct http_socket *http_socket = (struct http_socket *) us_socket_ext(SSL, s);
 
     /* We treat all data events as a response */
-    http_socket->offset = us_socket_write(SSL, s, request, sizeof(request) - 1, 0);
+    http_socket->offset = asock_socket_write(SSL, s, request, sizeof(request) - 1, 0);
 
     /* */
     responses++;
@@ -70,7 +70,7 @@ struct us_socket_t *on_http_socket_open(struct us_socket_t *s, int is_client, ch
     http_socket->offset = 0;
 
     /* Send a request */
-    us_socket_write(SSL, s, request, sizeof(request) - 1, 0);
+    asock_socket_write(SSL, s, request, sizeof(request) - 1, 0);
 
     if (--connections) {
         asock_context_connect(SSL, asock_context(SSL, s), host, port, 0, sizeof(struct http_socket));

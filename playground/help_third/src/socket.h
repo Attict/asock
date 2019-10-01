@@ -22,7 +22,9 @@ asock_socket_t;
 /**
  * asock_socket_write
  *
- * @brief todo
+ * @brief Write data up to length, returning actual bytes written.
+ *        Will call the on_writable callback of active socket context.
+ *        Set hint msg_more if you have more immediate date to write.
  *
  * @param ssl
  * @param s Socket
@@ -128,6 +130,17 @@ void asock_socket_remote_addr(int ssl, asock_socket_t *s, char *buf, int *len);
  * @param ssl
  * @param s
  * @return Next pointer?
+ */
+void *asock_socket_ext(int ssl, asock_socket_t *s);
+
+/**
+ * asock_socket_ext
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param s
+ * @return User data
  */
 void *asock_socket_ext(int ssl, asock_socket_t *s);
 

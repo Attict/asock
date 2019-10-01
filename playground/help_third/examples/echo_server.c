@@ -38,7 +38,7 @@ struct us_socket_t *on_echo_socket_writable(struct us_socket_t *s) {
 	struct echo_socket *es = (struct echo_socket *) us_socket_ext(SSL, s);
 
 	/* Continue writing out our backpressure */
-	int written = us_socket_write(SSL, s, es->backpressure, es->length, 0);
+	int written = asock_socket_write(SSL, s, es->backpressure, es->length, 0);
 	if (written != es->length) {
 		char *new_buffer = (char *) malloc(es->length - written);
 		memcpy(new_buffer, es->backpressure, es->length - written);
@@ -81,7 +81,7 @@ struct us_socket_t *on_echo_socket_data(struct us_socket_t *s, char *data, int l
 	printf("Client sent <%.*s>\n", length, data);
 
 	/* Send it back or buffer it up */
-	int written = us_socket_write(SSL, s, data, length, 0);
+	int written = asock_socket_write(SSL, s, data, length, 0);
 	if (written != length) {
 		char *new_buffer = (char *) malloc(es->length + length - written);
 		memcpy(new_buffer, es->backpressure, es->length);

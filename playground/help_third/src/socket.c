@@ -156,3 +156,11 @@ void asock_socket_remote_addr(int ssl, asock_socket_t *s, char *buf, int *len)
   }
 }
 
+/**
+ * asock_socket_ext
+ *
+ */
+void *asock_socket_ext(int ssl, asock_socket_t *s)
+{
+  return s + 1;
+}

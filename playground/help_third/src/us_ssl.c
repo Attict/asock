@@ -99,7 +99,7 @@ int BIO_s_custom_write(BIO *bio, const char *data, int length) {
     //printf("BIO_s_custom_write\n");
 
     loop_ssl_data->last_write_was_msg_more = loop_ssl_data->msg_more || length == 16413;
-    int written = us_socket_write(0, loop_ssl_data->ssl_socket, data, length, loop_ssl_data->last_write_was_msg_more);
+    int written = asock_socket_write(0, loop_ssl_data->ssl_socket, data, length, loop_ssl_data->last_write_was_msg_more);
 
     if (!written) {
         BIO_set_flags(bio, BIO_get_flags(bio) | BIO_FLAGS_SHOULD_RETRY | BIO_FLAGS_WRITE);
@@ -521,7 +521,7 @@ int us_internal_ssl_socket_write(struct us_internal_ssl_socket_t *s, const char 
     loop_ssl_data->msg_more = 0;
 
     if (loop_ssl_data->last_write_was_msg_more && !msg_more) {
-        us_socket_flush(0, &s->s);
+        asock_socket_flush(0, &s->s);
     }
 
     if (written > 0) {

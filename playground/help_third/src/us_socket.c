@@ -34,33 +34,7 @@ void us_socket_timeout(int ssl, struct us_socket_t *s, unsigned int seconds) {
   }
 }
 
-void us_socket_flush(int ssl, struct us_socket_t *s) {
-  if (!asock_socket_is_shutdown(0, s)) {
-    asock_core_socket_flush(asock_poll_fd((struct us_poll_t *) s));
-  }
-}
 
-/* Not shared with SSL */
-
-int us_socket_write(int ssl, struct us_socket_t *s, const char *data, int length, int msg_more) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    return us_internal_ssl_socket_write((struct us_internal_ssl_socket_t *) s, data, length, msg_more);
-  }
-#endif
-
-  if (asock_socket_is_closed(ssl, s) || asock_socket_is_shutdown(ssl, s)) {
-    return 0;
-  }
-
-  int written = asock_core_send(asock_poll_fd(&s->p), data, length, msg_more);
-  if (written != length) {
-    s->context->loop->data.last_write_failed = 1;
-    asock_poll_change(&s->p, s->context->loop, LIBUS_SOCKET_READABLE | LIBUS_SOCKET_WRITABLE);
-  }
-
-  return written < 0 ? 0 : written;
-}
 
 void *us_socket_ext(int ssl, struct us_socket_t *s) {
 #ifndef LIBUS_NO_SSL
