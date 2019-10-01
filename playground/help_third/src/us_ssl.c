@@ -575,13 +575,13 @@ void us_internal_ssl_socket_shutdown(struct us_internal_ssl_socket_t *s) {
 
         if (ret < 0) {
             // we get here if we are shutting down while still in init
-            us_socket_shutdown(0, &s->s);
+            asock_socket_shutdown(0, &s->s);
         }
     }
 }
 
 struct us_internal_ssl_socket_t *us_internal_ssl_socket_close(struct us_internal_ssl_socket_t *s) {
-    return (struct us_internal_ssl_socket_t *) us_socket_close(0, (struct us_socket_t *) s);
+    return (struct us_internal_ssl_socket_t *) asock_socket_close(0, (struct us_socket_t *) s);
 }
 
 struct us_internal_ssl_socket_t *us_internal_ssl_socket_context_adopt_socket(struct us_internal_ssl_socket_context_t *context, struct us_internal_ssl_socket_t *s, int ext_size) {

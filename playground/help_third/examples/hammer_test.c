@@ -70,7 +70,7 @@ struct us_socket_t *perform_random_operation(struct us_socket_t *s) {
     switch (rand() % 5) {
         case 0: {
             // close
-            return us_socket_close(SSL, s);
+            return asock_socket_close(SSL, s);
         }
         case 1: {
             // adoption cannot happen if closed!
@@ -95,7 +95,7 @@ struct us_socket_t *perform_random_operation(struct us_socket_t *s) {
         break;
         case 3: {
             // shutdown
-            us_socket_shutdown(SSL, s);
+            asock_socket_shutdown(SSL, s);
         }
         break;
         case 4: {
@@ -172,7 +172,7 @@ struct us_socket_t *on_web_socket_end(struct us_socket_t *s) {
     assume_state(s, 0);
 
     // we need to close on shutdown
-    s = us_socket_close(SSL, s);
+    s = asock_socket_close(SSL, s);
     return perform_random_operation(s);
 }
 
@@ -180,7 +180,7 @@ struct us_socket_t *on_http_socket_end(struct us_socket_t *s) {
     assume_state(s, 1);
 
     // we need to close on shutdown
-    s = us_socket_close(SSL, s);
+    s = asock_socket_close(SSL, s);
     return perform_random_operation(s);
 }
 

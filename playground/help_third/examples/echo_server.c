@@ -69,8 +69,8 @@ struct us_socket_t *on_echo_socket_close(struct us_socket_t *s) {
 
 /* Socket half-closed handler */
 struct us_socket_t *on_echo_socket_end(struct us_socket_t *s) {
-	us_socket_shutdown(SSL, s);
-	return us_socket_close(SSL, s);
+	asock_socket_shutdown(SSL, s);
+	return asock_socket_close(SSL, s);
 }
 
 /* Socket data handler */
@@ -116,7 +116,7 @@ struct us_socket_t *on_echo_socket_open(struct us_socket_t *s, int is_client, ch
 /* Socket timeout handler */
 struct us_socket_t *on_echo_socket_timeout(struct us_socket_t *s) {
 	printf("Client was idle for too long\n");
-	return us_socket_close(SSL, s);
+	return asock_socket_close(SSL, s);
 }
 
 int main() {

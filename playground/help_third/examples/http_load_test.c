@@ -47,7 +47,7 @@ struct us_socket_t *on_http_socket_close(struct us_socket_t *s) {
 }
 
 struct us_socket_t *on_http_socket_end(struct us_socket_t *s) {
-    return us_socket_close(SSL, s);
+    return asock_socket_close(SSL, s);
 }
 
 struct us_socket_t *on_http_socket_data(struct us_socket_t *s, char *data, int length) {

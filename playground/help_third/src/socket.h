@@ -111,7 +111,24 @@ int asock_socket_is_shutdown(int ssl, asock_socket_t *s);
 /**
  * asock_socket_remote_addr
  *
+ * @brief todo
+ *
+ * @param ssl
+ * @param s
+ * @param buf
+ * @param len
  */
 void asock_socket_remote_addr(int ssl, asock_socket_t *s, char *buf, int *len);
+
+/**
+ * asock_socket_ext
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param s
+ * @return Next pointer?
+ */
+void *asock_socket_ext(int ssl, asock_socket_t *s);
 
 #endif

@@ -165,12 +165,6 @@ struct us_socket_context_t *us_socket_context(int ssl, struct us_socket_t *s);
 /* Withdraw any msg_more status and flush any pending data */
 void us_socket_flush(int ssl, struct us_socket_t *s);
 
-/* Shuts down the connection by sending FIN and/or close_notify */
-void us_socket_shutdown(int ssl, struct us_socket_t *s);
-
-/* Immediately closes the socket */
-struct us_socket_t *us_socket_close(int ssl, struct us_socket_t *s);
-
 /* Copy remote (IP) address of socket, or fail with zero length. */
 void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *length);
 
