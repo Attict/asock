@@ -138,7 +138,7 @@ int main() {
 	us_socket_context_on_writable(SSL, echo_context, on_echo_socket_writable);
 	us_socket_context_on_close(SSL, echo_context, on_echo_socket_close);
 	us_socket_context_on_timeout(SSL, echo_context, on_echo_socket_timeout);
-	us_socket_context_on_end(SSL, echo_context, on_echo_socket_end);
+	asock_context_on_end(SSL, echo_context, on_echo_socket_end);
 
 	/* Start accepting echo sockets */
 	struct us_listen_socket_t *listen_socket = us_socket_context_listen(SSL, echo_context, 0, 3000, 0, sizeof(struct echo_socket));

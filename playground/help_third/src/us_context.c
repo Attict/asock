@@ -189,23 +189,3 @@ void us_socket_context_on_timeout(int ssl, struct us_socket_context_t *context, 
   context->on_socket_timeout = on_timeout;
 }
 
-void us_socket_context_on_end(int ssl, struct us_socket_context_t *context, struct us_socket_t *(*on_end)(struct us_socket_t *)) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    us_internal_ssl_socket_context_on_end((struct us_internal_ssl_socket_context_t *) context, (struct us_internal_ssl_socket_t * (*)(struct us_internal_ssl_socket_t *)) on_end);
-    return;
-  }
-#endif
-
-  context->on_end = on_end;
-}
-
-void *us_socket_context_ext(int ssl, struct us_socket_context_t *context) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    return us_internal_ssl_socket_context_ext((struct us_internal_ssl_socket_context_t *) context);
-  }
-#endif
-
-  return context + 1;
-}

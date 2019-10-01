@@ -116,8 +116,6 @@ void us_socket_context_on_writable(int ssl, struct us_socket_context_t *context,
 void us_socket_context_on_timeout(int ssl, struct us_socket_context_t *context,
     struct us_socket_t *(*on_timeout)(struct us_socket_t *s));
 
-/* Emitted when a socket has been half-closed */
-void us_socket_context_on_end(int ssl, struct us_socket_context_t *context, struct us_socket_t *(*on_end)(struct us_socket_t *s));
 
 /* Returns user data extension for this socket context */
 void *us_socket_context_ext(int ssl, struct us_socket_context_t *context);

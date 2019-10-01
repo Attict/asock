@@ -271,7 +271,7 @@ int main() {
     us_socket_context_on_writable(SSL, http_context, on_http_socket_writable);
     us_socket_context_on_close(SSL, http_context, on_http_socket_close);
     us_socket_context_on_timeout(SSL, http_context, on_http_socket_timeout);
-    us_socket_context_on_end(SSL, http_context, on_http_socket_end);
+    asock_context_on_end(SSL, http_context, on_http_socket_end);
 
     websocket_context = us_create_child_socket_context(SSL, http_context, sizeof(struct http_context));
 
@@ -280,7 +280,7 @@ int main() {
     us_socket_context_on_writable(SSL, websocket_context, on_web_socket_writable);
     us_socket_context_on_close(SSL, websocket_context, on_web_socket_close);
     us_socket_context_on_timeout(SSL, websocket_context, on_web_socket_timeout);
-    us_socket_context_on_end(SSL, websocket_context, on_web_socket_end);
+    asock_context_on_end(SSL, websocket_context, on_web_socket_end);
 
     listen_socket = us_socket_context_listen(SSL, http_context, "127.0.0.1", 3000, 0, sizeof(struct http_socket));
 

@@ -484,7 +484,7 @@ void us_internal_ssl_socket_context_on_timeout(struct us_internal_ssl_socket_con
 }
 
 void us_internal_ssl_socket_context_on_end(struct us_internal_ssl_socket_context_t *context, struct us_internal_ssl_socket_t *(*on_end)(struct us_internal_ssl_socket_t *)) {
-    us_socket_context_on_end(0, (struct us_socket_context_t *) context, (struct us_socket_t *(*)(struct us_socket_t *)) ssl_on_end);
+    asock_context_on_end(0, (struct us_socket_context_t *) context, (struct us_socket_t *(*)(struct us_socket_t *)) ssl_on_end);
 }
 
 void *us_internal_ssl_socket_context_ext(struct us_internal_ssl_socket_context_t *context) {
