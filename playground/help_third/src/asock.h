@@ -24,6 +24,7 @@
 #define LIBUS_SOCKET_DESCRIPTOR int
 #define WIN32_EXPORT
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -58,6 +59,8 @@ asock_options_t;
 asock_loop_t *asock_loop_create(void *hint,
     void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
     void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
+    int ext_size, asock_options_t options);
 
 ///
 /// NEW CODE
@@ -95,7 +98,7 @@ struct us_socket_context_options_t {
 };
 
 /* A socket context holds shared callbacks and user data extension for associated sockets */
-struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *loop,
+asock_context_t *us_create_socket_context(int ssl, asock_loop_t *loop,
     int ext_size, asock_options_t options);
 
 /* Delete resources allocated at creation time. */

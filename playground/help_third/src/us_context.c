@@ -20,14 +20,9 @@
 #include "core.h"
 #include <stdlib.h>
 
-struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *loop, int context_ext_size, asock_options_t options) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    return (struct us_socket_context_t *) us_internal_create_ssl_socket_context(loop, context_ext_size, options);
-  }
-#endif
+asock_context_t *us_create_socket_context(int ssl, asock_loop_t *loop, int context_ext_size, asock_options_t options) {
 
-  struct us_socket_context_t *context = malloc(sizeof(struct us_socket_context_t) + context_ext_size);
+  asock_context_t *context = malloc(sizeof(asock_context_t) + context_ext_size);
   context->loop = loop;
   context->head = 0;
   context->iterator = 0;

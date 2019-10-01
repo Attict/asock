@@ -121,7 +121,7 @@ struct us_socket_t *on_echo_socket_timeout(struct us_socket_t *s) {
 
 int main() {
 	/* The event loop */
-	struct us_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
+	asock_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
 
 	/* Socket context */
 	asock_options_t options = {};
@@ -129,7 +129,7 @@ int main() {
 	options.cert_file_name = "misc/cert.crt";
 	//options.passphrase = "1234";
 
-	struct us_socket_context_t *echo_context = us_create_socket_context(SSL, loop,
+	asock_context_t *echo_context = asock_context_create(SSL, loop,
       sizeof(struct echo_context), options);
 
 	/* Registering event handlers */
@@ -145,7 +145,7 @@ int main() {
 
 	if (listen_socket) {
 		printf("Listening on port 3000...\n");
-		us_loop_run(loop);
+		asock_loop_run(loop);
 	} else {
 		printf("Failed to listen!\n");
 	}

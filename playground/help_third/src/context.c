@@ -14,7 +14,7 @@ asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
   context->head = 0;
   context->iterator = 0;
   context->next = 0;
-  context->ignore_data = 0;
+  context->ignore_data = asock_context_ignore_data_handler;
 
   asock_loop_link(loop, context);
   return context;
