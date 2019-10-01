@@ -9,36 +9,6 @@
 #include "us_internal.h"
 #include <stdlib.h>
 
-void us_internal_loop_link(asock_loop_t *loop, asock_context_t *context) {
-    context->next = loop->data.head;
-    context->prev = 0;
-    if (loop->data.head) {
-        loop->data.head->prev = context;
-    }
-    loop->data.head = context;
-}
-
-/* Note: Properly takes the linked list and timeout sweep into account */
-void us_internal_free_closed_sockets(struct us_loop_t *loop) {
-    /* Free all closed sockets (maybe it is better to reverse order?) */
-    if (loop->data.closed_head) {
-        for (asock_socket_t *s = loop->data.closed_head; s; ) {
-            asock_socket_t *next = s->next;
-            asock_poll_free((asock_poll_t *) s, loop);
-            s = next;
-        }
-        loop->data.closed_head = 0;
-    }
-}
-
-void sweep_timer_cb(struct us_internal_callback_t *cb) {
-    asock_timer_sweep(cb->loop);
-}
-
-long long us_loop_iteration_number(struct us_loop_t *loop) {
-    return loop->data.iteration_nr;
-}
-
 /* These may have somewhat different meaning depending on the underlying event library */
 void us_internal_loop_pre(struct us_loop_t *loop) {
     loop->data.iteration_nr++;
@@ -46,7 +16,7 @@ void us_internal_loop_pre(struct us_loop_t *loop) {
 }
 
 void us_internal_loop_post(struct us_loop_t *loop) {
-    us_internal_free_closed_sockets(loop);
+    asock_socket_free_closed(loop);
     loop->data.post_cb(loop);
 }
 

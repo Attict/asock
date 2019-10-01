@@ -109,3 +109,13 @@ void asock_timer_sweep(asock_loop_t *loop)
     }
   }
 }
+
+/**
+ * asock_timer_sweep_cb
+ *
+ */
+void asock_timer_sweep_cb(asock_callback_t *cb)
+{
+  asock_timer_sweep(cb->loop);
+}
+

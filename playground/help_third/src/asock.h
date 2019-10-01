@@ -123,10 +123,6 @@ void us_loop_run(struct us_loop_t *loop);
 /* Hook up timers in existing loop */
 void us_loop_integrate(struct us_loop_t *loop);
 
-/* Returns the loop iteration number */
-long long us_loop_iteration_number(struct us_loop_t *loop);
-
-/* Public interfaces for polls */
 
 
 

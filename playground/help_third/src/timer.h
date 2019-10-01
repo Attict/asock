@@ -78,6 +78,15 @@ asock_loop_t *asock_timer_loop(asock_timer_t *timer);
  */
 void asock_timer_sweep(asock_loop_t *loop);
 
+/**
+ * asock_timer_sweep_cb
+ *
+ * @brief todo
+ *
+ * @param cb Callback
+ */
+void asock_timer_sweep_cb(asock_callback_t *cb);
+
 
 
 #endif // ASOCK_TIMER_H

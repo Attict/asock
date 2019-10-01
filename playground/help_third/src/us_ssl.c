@@ -342,8 +342,8 @@ int ssl_ignore_data(struct us_internal_ssl_socket_t *s) {
     struct loop_ssl_data *loop_ssl_data = loop->data.ssl_data;
 
     // reset handshake budget if new iteration
-    if (loop_ssl_data->last_iteration_nr != us_loop_iteration_number(loop)) {
-        loop_ssl_data->last_iteration_nr = us_loop_iteration_number(loop);
+    if (loop_ssl_data->last_iteration_nr != asock_loop_iteration_number(loop)) {
+        loop_ssl_data->last_iteration_nr = asock_loop_iteration_number(loop);
         loop_ssl_data->handshake_budget = MAX_HANDSHAKES_PER_LOOP_ITERATION;
     }
 
