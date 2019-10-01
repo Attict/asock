@@ -1,5 +1,7 @@
+#include "core.h"
 #include "context.h"
 #include "poll.h"
+#include "socket.h"
 #include <stdlib.h>
 #include <sys/event.h>
 
@@ -196,4 +198,107 @@ asock_poll_t *asock_poll_resize(asock_poll_t *p, asock_loop_t *loop,
   }
 
   return new_p;
+}
+
+/**
+ * asock_poll_ready_dispatch
+ *
+ */
+void asock_poll_ready_dispatch(asock_poll_t *p, int error, int events)
+{
+  switch (asock_poll_type(p))
+  {
+  case ASOCK_POLL_TYPE_CALLBACK:
+    asock_poll_accept_event(p);
+    asock_callback_t *parent = (asock_callback_t *) p;
+    parent->cb(parent->cb_expects_the_loop
+        ? (asock_callback_t *) parent->loop : (asock_callback_t *) &parent->p);
+    break;
+
+  case ASOCK_POLL_TYPE_SEMI:
+    // Both connect and listen sockets are semi-sockets
+    // but they poll for different events
+    if (asock_poll_events(p) == ASOCK_SOCKET_WRITABLE)
+    {
+      asock_socket_t *s = (asock_socket_t *) p;
+      asock_poll_change(p, s->context->loop, ASOCK_SOCKET_WRITABLE);
+      // We always use no-delay
+      asock_core_socket_nodelay(asock_poll_fd(p), 1);
+      // We are now a proper socket
+      asock_poll_set_type(p, ASOCK_POLL_TYPE_SOCKET);
+
+      s->context->on_open(s, 1, 0, 0);
+    }
+    else
+    {
+      asock_core_listen_t *ls = (asock_core_listen_t *) p;
+      asock_core_addr_t addr;
+      int client_fd = asock_core_accept_socket(asock_poll_fd(p), &addr);
+      if (client_fd == -1)
+      {
+        // todo: start timer here
+      }
+      else
+      {
+        // todo: stop timer if any
+
+        do
+        {
+          asock_poll_t *p = asock_poll_create(
+              asock_context(0, &ls->s)->loop, 0, sizeof(asock_socket_t)
+                  - sizeof(asock_poll_t) + ls->socket_ext_size);
+
+          asock_poll_init(p, client_fd, ASOCK_POLL_TYPE_SOCKET);
+          asock_poll_start(p, ls->s.context->loop, ASOCK_SOCKET_READABLE);
+
+          asock_socket_t *s = (asock_socket_t *) p;
+          s->context = ls->s.context;
+
+          // We always use no-delay
+          asock_core_socket_nodelay(client_fd, 1);
+          asock_context_link(ls->s.context, s);
+          ls->s.context->on_open(
+              s, 0, asock_core_get_ip(&addr), asock_core_addr_ip_len(&addr));
+
+          // Exit accept loop if listen socket was closed in on_open handler
+          if (asock_socket_is_closed(0, &ls->s))
+          {
+            break;
+          }
+        }
+        while ((client_fd
+            = asock_core_accept_socket(asock_poll_fd(p), &addr)) != -1);
+      }
+    }
+    break;
+
+  case ASOCK_POLL_TYPE_SHUTDOWN:
+  case ASOCK_POLL_TYPE_SOCKET:
+    {
+      // We should only use s, no p after this point.
+      asock_socket_t *s = (asock_socket_t *) p;
+
+      // Such as epollerr epollhup
+      if (error)
+      {
+        s = asock_socket_close(0, s);
+        return;
+      }
+
+      if (events & ASOCK_SOCKET_WRITABLE)
+      {
+        // Note: if we fail a write as a socket of one loop then adopted
+        // to another loop, this will be wrong.  Absurd case though.
+        s->context->loop->data.last_write_failed = 0;
+
+        s = s->context->on_writable(s);
+
+        if (asock_socket_is_closed(0, s))
+        {
+          return;
+        }
+      }
+    }
+    break;
+  }
 }

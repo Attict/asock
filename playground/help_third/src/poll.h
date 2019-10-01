@@ -198,7 +198,16 @@ int asock_poll_kqueue_change(int kqfd, int fd, int old_events,
 asock_poll_t *asock_poll_resize(asock_poll_t *p, asock_loop_t *loop,
     unsigned int ext_size);
 
-
+/**
+ * asock_poll_ready_dispatch
+ *
+ * @brief todo
+ *
+ * @param p Poll
+ * @param error
+ * @param events
+ */
+void asock_poll_ready_dispatch(asock_poll_t *p, int error, int events);
 
 
 

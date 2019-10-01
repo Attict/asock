@@ -174,7 +174,7 @@ void asock_context_on_open(int ssl, asock_context_t *context,
  * @param socket
  * @return Context
  */
-asock_context_t *asock_socket_context(int ssl, asock_socket_t *s);
+asock_context_t *asock_context(int ssl, asock_socket_t *s);
 
 /**
  * asock_context_ignore_data_handler

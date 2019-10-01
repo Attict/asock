@@ -19,7 +19,41 @@ void asock_loop_run(asock_loop_t *loop)
   // While we ahve non-fallthrough polls we shouldn't fall through
   while (loop->num_polls)
   {
+    asock_loop_pre(loop);
 
+    loop->num_ready_polls = kevent(
+        loop->fd, NULL, 0, loop->ready_polls, 1024, NULL);
+
+    // Iterate over ready polls, dispatching them by type
+    for (loop->current_ready_poll = 0;
+        loop->current_ready_poll < loop->num_ready_polls;
+        loop->current_ready_poll++)
+    {
+      asock_poll_t *poll = GET_READY_POLL(loop, loop->current_ready_poll);
+
+      // any ready poll marked with nullptr will be ignored
+      if (poll)
+      {
+        int events = ASOCK_SOCKET_READABLE;
+        if (loop->ready_polls[loop->current_ready_poll].filter == EVFILT_WRITE)
+        {
+          events = ASOCK_SOCKET_WRITABLE;
+        }
+
+        int error = loop->ready_polls[loop->current_ready_poll].flags
+            & (EV_ERROR | EV_EOF);
+
+        // Always filter all polls by what they actually poll for
+        // (callback polls always poll for readable)
+        events &= asock_poll_events(poll);
+        if (events || error)
+        {
+          asock_poll_ready_dispatch(poll, error, events);
+        }
+      }
+    }
+
+    asock_loop_post(loop);
   }
 }
 
