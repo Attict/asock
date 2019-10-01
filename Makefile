@@ -1,25 +1,51 @@
-ifeq ($(WITH_SSL),1)
-  override LDFLAGS += -Lssl -Lcrypto
+# WITH_SSL=1 enables SSL support
+ifneq ($(WITH_SSL),1)
+	override CFLAGS += -DLIBUS_NO_SSL
+else
+	# With problems on macOS, make sure to pass needed LDFLAGS required to find these
+	override LDFLAGS += -L/usr/local/opt/openssl@1.1/lib -lssl -lcrypto
+	override CFLAGS += -I/usr/local/opt/openssl@1.1/include
 endif
 
-override CFLAGS += -std=c11 -Wall -Isrc
+# WITH_LIBUV=1 builds with libuv as event-loop
+ifeq ($(WITH_LIBUV),1)
+	override CFLAGS += -DLIBUS_USE_LIBUV
+	override LDFLAGS += -luv
+endif
+
+# WITH_GCD=1 builds with libdispatch as event-loop
+ifeq ($(WITH_GCD),1)
+	override CFLAGS += -DLIBUS_USE_GCD
+	override LDFLAGS += -framework CoreFoundation
+endif
+
+# WITH_ASAN builds with sanitizers
+ifeq ($(WITH_ASAN),1)
+	override CFLAGS += -fsanitize=address
+	override LDFLAGS += -lasan
+endif
+
+# add -g for debugging, and remove optimization flags
+
+override CFLAGS += -std=c11 -Wno-everything -Isrc
 override LDFLAGS += build/asock.a
 
-.PHONY: asock examples test clean
-
-# ASOCK Library
-asock:
+# By default we build the uSockets.a static library
+default:
 	mkdir -p build
-	$(CC) $(CFLAGS) -c src/*.c
+	$(CC) $(CFLAGS) -flto -O3 -c src/*.c
 	$(AR) rvs build/asock.a *.o
 	rm -rf *.o
 
-examples:
-	$(CC) $(CFLAGS) -o build/example_echo examples/example_echo.c $(LDFLAGS)
+# Builds all examples
+.PHONY: examples
+examples: default
+	for f in examples/*.c; do $(CC) -flto -O3 $(CFLAGS) -o build/$$(basename "$$f" ".c") "$$f" $(LDFLAGS); done
 
-# Using CHECK
-test:
-	mkdir -p build/test
+swift_examples:
+	swiftc -O -I . examples/swift_http_server/main.swift uSockets.a -o swift_http_server
+
+all: clean default examples
 
 clean:
-	rm-rf build
+	rm -rf build
