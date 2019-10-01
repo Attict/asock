@@ -1,5 +1,6 @@
 #include "context.h"
 #include "socket.h"
+#include <stdlib.h>
 
 /**
  * asock_context_create
@@ -17,7 +18,6 @@ asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
 
   asock_loop_link(loop, context);
   return context;
-
 }
 
 /**

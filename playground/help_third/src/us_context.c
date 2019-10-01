@@ -34,7 +34,7 @@ struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *
   context->next = 0;
   context->ignore_data = 0;
 
-  us_internal_loop_link(loop, context);
+  asock_loop_link(loop, context);
   return context;
 }
 
