@@ -33,4 +33,16 @@ asock_socket_t;
  */
 void asock_socket_free_closed(asock_loop_t *loop);
 
+/**
+ * asock_socket_is_closed
+ *
+ * @brief Returns whether this socket has been closed.
+ *        Only valid if memory has not yet been released.
+ *
+ * @param
+ * @param
+ * @return
+ */
+int asock_socket_is_closed(int ssl, asock_socket_t *s);
+
 #endif

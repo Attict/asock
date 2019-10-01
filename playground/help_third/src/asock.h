@@ -158,9 +158,6 @@ void us_socket_shutdown(int ssl, struct us_socket_t *s);
 /* Returns whether the socket has been shut down or not */
 int us_socket_is_shut_down(int ssl, struct us_socket_t *s);
 
-/* Returns whether this socket has been closed. Only valid if memory has not yet been released. */
-int us_socket_is_closed(int ssl, struct us_socket_t *s);
-
 /* Immediately closes the socket */
 struct us_socket_t *us_socket_close(int ssl, struct us_socket_t *s);
 

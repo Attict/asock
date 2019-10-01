@@ -18,3 +18,12 @@ void asock_socket_free_closed(asock_loop_t *loop)
     loop->data.closed_head = 0;
   }
 }
+
+/**
+ * asock_socket_is_closed
+ *
+ */
+int asock_socket_is_closed(int ssl, asock_socket_t *s)
+{
+  return s->prev == (asock_socket_t *) s->context;
+}

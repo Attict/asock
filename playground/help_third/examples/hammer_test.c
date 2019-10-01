@@ -74,7 +74,7 @@ struct us_socket_t *perform_random_operation(struct us_socket_t *s) {
         }
         case 1: {
             // adoption cannot happen if closed!
-            if (!us_socket_is_closed(SSL, s)) {
+            if (!asock_socket_is_closed(SSL, s)) {
                 if (rand() % 2) {
                     s = us_socket_context_adopt_socket(SSL, websocket_context, s, sizeof(struct web_socket));
                     struct http_socket *hs = (struct http_socket *) us_socket_ext(SSL, s);

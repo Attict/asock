@@ -20,17 +20,13 @@
 #include "core.h"
 #include <stdlib.h>
 
-int default_ignore_data_handler(struct us_socket_t *s)
-{
-  return 0;
-}
 
 /* Shared with SSL */
 
 void us_listen_socket_close(int ssl, struct us_listen_socket_t *ls)
 {
   /* us_listen_socket_t extends us_socket_t so we close in similar ways */
-  if (!us_socket_is_closed(0, &ls->s))
+  if (!asock_socket_is_closed(0, &ls->s))
   {
     asock_context_unlink(ls->s.context, &ls->s);
     asock_poll_stop((struct us_poll_t *) &ls->s, ls->s.context->loop);
@@ -62,7 +58,7 @@ struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *
   context->head = 0;
   context->iterator = 0;
   context->next = 0;
-  context->ignore_data = default_ignore_data_handler;
+  context->ignore_data = 0;
 
   us_internal_loop_link(loop, context);
   return context;
@@ -155,7 +151,7 @@ struct us_socket_t *us_socket_context_adopt_socket(int ssl, struct us_socket_con
 #endif
 
   /* Cannot adopt a closed socket */
-  if (us_socket_is_closed(ssl, s)) {
+  if (asock_socket_is_closed(ssl, s)) {
     return s;
   }
 

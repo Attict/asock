@@ -52,10 +52,6 @@ void us_socket_flush(int ssl, struct us_socket_t *s) {
   }
 }
 
-int us_socket_is_closed(int ssl, struct us_socket_t *s) {
-  return s->prev == (struct us_socket_t *) s->context;
-}
-
 /* Not shared with SSL */
 
 int us_socket_write(int ssl, struct us_socket_t *s, const char *data, int length, int msg_more) {
@@ -65,7 +61,7 @@ int us_socket_write(int ssl, struct us_socket_t *s, const char *data, int length
   }
 #endif
 
-  if (us_socket_is_closed(ssl, s) || us_socket_is_shut_down(ssl, s)) {
+  if (asock_socket_is_closed(ssl, s) || us_socket_is_shut_down(ssl, s)) {
     return 0;
   }
 
@@ -95,7 +91,7 @@ struct us_socket_t *us_socket_close(int ssl, struct us_socket_t *s) {
   }
 #endif
 
-  if (!us_socket_is_closed(0, s)) {
+  if (!asock_socket_is_closed(0, s)) {
     asock_context_unlink(s->context, s);
     asock_poll_stop((struct us_poll_t *) s, s->context->loop);
     asock_core_close_socket(asock_poll_fd((struct us_poll_t *) s));
@@ -133,7 +129,7 @@ void us_socket_shutdown(int ssl, struct us_socket_t *s) {
   /* Todo: should we emit on_close if calling shutdown on an already half-closed socket?
    * We need more states in that case, we need to track RECEIVED_FIN
    * so far, the app has to track this and call close as needed */
-  if (!us_socket_is_closed(ssl, s) && !us_socket_is_shut_down(ssl, s)) {
+  if (!asock_socket_is_closed(ssl, s) && !us_socket_is_shut_down(ssl, s)) {
     asock_poll_set_type(&s->p, POLL_TYPE_SOCKET_SHUT_DOWN);
     asock_poll_change(&s->p, s->context->loop, asock_poll_events(&s->p) & LIBUS_SOCKET_READABLE);
     asock_core_shutdown_socket(asock_poll_fd((asock_poll_t *) s));

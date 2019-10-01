@@ -128,7 +128,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
                         listen_socket->s.context->on_open(s, 0, asock_core_get_ip(&addr), asock_core_addr_ip_len(&addr));
 
                         /* Exit accept loop if listen socket was closed in on_open handler */
-                        if (us_socket_is_closed(0, &listen_socket->s)) {
+                        if (asock_socket_is_closed(0, &listen_socket->s)) {
                             break;
                         }
 
@@ -155,7 +155,7 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
 
                 s = s->context->on_writable(s);
 
-                if (us_socket_is_closed(0, s)) {
+                if (asock_socket_is_closed(0, s)) {
                     return;
                 }
 
