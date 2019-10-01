@@ -37,8 +37,6 @@ enum {
 
 /* Loop related */
 void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events);
-void us_internal_loop_pre(struct us_loop_t *loop);
-void us_internal_loop_post(struct us_loop_t *loop);
 
 
 /* SSL loop data */

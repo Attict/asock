@@ -29,7 +29,7 @@ void us_loop_run(struct us_loop_t *loop) {
     /* While we have non-fallthrough polls we shouldn't fall through */
     while (loop->num_polls) {
         /* Emit pre callback */
-        us_internal_loop_pre(loop);
+        asock_loop_pre(loop);
 
         /* Fetch ready polls */
 #ifdef LIBUS_USE_EPOLL
@@ -62,7 +62,7 @@ void us_loop_run(struct us_loop_t *loop) {
             }
         }
         /* Emit post callback */
-        us_internal_loop_post(loop);
+        asock_loop_post(loop);
     }
 }
 /* Poll */

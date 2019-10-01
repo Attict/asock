@@ -2,6 +2,7 @@
 #include "callback.h"
 #include "context.h"
 #include "loop.h"
+#include "socket.h"
 #include "timer.h"
 #include <stdlib.h>
 #include <unistd.h>
@@ -186,4 +187,24 @@ void *asock_loop_ext(asock_loop_t *loop)
 long long asock_loop_iteration_number(asock_loop_t *loop)
 {
   return loop->data.iteration_nr;
+}
+
+/**
+ * asock_loop_pre
+ *
+ */
+void asock_loop_pre(asock_loop_t *loop)
+{
+  loop->data.iteration_nr++;
+  loop->data.pre_cb(loop);
+}
+
+/**
+ * asock_loop_post
+ *
+ */
+void asock_loop_post(asock_loop_t *loop)
+{
+  asock_socket_free_closed(loop);
+  loop->data.post_cb(loop);
 }

@@ -9,17 +9,6 @@
 #include "us_internal.h"
 #include <stdlib.h>
 
-/* These may have somewhat different meaning depending on the underlying event library */
-void us_internal_loop_pre(struct us_loop_t *loop) {
-    loop->data.iteration_nr++;
-    loop->data.pre_cb(loop);
-}
-
-void us_internal_loop_post(struct us_loop_t *loop) {
-    asock_socket_free_closed(loop);
-    loop->data.post_cb(loop);
-}
-
 void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events) {
     switch (asock_poll_type(p)) {
     case POLL_TYPE_CALLBACK: {

@@ -182,4 +182,22 @@ void *asock_loop_ext(asock_loop_t *loop);
  */
 long long asock_loop_iteration_number(asock_loop_t *loop);
 
+/**
+ * asock_loop_pre
+ *
+ * @brief todo
+ *
+ * @param loop
+ */
+void asock_loop_pre(asock_loop_t *loop);
+
+/**
+ * asock_loop_post
+ *
+ * @brief todo
+ *
+ * @param loop
+ */
+void asock_loop_post(asock_loop_t *loop);
+
 #endif // ASOCK_LOOP_H
