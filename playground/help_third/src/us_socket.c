@@ -21,9 +21,6 @@
 #include "us_internal.h"
 #include <stdlib.h>
 
-struct us_socket_context_t *us_socket_context(int ssl, struct us_socket_t *s) {
-  return s->context;
-}
 
 
 

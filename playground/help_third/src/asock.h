@@ -146,9 +146,6 @@ void us_loop_integrate(struct us_loop_t *loop);
 /* Return the user data extension of this socket */
 void *us_socket_ext(int ssl, struct us_socket_t *s);
 
-/* Return the socket context of this socket */
-struct us_socket_context_t *us_socket_context(int ssl, struct us_socket_t *s);
-
 /* Withdraw any msg_more status and flush any pending data */
 //void us_socket_flush(int ssl, struct us_socket_t *s);
 
