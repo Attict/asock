@@ -88,8 +88,6 @@ void *us_socket_context_ext(int ssl, struct us_socket_context_t *context);
 struct us_listen_socket_t *us_socket_context_listen(int ssl, struct us_socket_context_t *context,
     const char *host, int port, int options, int socket_ext_size);
 
-/* listen_socket.c/.h */
-void us_listen_socket_close(int ssl, struct us_listen_socket_t *ls);
 
 /* Land in on_open or on_close or return null or return socket */
 struct us_socket_t *us_socket_context_connect(int ssl, struct us_socket_context_t *context,

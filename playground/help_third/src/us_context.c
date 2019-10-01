@@ -20,32 +20,6 @@
 #include "core.h"
 #include <stdlib.h>
 
-
-/* Shared with SSL */
-
-void us_listen_socket_close(int ssl, struct us_listen_socket_t *ls)
-{
-  /* us_listen_socket_t extends us_socket_t so we close in similar ways */
-  if (!asock_socket_is_closed(0, &ls->s))
-  {
-    asock_context_unlink(ls->s.context, &ls->s);
-    asock_poll_stop((struct us_poll_t *) &ls->s, ls->s.context->loop);
-    asock_core_close_socket(asock_poll_fd((struct us_poll_t *) &ls->s));
-
-    /* Link this socket to the close-list and let it be deleted after this iteration */
-    ls->s.next = ls->s.context->loop->data.closed_head;
-    ls->s.context->loop->data.closed_head = &ls->s;
-
-    /* Any socket with prev = context is marked as closed */
-    ls->s.prev = (struct us_socket_t *) ls->s.context;
-  }
-
-  /* We cannot immediately free a listen socket as we can be inside an accept loop */
-}
-
-
-/* Not shared with SSL */
-
 struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *loop, int context_ext_size, struct us_socket_context_options_t options) {
 #ifndef LIBUS_NO_SSL
   if (ssl) {

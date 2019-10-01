@@ -25,6 +25,18 @@ typedef struct asock_socket_t
 asock_socket_t;
 
 /**
+ * asock_listen_socket_t
+ *
+ * @brief todo
+ */
+typedef struct asock_listen_socket_t
+{
+  alignas(ASOCK_EXT_ALIGN) asock_socket_t s;
+  unsigned int socket_ext_size;
+}
+asock_listen_socket_t;
+
+/**
  * asock_socket_free_closed
  *
  * @brief Properly takes the linked list and timeout sweep into account.
@@ -44,5 +56,15 @@ void asock_socket_free_closed(asock_loop_t *loop);
  * @return
  */
 int asock_socket_is_closed(int ssl, asock_socket_t *s);
+
+/**
+ * asock_listen_socket_close
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param ls Listen socket
+ */
+void asock_listen_socket_close(int ssl, asock_listen_socket_t *ls);
 
 #endif
