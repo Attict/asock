@@ -21,20 +21,6 @@
 #include <stdlib.h>
 
 
-
-
-struct us_socket_context_t *us_create_child_socket_context(int ssl, struct us_socket_context_t *context, int context_ext_size) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    return (struct us_socket_context_t *) us_internal_create_child_ssl_socket_context((struct us_internal_ssl_socket_context_t *) context, context_ext_size);
-  }
-#endif
-
-  /* For TCP we simply create a new context as nothing is shared */
-  asock_options_t options = {0};
-  return asock_context_create(ssl, context->loop, context_ext_size, options);
-}
-
 /* Note: This will set timeout to 0 */
 struct us_socket_t *us_socket_context_adopt_socket(int ssl, struct us_socket_context_t *context, struct us_socket_t *s, int ext_size) {
 #ifndef LIBUS_NO_SSL

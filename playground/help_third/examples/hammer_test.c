@@ -76,11 +76,11 @@ struct us_socket_t *perform_random_operation(struct us_socket_t *s) {
             // adoption cannot happen if closed!
             if (!asock_socket_is_closed(SSL, s)) {
                 if (rand() % 2) {
-                    s = us_socket_context_adopt_socket(SSL, websocket_context, s, sizeof(struct web_socket));
+                    s = asock_context_adopt_socket(SSL, websocket_context, s, sizeof(struct web_socket));
                     struct http_socket *hs = (struct http_socket *) us_socket_ext(SSL, s);
                     hs->is_http = 0;
                 } else {
-                    s = us_socket_context_adopt_socket(SSL, http_context, s, sizeof(struct http_socket));
+                    s = asock_context_adopt_socket(SSL, http_context, s, sizeof(struct http_socket));
                     struct http_socket *hs = (struct http_socket *) us_socket_ext(SSL, s);
                     hs->is_http = 1;
                 }
@@ -273,7 +273,7 @@ int main() {
     asock_context_on_timeout(SSL, http_context, on_http_socket_timeout);
     asock_context_on_end(SSL, http_context, on_http_socket_end);
 
-    websocket_context = us_create_child_socket_context(SSL, http_context, sizeof(struct http_context));
+    websocket_context = asock_context_create_child(SSL, http_context, sizeof(struct http_context));
 
     asock_context_on_open(SSL, websocket_context, on_web_socket_open);
     asock_context_on_data(SSL, websocket_context, on_web_socket_data);
