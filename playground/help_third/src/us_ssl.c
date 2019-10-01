@@ -449,7 +449,7 @@ void us_internal_ssl_socket_context_free(struct us_internal_ssl_socket_context_t
         SSL_CTX_free(context->ssl_context);
     }
 
-    us_socket_context_free(0, &context->sc);
+    asock_context_free(0, &context->sc);
 }
 
 struct us_listen_socket_t *us_internal_ssl_socket_context_listen(struct us_internal_ssl_socket_context_t *context, const char *host, int port, int options, int socket_ext_size) {

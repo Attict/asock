@@ -20,29 +20,6 @@
 #include "core.h"
 #include <stdlib.h>
 
-asock_context_t *us_create_socket_context(int ssl, asock_loop_t *loop, int context_ext_size, asock_options_t options) {
-
-  asock_context_t *context = malloc(sizeof(asock_context_t) + context_ext_size);
-  context->loop = loop;
-  context->head = 0;
-  context->iterator = 0;
-  context->next = 0;
-  context->ignore_data = asock_context_ignore_data_handler;
-
-  asock_loop_link(loop, context);
-  return context;
-}
-
-void us_socket_context_free(int ssl, struct us_socket_context_t *context) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    us_internal_ssl_socket_context_free((struct us_internal_ssl_socket_context_t *) context);
-    return;
-  }
-#endif
-
-  free(context);
-}
 
 struct us_listen_socket_t *us_socket_context_listen(int ssl, struct us_socket_context_t *context, const char *host, int port, int options, int socket_ext_size) {
 #ifndef LIBUS_NO_SSL
@@ -108,7 +85,7 @@ struct us_socket_context_t *us_create_child_socket_context(int ssl, struct us_so
 
   /* For TCP we simply create a new context as nothing is shared */
   asock_options_t options = {0};
-  return us_create_socket_context(ssl, context->loop, context_ext_size, options);
+  return asock_context_create(ssl, context->loop, context_ext_size, options);
 }
 
 /* Note: This will set timeout to 0 */

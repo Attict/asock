@@ -98,8 +98,6 @@ struct us_socket_context_options_t {
 };
 
 
-/* Delete resources allocated at creation time. */
-void us_socket_context_free(int ssl, struct us_socket_context_t *context);
 
 /* Returns user data extension for this socket context */
 void *us_socket_context_ext(int ssl, struct us_socket_context_t *context);

@@ -292,8 +292,8 @@ int main() {
         printf("Cannot listen to port 3000!\n");
     }
 
-    us_socket_context_free(SSL, websocket_context);
-    us_socket_context_free(SSL, http_context);
+    asock_context_free(SSL, websocket_context);
+    asock_context_free(SSL, http_context);
     asock_loop_free(loop);
     free(long_buffer);
     printf("Done, shutting down now\n");
