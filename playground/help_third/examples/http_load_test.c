@@ -127,5 +127,5 @@ int main(int argc, char **argv) {
     /* Start making HTTP connections */
     us_socket_context_connect(SSL, http_context, host, port, 0, sizeof(struct http_socket));
 
-    us_loop_run(loop);
+    asock_loop_run(loop);
 }

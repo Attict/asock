@@ -287,7 +287,7 @@ int main() {
     if (listen_socket) {
         printf("Running hammer test\n");
         us_socket_context_connect(SSL, http_context, "127.0.0.1", 3000, 0, sizeof(struct http_socket));
-        us_loop_run(loop);
+        asock_loop_run(loop);
     } else {
         printf("Cannot listen to port 3000!\n");
     }

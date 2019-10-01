@@ -120,7 +120,7 @@ int main() {
 
 	if (listen_socket) {
 		printf("Listening on port 3000...\n");
-		us_loop_run(loop);
+		asock_loop_run(loop);
 	} else {
 		printf("Failed to listen!\n");
 	}
