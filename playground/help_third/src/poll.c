@@ -297,6 +297,56 @@ void asock_poll_ready_dispatch(asock_poll_t *p, int error, int events)
         {
           return;
         }
+
+        // If we have no failed write or if we shut down, then
+        // stop polling for more writable
+        if (!s->context->loop->data.last_write_failed
+            || asock_socket_is_shutdown(0, s))
+        {
+          asock_poll_change(&s->p, asock_context(0, s)->loop,
+              asock_poll_events(&s->p) & ASOCK_SOCKET_READABLE);
+        }
+      }
+
+      if (events & ASOCK_SOCKET_READABLE)
+      {
+        // Contexts may ignore data and postpone it to next iteration,
+        // for balancing purposes such as when SSL handshakes take too long
+        // to finish and we only want a few of them per iteration.
+        if (s->context->ignore_data(s))
+        {
+          break;
+        }
+
+        int length = asock_core_recv(asock_poll_fd(&s->p),
+            s->context->loop->data.recv_buf + ASOCK_RECV_BUFFER_PADDING,
+            ASOCK_RECV_BUFFER_LENGTH, 0);
+
+        if (length > 0)
+        {
+          s = s->context->on_data(s,
+              s->context->loop->data.recv_buf + ASOCK_RECV_BUFFER_PADDING,
+              length);
+        }
+        else if (!length)
+        {
+          if (asock_socket_is_shutdown(0, s))
+          {
+            // We got FIN back after sending it
+            s = asock_socket_close(0, s);
+          }
+          else
+          {
+            // We got FIN, so stop polling for readable
+            asock_poll_change(&s->p, asock_context(0, s)->loop,
+                asock_poll_events(&s->p) & ASOCK_SOCKET_WRITABLE);
+            s = s->context->on_end(s);
+          }
+        }
+        else if (length == -1 && !asock_core_would_block())
+        {
+          s = asock_socket_close(0, s);
+        }
       }
     }
     break;
