@@ -18,30 +18,6 @@ void us_internal_loop_link(asock_loop_t *loop, asock_context_t *context) {
     loop->data.head = context;
 }
 
-/* This functions should never run recursively */
-void us_internal_timer_sweep(struct us_loop_t *loop) {
-    asock_loop_data_t *loop_data = &loop->data;
-    for (loop_data->iterator = loop_data->head; loop_data->iterator; loop_data->iterator = loop_data->iterator->next) {
-
-        struct us_socket_context_t *context = loop_data->iterator;
-        for (context->iterator = context->head; context->iterator; ) {
-
-            struct us_socket_t *s = context->iterator;
-            if (s->timeout && --(s->timeout) == 0) {
-
-                context->on_socket_timeout(s);
-
-                /* Check for unlink / link */
-                if (s == context->iterator) {
-                    context->iterator = s->next;
-                }
-            } else {
-                context->iterator = s->next;
-            }
-        }
-    }
-}
-
 /* Note: Properly takes the linked list and timeout sweep into account */
 void us_internal_free_closed_sockets(struct us_loop_t *loop) {
     /* Free all closed sockets (maybe it is better to reverse order?) */
@@ -56,7 +32,7 @@ void us_internal_free_closed_sockets(struct us_loop_t *loop) {
 }
 
 void sweep_timer_cb(struct us_internal_callback_t *cb) {
-    us_internal_timer_sweep(cb->loop);
+    asock_timer_sweep(cb->loop);
 }
 
 long long us_loop_iteration_number(struct us_loop_t *loop) {
@@ -191,13 +167,4 @@ void us_internal_dispatch_ready_poll(struct us_poll_t *p, int error, int events)
         }
         break;
     }
-}
-
-/* Integration only requires the timer to be set up */
-void us_loop_integrate(struct us_loop_t *loop) {
-    asock_timer_set(loop->data.sweep_timer, (void (*)(struct us_timer_t *)) sweep_timer_cb, LIBUS_TIMEOUT_GRANULARITY * 1000, LIBUS_TIMEOUT_GRANULARITY * 1000);
-}
-
-void *us_loop_ext(struct us_loop_t *loop) {
-    return loop + 1;
 }

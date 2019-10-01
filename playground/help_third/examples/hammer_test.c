@@ -110,8 +110,7 @@ struct us_socket_t *perform_random_operation(struct us_socket_t *s) {
 
 void on_wakeup(struct us_loop_t *loop) {
     // note: we expose internal functions to trigger a timeout sweep to find bugs
-    extern void us_internal_timer_sweep(struct us_loop_t *loop);
-    us_internal_timer_sweep(loop);
+    asock_timer_sweep(loop);
 }
 
 // maybe use thse to count spurious wakeups?

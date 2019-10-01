@@ -50,6 +50,16 @@ typedef struct asock_loop_t
 }
 asock_loop_t;
 
+
+/**
+ * asock_loop_run
+ *
+ * @brief The main loop
+ *
+ * @param loop
+ */
+void asock_loop_run(asock_loop_t *loop);
+
 /**
  * asock_loop_create
  *
@@ -152,6 +162,24 @@ void asock_loop_integrate(asock_loop_t *loop);
  */
 void asock_loop_sweep_timer_cb(asock_callback_t *cb);
 
+/**
+ * asock_loop_ext
+ *
+ * @brief todo
+ *
+ * @param loop
+ * @return Next loop pointer
+ */
+void *asock_loop_ext(asock_loop_t *loop);
 
+/**
+ * asock_loop_iteration_number
+ *
+ * @brief todo
+ *
+ * @param loop
+ * @return Iteration number of loop data
+ */
+long long asock_loop_iteration_number(asock_loop_t *loop);
 
 #endif // ASOCK_LOOP_H

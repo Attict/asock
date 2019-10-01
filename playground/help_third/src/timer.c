@@ -1,5 +1,6 @@
 #include "callback.h"
 #include "context.h"
+#include "socket.h"
 #include "timer.h"
 #include <stdlib.h>
 #include <sys/event.h>
@@ -88,5 +89,23 @@ void asock_timer_sweep(asock_loop_t *loop)
       loop_data->iterator = loop_data->iterator->next)
   {
     asock_context_t *context = loop_data->iterator;
+    for (context->iterator = context->head; context->iterator; )
+    {
+      asock_socket_t *s = context->iterator;
+      if (s->timeout && --(s->timeout) == 0)
+      {
+        context->on_socket_timeout(s);
+
+        // Check for unlink / link
+        if (s == context->iterator)
+        {
+          context->iterator = s->next;
+        }
+      }
+      else
+      {
+        context->iterator = s->next;
+      }
+    }
   }
 }

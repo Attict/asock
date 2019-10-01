@@ -6,6 +6,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+/**
+ * asock_loop_run
+ *
+ */
+void asock_loop_run(asock_loop_t *loop)
+{
+  asock_loop_integrate(loop);
+
+  // While we ahve non-fallthrough polls we shouldn't fall through
+  while (loop->num_polls)
+  {
+
+  }
+}
+
 /**
  * asock_loop_create
  *
@@ -151,16 +167,23 @@ void asock_loop_sweep_timer_cb(asock_callback_t *cb)
 }
 
 /**
- * asock_loop_run
+ * asock_loop_ext
+ *
+ * @brief todo
+ *
+ * @param loop
+ * @return Next loop pointer
+ */
+void *asock_loop_ext(asock_loop_t *loop)
+{
+  return loop + 1;
+}
+
+/**
+ * asock_loop_iteration_number
  *
  */
-void asock_loop_run(asock_loop_t *loop)
+long long asock_loop_iteration_number(asock_loop_t *loop)
 {
-  asock_loop_integrate(loop);
-
-  // While we ahve non-fallthrough polls we shouldn't fall through
-  while (loop->num_polls)
-  {
-
-  }
+  return loop->data.iteration_nr;
 }

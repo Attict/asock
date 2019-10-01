@@ -24,7 +24,7 @@
 
 
 void us_loop_run(struct us_loop_t *loop) {
-    us_loop_integrate(loop);
+    asock_loop_integrate(loop);
 
     /* While we have non-fallthrough polls we shouldn't fall through */
     while (loop->num_polls) {
