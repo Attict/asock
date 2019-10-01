@@ -32,6 +32,7 @@ extern "C" {
 // New Code
 //
 
+typedef struct asock_core_listen_t asock_core_listen_t;
 typedef struct asock_async_t asock_async_t;
 typedef struct asock_callback_t asock_callback_t;
 typedef struct asock_context_t asock_context_t;

@@ -186,4 +186,20 @@ asock_context_t *asock_context(int ssl, asock_socket_t *s);
  */
 int asock_context_ignore_data_handler(asock_socket_t *s);
 
+/**
+ * asock_context_listen
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param host
+ * @param port
+ * @param options
+ * @param ext_size
+ * @return
+ */
+asock_core_listen_t *asock_context_listen(int ssl, asock_context_t *context,
+    const char *host, int port, int options, int ext_size);
+
 #endif // ASOCK_CONTEXT_H

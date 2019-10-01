@@ -82,6 +82,17 @@ asock_poll_t *asock_poll_create(asock_loop_t *loop,
 void asock_poll_init(asock_poll_t *p, int fd, int poll_type);
 
 /**
+ * asock_poll_start
+ *
+ * @brief todo
+ *
+ * @param p
+ * @param loop
+ * @param events
+ */
+void asock_poll_start(asock_poll_t *p, asock_loop_t *loop, int events);
+
+/**
  * asock_poll_stop
  *
  * @brief todo

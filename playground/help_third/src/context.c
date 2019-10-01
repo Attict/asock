@@ -1,4 +1,5 @@
 #include "context.h"
+#include "core.h"
 #include "socket.h"
 #include <stdlib.h>
 
@@ -175,4 +176,35 @@ asock_context_t *asock_context(int ssl, asock_socket_t *s)
 int asock_context_ignore_data_handler(asock_socket_t *s)
 {
   return 0;
+}
+
+/**
+ * asock_context_listen
+ *
+ */
+asock_core_listen_t *asock_context_listen(int ssl, asock_context_t *context,
+    const char *host, int port, int options, int ext_size)
+{
+  int ls_fd = asock_core_listen_socket(host, port, options);
+
+  if (ls_fd == -1)
+  {
+    return 0;
+  }
+
+  asock_poll_t *p = asock_poll_create(
+      context->loop, 0, sizeof(asock_core_listen_t));
+  asock_poll_init(p, ls_fd, ASOCK_POLL_TYPE_SEMI);
+  asock_poll_start(p, context->loop, ASOCK_SOCKET_READABLE);
+
+  asock_core_listen_t *ls = (asock_core_listen_t *) p;
+
+  ls->s.context = context;
+  ls->s.timeout = 0;
+  ls->s.next = 0;
+  asock_context_link(context, &ls->s);
+
+  ls->socket_ext_size = ext_size;
+
+  return ls;
 }
