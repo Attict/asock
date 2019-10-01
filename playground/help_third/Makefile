@@ -25,6 +25,8 @@ ifeq ($(WITH_ASAN),1)
 	override LDFLAGS += -lasan
 endif
 
+# add -g for debugging, and remove optimization flags
+
 override CFLAGS += -std=c11 -Wno-everything -Isrc
 override LDFLAGS += build/asock.a
 
