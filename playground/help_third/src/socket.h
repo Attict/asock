@@ -69,7 +69,9 @@ void asock_socket_free_closed(asock_loop_t *loop);
 /**
  * asock_socket_timeout
  *
- * @brief todo
+ * @brief Sets a low precision, high performance timer on a socket.
+ *        A socket can only have one single active timer at any given
+ *        point in time.  Will remove any such pre-set timer.
  *
  * @param ssl
  * @param s Socket

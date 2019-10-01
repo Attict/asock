@@ -63,7 +63,7 @@ struct us_socket_t *on_http_socket_data(struct us_socket_t *s, char *data, int l
 	http_socket->offset = asock_socket_write(SSL, s, http_context->response, http_context->length, 0);
 
 	/* Reset idle timer */
-	us_socket_timeout(SSL, s, 30);
+	asock_socket_timeout(SSL, s, 30);
 
 	return s;
 }
@@ -75,7 +75,7 @@ struct us_socket_t *on_http_socket_open(struct us_socket_t *s, int is_client, ch
 	http_socket->offset = 0;
 
 	/* Timeout idle HTTP connections */
-	us_socket_timeout(SSL, s, 30);
+	asock_socket_timeout(SSL, s, 30);
 
 	printf("Client connected\n");
 

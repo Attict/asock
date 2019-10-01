@@ -143,11 +143,6 @@ void us_loop_run(struct us_loop_t *loop);
 void us_loop_integrate(struct us_loop_t *loop);
 
 
-
-/* Set a low precision, high performance timer on a socket. A socket can only have one single active timer
- * at any given point in time. Will remove any such pre set timer */
-void us_socket_timeout(int ssl, struct us_socket_t *s, unsigned int seconds);
-
 /* Return the user data extension of this socket */
 void *us_socket_ext(int ssl, struct us_socket_t *s);
 

@@ -100,7 +100,7 @@ struct us_socket_t *perform_random_operation(struct us_socket_t *s) {
         break;
         case 4: {
             // loop wakeup and timeout sweep
-            us_socket_timeout(SSL, s, 1);
+            asock_socket_timeout(SSL, s, 1);
             asock_loop_wakeup(asock_context_loop(SSL, asock_context(SSL, s)));
         }
         break;

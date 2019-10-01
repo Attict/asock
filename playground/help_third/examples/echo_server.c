@@ -51,7 +51,7 @@ struct us_socket_t *on_echo_socket_writable(struct us_socket_t *s) {
 	}
 
 	/* Client is not boring */
-	us_socket_timeout(SSL, s, 30);
+	asock_socket_timeout(SSL, s, 30);
 
 	return s;
 }
@@ -92,7 +92,7 @@ struct us_socket_t *on_echo_socket_data(struct us_socket_t *s, char *data, int l
 	}
 
 	/* Client is not boring */
-	us_socket_timeout(SSL, s, 30);
+	asock_socket_timeout(SSL, s, 30);
 
 	return s;
 }
@@ -106,7 +106,7 @@ struct us_socket_t *on_echo_socket_open(struct us_socket_t *s, int is_client, ch
 	es->length = 0;
 
 	/* Start a timeout to close the socekt if boring */
-	us_socket_timeout(SSL, s, 30);
+	asock_socket_timeout(SSL, s, 30);
 
 	printf("Client connected\n");
 

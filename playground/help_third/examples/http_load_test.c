@@ -77,7 +77,7 @@ struct us_socket_t *on_http_socket_open(struct us_socket_t *s, int is_client, ch
     } else {
         printf("Running benchmark now...\n");
 
-        us_socket_timeout(SSL, s, LIBUS_TIMEOUT_GRANULARITY);
+        asock_socket_timeout(SSL, s, LIBUS_TIMEOUT_GRANULARITY);
     }
 
     return s;
@@ -88,7 +88,7 @@ struct us_socket_t *on_http_socket_timeout(struct us_socket_t *s) {
     printf("Req/sec: %f\n", ((float)responses) / LIBUS_TIMEOUT_GRANULARITY);
 
     responses = 0;
-    us_socket_timeout(SSL, s, LIBUS_TIMEOUT_GRANULARITY);
+    asock_socket_timeout(SSL, s, LIBUS_TIMEOUT_GRANULARITY);
 
     return s;
 }
