@@ -197,9 +197,52 @@ int asock_context_ignore_data_handler(asock_socket_t *s);
  * @param port
  * @param options
  * @param ext_size
- * @return
+ * @return Listen Socket
  */
 asock_core_listen_t *asock_context_listen(int ssl, asock_context_t *context,
     const char *host, int port, int options, int ext_size);
+
+/**
+ * asock_context_connect
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param host
+ * @param port
+ * @param options
+ * @param ext_size
+ * @return Connect Socket
+ */
+asock_socket_t *asock_context_connect(int ssl, asock_context_t *context,
+    const char *host, int port, int options, int ext_size);
+
+/**
+ * asock_context_create_child
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param ext_size
+ * @return Child Context
+ */
+asock_context_t *asock_context_create_child(int ssl, asock_context_t *context,
+    int ext_size);
+
+/**
+ * asock_context_adopt_socket
+ *
+ * @brief todo
+ *
+ * @param ssl
+ * @param context
+ * @param socket
+ * @param ext_size
+ * @return Socket
+ */
+asock_socket_t *asock_context_adopt_socket(int ssl, asock_context_t *context,
+    asock_socket_t *s, int ext_size);
 
 #endif // ASOCK_CONTEXT_H

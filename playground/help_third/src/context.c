@@ -208,3 +208,67 @@ asock_core_listen_t *asock_context_listen(int ssl, asock_context_t *context,
 
   return ls;
 }
+
+/**
+ * asock_context_connect
+ *
+ * @note cs_fd = Connect Socket File Descriptor
+ */
+asock_socket_t *asock_context_connect(int ssl, asock_context_t *context,
+    const char *host, int port, int options, int ext_size)
+{
+  int cs_fd = asock_core_connect_socket(host, port, options);
+  if (cs_fd == -1)
+  {
+    return 0;
+  }
+
+  // Connect sockets are semi-sockets just like listen sockets
+  asock_poll_t *p = asock_poll_create(
+      context->loop, 0, sizeof(asock_socket_t) + ext_size);
+  asock_poll_init(p, cs_fd, ASOCK_POLL_TYPE_SEMI);
+  asock_poll_start(p, context->loop, ASOCK_SOCKET_WRITABLE);
+
+  // Connect Socket
+  asock_socket_t *cs = (asock_socket_t *) p;
+
+  // Link it into context so that timeout fires properly
+  cs->context = context;
+  asock_context_link(context, cs);
+
+  return cs;
+}
+
+/**
+ * asock_context_create_child
+ *
+ */
+asock_context_t *asock_context_create_child(int ssl, asock_context_t *context,
+    int ext_size)
+{
+  asock_options_t options = {0};
+  return asock_context_create(ssl, context->loop, ext_size, options);
+}
+
+/**
+ * asock_context_adopt_socket
+ *
+ * @note This will set timeout to 0.
+ */
+asock_socket_t *asock_context_adopt_socket(int ssl, asock_context_t *context,
+    asock_socket_t *s, int ext_size)
+{
+  // Cannot adopt closed socket
+  if (asock_socket_is_closed(ssl, s))
+  {
+    return s;
+  }
+
+  // This properly update the iterator if in on_timeout
+  asock_context_unlink(s->context, s);
+  asock_socket_t *new_s = (asock_socket_t *) asock_poll_resize(
+      &s->p, s->context->loop, sizeof(asock_socket_t) + ext_size);
+
+  asock_context_link(context, new_s);
+  return new_s;
+}
