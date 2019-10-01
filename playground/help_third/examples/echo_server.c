@@ -124,12 +124,13 @@ int main() {
 	struct us_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
 
 	/* Socket context */
-	struct us_socket_context_options_t options = {};
+	asock_options_t options = {};
 	options.key_file_name = "misc/cert.key";
 	options.cert_file_name = "misc/cert.crt";
 	//options.passphrase = "1234";
 
-	struct us_socket_context_t *echo_context = us_create_socket_context(SSL, loop, sizeof(struct echo_context), options);
+	struct us_socket_context_t *echo_context = us_create_socket_context(SSL, loop,
+      sizeof(struct echo_context), options);
 
 	/* Registering event handlers */
 	us_socket_context_on_open(SSL, echo_context, on_echo_socket_open);

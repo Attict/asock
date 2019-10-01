@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     struct us_loop_t *loop = asock_loop_create(0, on_wakeup, on_pre, on_post, 0);
 
     /* Create a socket context for HTTP */
-    struct us_socket_context_options_t options = {};
+    asock_options_t options = {};
     options.key_file_name = "/home/alexhultman/uWebSockets.js/misc/key.pem";
     options.cert_file_name = "/home/alexhultman/uWebSockets.js/misc/cert.pem";
     options.passphrase = "1234";

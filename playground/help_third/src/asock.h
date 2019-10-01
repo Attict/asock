@@ -27,6 +27,41 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+//
+// New Code
+//
+
+typedef struct asock_async_t asock_async_t;
+typedef struct asock_callback_t asock_callback_t;
+typedef struct asock_context_t asock_context_t;
+typedef struct asock_loop_t asock_loop_t;
+typedef struct asock_poll_t asock_poll_t;
+typedef struct asock_socket_t asock_socket_t;
+typedef struct asock_timer_t asock_timer_t;
+
+/**
+ * asock_options_t
+ *
+ * @brief todo
+ */
+typedef struct asock_options_t
+{
+  const char *key_file_name;
+  const char *cert_file_name;
+  const char *passphrase;
+  const char *dh_params_file_name;
+  int ssl_prefer_low_memory_usage;
+}
+asock_options_t;
+
+
+asock_loop_t *asock_loop_create(void *hint,
+    void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
+    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
+
+///
+/// NEW CODE
+///
 
 
 enum {
@@ -61,7 +96,7 @@ struct us_socket_context_options_t {
 
 /* A socket context holds shared callbacks and user data extension for associated sockets */
 struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *loop,
-    int ext_size, struct us_socket_context_options_t options);
+    int ext_size, asock_options_t options);
 
 /* Delete resources allocated at creation time. */
 void us_socket_context_free(int ssl, struct us_socket_context_t *context);
@@ -162,22 +197,6 @@ void us_socket_remote_address(int ssl, struct us_socket_t *s, char *buf, int *le
 #define LIBUS_USE_KQUEUE
 
 
-//
-// New Code
-//
-
-typedef struct asock_async_t asock_async_t;
-typedef struct asock_callback_t asock_callback_t;
-typedef struct asock_context_t asock_context_t;
-typedef struct asock_loop_t asock_loop_t;
-typedef struct asock_poll_t asock_poll_t;
-typedef struct asock_socket_t asock_socket_t;
-typedef struct asock_timer_t asock_timer_t;
-
-
-asock_loop_t *asock_loop_create(void *hint,
-    void (*wakeup_cb)(asock_loop_t *loop), void (*pre_cb)(asock_loop_t *loop),
-    void (*post_cb)(asock_loop_t *loop), unsigned int ext_size);
 
 
 #endif // ASOCK_H

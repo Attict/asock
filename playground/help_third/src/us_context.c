@@ -20,7 +20,7 @@
 #include "core.h"
 #include <stdlib.h>
 
-struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *loop, int context_ext_size, struct us_socket_context_options_t options) {
+struct us_socket_context_t *us_create_socket_context(int ssl, struct us_loop_t *loop, int context_ext_size, asock_options_t options) {
 #ifndef LIBUS_NO_SSL
   if (ssl) {
     return (struct us_socket_context_t *) us_internal_create_ssl_socket_context(loop, context_ext_size, options);
@@ -112,7 +112,7 @@ struct us_socket_context_t *us_create_child_socket_context(int ssl, struct us_so
 #endif
 
   /* For TCP we simply create a new context as nothing is shared */
-  struct us_socket_context_options_t options = {0};
+  asock_options_t options = {0};
   return us_create_socket_context(ssl, context->loop, context_ext_size, options);
 }
 

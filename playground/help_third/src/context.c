@@ -7,7 +7,7 @@
  *
  */
 asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
-    int ext_size, asock_context_options_t options)
+    int ext_size, asock_options_t options)
 {
   asock_context_t *context = malloc(sizeof(asock_context_t) + ext_size);
   context->loop = loop;

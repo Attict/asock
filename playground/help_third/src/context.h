@@ -29,22 +29,6 @@ typedef struct asock_context_t
 asock_context_t;
 
 /**
- * asock_context_options_t
- *
- * @brief todo
- */
-typedef struct asock_context_options_t
-{
-  const char *key_file_name;
-  const char *cert_file_name;
-  const char *passphrase;
-  const char *dh_params_file_name;
-  int ssl_prefer_low_memory_usage;
-}
-asock_context_options_t;
-
-
-/**
  * asock_context_create
  *
  * @brief todo
@@ -55,7 +39,7 @@ asock_context_options_t;
  * @return Context
  */
 asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
-    int ext_size, asock_context_options_t options);
+    int ext_size, asock_options_t options);
 
 /**
  * asock_context_free
