@@ -21,34 +21,6 @@
 #include <stdlib.h>
 
 
-struct us_listen_socket_t *us_socket_context_listen(int ssl, struct us_socket_context_t *context, const char *host, int port, int options, int socket_ext_size) {
-#ifndef LIBUS_NO_SSL
-  if (ssl) {
-    return us_internal_ssl_socket_context_listen((struct us_internal_ssl_socket_context_t *) context, host, port, options, socket_ext_size);
-  }
-#endif
-
-  int listen_socket_fd = asock_core_listen_socket(host, port, options);
-
-  if (listen_socket_fd == -1) {
-    return 0;
-  }
-
-  struct us_poll_t *p = asock_poll_create(context->loop, 0, sizeof(struct us_listen_socket_t));
-  asock_poll_init(p, listen_socket_fd, POLL_TYPE_SEMI_SOCKET);
-  asock_poll_start(p, context->loop, LIBUS_SOCKET_READABLE);
-
-  struct us_listen_socket_t *ls = (struct us_listen_socket_t *) p;
-
-  ls->s.context = context;
-  ls->s.timeout = 0;
-  ls->s.next = 0;
-  asock_context_link(context, &ls->s);
-
-  ls->socket_ext_size = socket_ext_size;
-
-  return ls;
-}
 
 struct us_socket_t *us_socket_context_connect(int ssl, struct us_socket_context_t *context, const char *host, int port, int options, int socket_ext_size) {
 #ifndef LIBUS_NO_SSL

@@ -282,7 +282,7 @@ int main() {
     asock_context_on_timeout(SSL, websocket_context, on_web_socket_timeout);
     asock_context_on_end(SSL, websocket_context, on_web_socket_end);
 
-    listen_socket = us_socket_context_listen(SSL, http_context, "127.0.0.1", 3000, 0, sizeof(struct http_socket));
+    listen_socket = asock_context_listen(SSL, http_context, "127.0.0.1", 3000, 0, sizeof(struct http_socket));
 
     if (listen_socket) {
         printf("Running hammer test\n");

@@ -116,7 +116,7 @@ int main() {
 	asock_context_on_end(SSL, http_context, on_http_socket_end);
 
 	/* Start serving HTTP connections */
-	struct us_listen_socket_t *listen_socket = us_socket_context_listen(SSL, http_context, 0, 3000, 0, sizeof(struct http_socket));
+	struct us_listen_socket_t *listen_socket = asock_context_listen(SSL, http_context, 0, 3000, 0, sizeof(struct http_socket));
 
 	if (listen_socket) {
 		printf("Listening on port 3000...\n");

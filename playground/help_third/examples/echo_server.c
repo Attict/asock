@@ -141,7 +141,7 @@ int main() {
 	asock_context_on_end(SSL, echo_context, on_echo_socket_end);
 
 	/* Start accepting echo sockets */
-	struct us_listen_socket_t *listen_socket = us_socket_context_listen(SSL, echo_context, 0, 3000, 0, sizeof(struct echo_socket));
+	struct us_listen_socket_t *listen_socket = asock_context_listen(SSL, echo_context, 0, 3000, 0, sizeof(struct echo_socket));
 
 	if (listen_socket) {
 		printf("Listening on port 3000...\n");
