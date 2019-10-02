@@ -1,7 +1,7 @@
 #ifndef ASOCK_POLL_H
 #define ASOCK_POLL_H
 
-#include "asock.h"
+#include "../asock.h"
 
 /**
  * GET_READY_POLL

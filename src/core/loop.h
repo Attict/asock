@@ -1,7 +1,7 @@
 #ifndef ASOCK_LOOP_H
 #define ASOCK_LOOP_H
 
-#include "asock.h"
+#include "../asock.h"
 #include <stdalign.h>
 #include <sys/event.h>
 

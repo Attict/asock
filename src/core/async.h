@@ -1,7 +1,7 @@
 #ifndef ASOCK_ASYNC_H
 #define ASOCK_ASYNC_H
 
-#include "asock.h"
+#include "../asock.h"
 #include "loop.h"
 #include "poll.h"
 #include <stdalign.h>

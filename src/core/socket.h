@@ -1,7 +1,7 @@
 #ifndef ASOCK_SOCKET_H
 #define ASOCK_SOCKET_H
 
-#include "asock.h"
+#include "../asock.h"
 #include "context.h"
 #include "loop.h"
 

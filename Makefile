@@ -33,7 +33,7 @@ override LDFLAGS += build/asock.a
 # By default we build the uSockets.a static library
 default:
 	mkdir -p build
-	$(CC) $(CFLAGS) -flto -O3 -c src/*.c
+	$(CC) $(CFLAGS) -flto -O3 -c src/core/*.c
 	$(AR) rvs build/asock.a *.o
 	rm -rf *.o
 

@@ -13,7 +13,7 @@
 #ifndef ASOCK_CORE_H
 #define ASOCK_CORE_H
 
-#include "asock.h"
+#include "../asock.h"
 #include "loop.h"
 #include "socket.h"
 #include <sys/socket.h>
