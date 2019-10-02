@@ -29,3 +29,10 @@ while (loop->num_polls)
   us_interal_loop_post(loop);
 }
 ```
+
+# lldb
+
+`breakpoint set -f <file.ext> -l <line>`
+`next`
+`step`
+`list`

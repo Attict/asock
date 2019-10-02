@@ -50,6 +50,8 @@ asock_loop_t *asock_loop_create(void *hint,
 
 
 // Context
+asock_context_t *asock_context(int ssl, asock_socket_t *s);
+void *asock_context_ext(int ssl, asock_context_t *context);
 asock_context_t *asock_context_create(int ssl, asock_loop_t *loop,
     int ext_size, asock_options_t options);
 asock_core_listen_t *asock_context_listen(int ssl, asock_context_t *context,
