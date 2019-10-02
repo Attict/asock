@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Websocket Test</title>
+</head>
+<body>
+<script>
+window.onload = function(e)
+{
+  let socket = new WebSocket('ws://localhost:3000');
+  socket.onopen = function(e)
+  {
+    console.log('Socket Opened!');
+    socket.send('Hello, Socket!');
+  };
+  socket.onmessage = function(e)
+  {
+    console.log(`Socket sent -> ${e.data}`);
+  };
+  socket.onclose = function(e)
+  {
+    console.log('Socket closed!');
+  };
+};
+</script>
+</body>
+</html>

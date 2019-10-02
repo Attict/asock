@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <regex.h>
 
 typedef struct http_socket_t
 {
@@ -51,6 +52,19 @@ asock_socket_t *on_data(asock_socket_t *s, char *data, int length)
   socket->offset =
       asock_socket_write(0, s, context->response, context->length, 0);
   asock_socket_timeout(0, s, 30);
+  printf("Recieved data: %s\n", data);
+
+
+  //
+  // Regex to get the Sec-WebSocket-Key
+  //
+  regex_t regex;
+  int reti;
+  char msgbuf[100];
+
+  reti = regcomp(&regex, "", 0);
+
+
   return s;
 }
 
@@ -91,7 +105,11 @@ int main()
   http_context->response = (char *) malloc(128 + sizeof(body) - 1);
   http_context->length = snprintf(
       http_context->response, 128 + sizeof(body) - 1,
-      "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\n\r\n%s",
+      "HTTP/1.1 101 Switching Protocols\r\n"
+      "Upgrade: websocket\r\n"
+      "Connection: Upgrade\r\n"
+      "Sec-WebSocket-Accept: \r\n"
+      "Content-Length: %ld\r\n\r\n%s",
       sizeof(body) - 1, body);
 
   // Set up event handlers
