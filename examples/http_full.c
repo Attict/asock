@@ -1,5 +1,9 @@
 #include "../src/asock.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define AHTTP_MAX_HEADERS 50
 
 /**
  * ahttp_socket_t
@@ -37,6 +41,32 @@ typedef struct ahttp_header_t
 ahttp_header_t;
 
 /**
+ * ahttp_request_t
+ *
+ * @brief
+ */
+typedef struct ahttp_request_t
+{
+  ahttp_header_t headers[AHTTP_MAX_HEADERS];
+  char *version;
+  char *method;
+  char *uri;
+  char *body;
+}
+ahttp_request_t;
+
+/**
+ * ahttp_response_t
+ *
+ * @brief
+ */
+typedef struct ahttp_response_t
+{
+  ahttp_header_t headers[AHTTP_MAX_HEADERS];
+}
+ahttp_response_t;
+
+/**
  * AHTTP_STATUS
  *
  * @brief
@@ -60,6 +90,26 @@ enum
   AHTTP_STATUS_BAD_GATEWAY = 502,
   AHTTP_STATUS_SERVICE_UNAVAILABLE = 503
 };
+
+
+ahttp_request_t *parseRequest(char *data)
+{
+  //ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
+  //char *line = strtok(data, "\r\n");
+  //while (line != NULL)
+  //{
+  //  printf("Line: %s\n", line);
+  //  line = strtok(NULL, "\r\n");
+  //}
+
+  char *p = strstr(data, "\r\n\r\n");
+  while (p != NULL)
+  {
+    printf("A: %s", p);
+  }
+
+  return NULL;
+}
 
 // -----------------------------------------------------------------------------
 // ahttp_core?
@@ -112,6 +162,18 @@ asock_socket_t *ahttp_core_on_data(asock_socket_t *s, char *data, int length)
   ahttp_socket_t *socket = (ahttp_socket_t *) asock_socket_ext(0, s);
   ahttp_context_t *context =
       (ahttp_context_t *) asock_context_ext(0, asock_context(0, s));
+
+  // Parse data into `ahttp_request_t`
+  parseRequest(data);
+
+  const char body[] = "<html><body><h1>Something completely new!</h1></body></html>";
+  context->response =
+      (char *) realloc(context->response, 128 + sizeof(body) - 1);
+  context->length = snprintf(
+      context->response, 128 + sizeof(body) - 1,
+      "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\n\r\n%s",
+      sizeof(body) - 1, body);
+
   socket->offset =
       asock_socket_write(0, s, context->response, context->length, 0);
   asock_socket_timeout(0, s, 30);
