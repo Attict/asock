@@ -102,11 +102,13 @@ ahttp_request_t *parseRequest(char *data)
   //  line = strtok(NULL, "\r\n");
   //}
 
-  char *p = strstr(data, "\r\n\r\n");
-  while (p != NULL)
-  {
-    printf("A: %s", p);
-  }
+  // Parse first line as METHOD, URI, VERSION
+  // Parse next lines as HEADER -> KEY, VALUE
+  // Parse body after \r\n\r\n
+
+  const char *body = strstr(data, "\r\n\r\n");
+  printf("data: %s\n", data);
+  printf("Test: %s\n", body);
 
   return NULL;
 }
