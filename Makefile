@@ -28,24 +28,26 @@ endif
 # add -g for debugging, and remove optimization flags
 
 override CFLAGS += -std=c11 -Wno-everything -Isrc
-override LDFLAGS += build/asock.a
+override LDFLAGS += build/asock.a build/ahttp.a
+.PHONY: asock ahttp examples clean
+clean: rm -rf build
 
-# By default we build the uSockets.a static library
-default:
+# ASOCK ------------------------------------------------------------------------
+asock:
 	mkdir -p build
 	$(CC) $(CFLAGS) -flto -O3 -c src/core/*.c
 	$(AR) rvs build/asock.a *.o
 	rm -rf *.o
 
-# Builds all examples
-.PHONY: examples
-examples: default
-	for f in examples/*.c; do $(CC) -flto -O3 $(CFLAGS) -o build/$$(basename "$$f" ".c") "$$f" $(LDFLAGS); done
+# AHTTP ------------------------------------------------------------------------
+ahttp:
+	mkdir -p build
+	$(CC) $(CFLAGS) -flto -O3 -c src/http/*.c
+	$(AR) rvs build/ahttp.a *.o
+	rm -rf *.o
 
-swift_examples:
-	swiftc -O -I . examples/swift_http_server/main.swift uSockets.a -o swift_http_server
+# EXAMPLES ---------------------------------------------------------------------
+examples: asock ahttp
+	for f in examples/*.c; do $(CC) -flto -O3 $(CFLAGS) \
+	  -o build/$$(basename "$$f" ".c") "$$f" $(LDFLAGS); done
 
-all: clean default examples
-
-clean:
-	rm -rf build
