@@ -3,16 +3,49 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Instead of returnin the request, perhaps pass in the memory allocation
+// and set it.  Instead return u_int of some sort.
+//
+// Nginx is doing this.  It passes the request pointer, and the buffer pointer.
+// Then sets the state: start, method, spaces before uri, etc.
+// Then it goes over each position of the buffer?  And seems to check each
+// char and determines continuing.  'G', 'E', 'T'... 'P', 'O', 'S', 'T'
+// While checking the state for what to do.  Above is `state == method`
+//
+// State is keeping track of which char it is on.
+// saces before uri -> if slash -> state = sw_after_slash_in_uri
+//
+// After URI state = http_H, http_HT, http_HTT, http_HTTP
+// then first_major_digit, major_digit, first_minor_digit, minor_digit
+//
+// Then headers are turned to lowercase and read
 ahttp_request_t *ahttp_core_parse(char *data)
 {
-  ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
-  char *line = strtok(data, "\r\n");
+  int i = 0;                    // Line counter
+  char *line;
 
+  //
+
+  line = strstr(data, "\r\n");
   while (line != NULL)
   {
-    printf("Line: %s\n", line);
-    line = strtok(NULL, "\r\n");
+    if (i == 0)
+    {
+      printf("Status: %s\n", line);
+    }
+
+    i++;
   }
+
+
+  //ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
+  //char *line = strtok(data, "\r\n");
+
+  //while (line != NULL)
+  //{
+  //  printf("Line: %s\n", line);
+  //  line = strtok(NULL, "\r\n");
+  //}
 
   // Parse first line as METHOD, URI, VERSION
   // Parse next lines as HEADER -> KEY, VALUE
