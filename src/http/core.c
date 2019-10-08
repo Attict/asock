@@ -5,21 +5,22 @@
 
 ahttp_request_t *ahttp_core_parse(char *data)
 {
-  //ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
-  //char *line = strtok(data, "\r\n");
-  //while (line != NULL)
-  //{
-  //  printf("Line: %s\n", line);
-  //  line = strtok(NULL, "\r\n");
-  //}
+  ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
+  char *line = strtok(data, "\r\n");
+
+  while (line != NULL)
+  {
+    printf("Line: %s\n", line);
+    line = strtok(NULL, "\r\n");
+  }
 
   // Parse first line as METHOD, URI, VERSION
   // Parse next lines as HEADER -> KEY, VALUE
   // Parse body after \r\n\r\n
 
-  const char *body = strstr(data, "\r\n\r\n");
-  printf("data: %s\n", data);
-  printf("Test: %s\n", body);
+  //const char *body = strstr(data, "\r\n\r\n");
+  //printf("data: %s\n", data);
+  //printf("Test: %s\n", body);
 
   return NULL;
 }
