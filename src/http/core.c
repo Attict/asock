@@ -21,7 +21,7 @@
 // Then headers are turned to lowercase and read
 ahttp_request_t *ahttp_core_parse(char *data)
 {
-  int i = 0;                    // Line counter
+  int state;
   char *line;
 
   //

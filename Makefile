@@ -46,6 +46,13 @@ ahttp:
 	$(AR) rvs build/ahttp.a *.o
 	rm -rf *.o
 
+# ASQL -------------------------------------------------------------------------
+asql:
+	mkdir -p build
+	$(CC) $(CFLAGS) -flto -O3 -c src/sql/*.c
+	$(AR) rvs build/asql.a *.o
+	rm -rf *.o
+
 # EXAMPLES ---------------------------------------------------------------------
 examples: asock ahttp
 	for f in examples/*.c; do $(CC) -flto -O3 $(CFLAGS) \
