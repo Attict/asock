@@ -1,3 +1,5 @@
+#ifndef ASOCK_NO_SSL
+
 #include "ssl.h"
 #include <string.h>
 
@@ -9,3 +11,4 @@ int asock_passphrase_cb(char *buf, int size, int rwflag, void *u)
   return passphrase_length;
 }
 
+#endif // ASOCK_NO_SSL

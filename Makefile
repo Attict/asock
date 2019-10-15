@@ -1,6 +1,6 @@
 # WITH_SSL=1 enables SSL support
 ifneq ($(WITH_SSL),1)
-	override CFLAGS += -DLIBUS_NO_SSL
+	override CFLAGS += -DASOCK_NO_SSL
 else
 	# With problems on macOS, make sure to pass needed LDFLAGS required to find these
 	override LDFLAGS += -L/usr/local/opt/openssl@1.1/lib -lssl -lcrypto

@@ -1,6 +1,8 @@
 #ifndef ASOCK_SSL_H
 #define ASOCK_SSL_H
 
+#ifndef ASOCK_NO_SSL
+
 #include "../asock.h"
 #include "socket.h"
 #include <openssl/ssl.h>
@@ -67,5 +69,6 @@ typedef struct asock_ssl_context_t
 asock_ssl_context_t;
 
 
+#endif // ASOCK_NO_SSL
 
 #endif // ASOCK_SSL_H

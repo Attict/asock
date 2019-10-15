@@ -220,6 +220,4 @@ asock_poll_t *asock_poll_resize(asock_poll_t *p, asock_loop_t *loop,
  */
 void asock_poll_ready_dispatch(asock_poll_t *p, int error, int events);
 
-
-
 #endif // ASOCK_POLL_H
