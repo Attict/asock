@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define ahttp_str3_cmp(m, c0, c1, c2)       \
+    *(uint32_t *) m == ((c2 << 16) | (c1 << 8) | c0)
+
 // Instead of returnin the request, perhaps pass in the memory allocation
 // and set it.  Instead return u_int of some sort.
 //
@@ -19,41 +22,84 @@
 // then first_major_digit, major_digit, first_minor_digit, minor_digit
 //
 // Then headers are turned to lowercase and read
+//
+// Hex -> Binary -> value
+//      f -> 1111 -> 15
+//      e -> 1110 -> 14
+//      d -> 1101 -> 13
+//      c -> 1100 -> 12
+//      b -> 1011 -> 11
+//      a -> 1010 -> 10
+//      9 -> 1001 -> 9
+//      8 -> 1000 -> 8
+//      7 -> 0111 -> 7
+//      6 -> 0110 -> 6
+//      5 -> 0101 -> 5
+//      4 -> 0100 -> 4
+//      3 -> 0011 -> 3
+//      2 -> 0010 -> 2
+//      1 -> 0001 -> 1
+//      0 -> 0000 -> 0
+//
+//      19 -> 0001 1111 -> 31
+//      20 -> 0010 0000 -> 32
+//      21 -> 0010 0001 -> 33
+//
+// char is actually an 8-bit integral value from 0-255, (similar to 00-FF)
+//
+// Use 0xFF for hex
+// Use 0b00100000 for binary, but not supported for older cc
+//
+// FINAL:
+// This method is going to iterate over each char in the data,
+// and once it hits a space, it will see what the previous data was.
 ahttp_request_t *ahttp_core_parse(char *data)
 {
-  int state;
-  char *line;
+  ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
 
-  //
+  // 0 -> start
+  // 1 -> method
+  // 2 -> uri
+  // 3 -> version
+  int state = 0;
 
-  line = strstr(data, "\r\n");
-  while (line != NULL)
+  // i for counting the data string, and where it started.
+  int start = 0, i, len;
+
+  for (i = 0; i < strlen(data); i++)
   {
-    if (i == 0)
+    if (data[i] == ' ')
     {
-      printf("Status: %s\n", line);
-    }
+      len = i - start;
+      if (len == 3)
+      {
+        unsigned char *m = malloc(sizeof(char) * 3);
+        strncpy((char *)m, data, 3);
+        if (ahttp_str3_cmp(m, 'G', 'E', 'T')) {
+          request->method = AHTTP_METHOD_GET;
+          printf("GET METHOD: %d\n", request->method);
+        }
+      }
+      else if (len == 4)
+      {
 
-    i++;
+      }
+
+      //printf("Space found at %d, method len = %d\n", i, len);
+
+      start = i;
+    }
   }
 
 
-  //ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
-  //char *line = strtok(data, "\r\n");
 
-  //while (line != NULL)
+  // This works, but doesn't count.
+  //char *d = data;
+  //while (*d != '\0')
   //{
-  //  printf("Line: %s\n", line);
-  //  line = strtok(NULL, "\r\n");
+  //  printf("%c", *d);
+  //  d++;
   //}
-
-  // Parse first line as METHOD, URI, VERSION
-  // Parse next lines as HEADER -> KEY, VALUE
-  // Parse body after \r\n\r\n
-
-  //const char *body = strstr(data, "\r\n\r\n");
-  //printf("data: %s\n", data);
-  //printf("Test: %s\n", body);
 
   return NULL;
 }

@@ -7,6 +7,22 @@
 #define AHTTP_MAX_URL_SEGMENTS 100
 
 /**
+ * METHODS
+ *
+ * @brief
+ */
+#define AHTTP_METHOD_UNKNOWN        0x0001
+#define AHTTP_METHOD_GET            0x0002
+#define AHTTP_METHOD_HEAD           0x0004
+#define AHTTP_METHOD_POST           0x0008
+#define AHTTP_METHOD_PUT            0x0010
+#define AHTTP_METHOD_DELETE         0x0020
+#define AHTTP_METHOD_MKCOL          0x0040
+#define AHTTP_METHOD_COPY           0x0080
+#define AHTTP_METHOD_MOVE           0x0100
+#define AHTTP_METHOD_OPTIONS        0x0200
+
+/**
  * ahttp_socket_t
  *
  * @brief
@@ -48,11 +64,12 @@ ahttp_header_t;
  */
 typedef struct ahttp_request_t
 {
-  ahttp_header_t headers[AHTTP_MAX_HEADERS];
-  char *version;
-  char *method;
-  char *uri;
-  char *body;
+  unsigned int method;
+
+  //ahttp_header_t headers[AHTTP_MAX_HEADERS];
+  //char *version;
+  //char *uri;
+  //char *body;
 }
 ahttp_request_t;
 

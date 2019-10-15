@@ -30,7 +30,8 @@ endif
 override CFLAGS += -std=c11 -Wno-everything -Isrc
 override LDFLAGS += build/asock.a build/ahttp.a
 .PHONY: asock ahttp examples clean
-clean: rm -rf build
+clean:
+	rm -rf build
 
 # ASOCK ------------------------------------------------------------------------
 asock:
