@@ -7,6 +7,30 @@
 #define AHTTP_MAX_URL_SEGMENTS 100
 
 /**
+ * METHODS
+ *
+ * @brief
+ */
+#define AHTTP_METHOD_UNKNOWN        0x0001
+#define AHTTP_METHOD_GET            0x0002
+#define AHTTP_METHOD_HEAD           0x0004
+#define AHTTP_METHOD_POST           0x0008
+#define AHTTP_METHOD_PUT            0x0010
+#define AHTTP_METHOD_DELETE         0x0020
+#define AHTTP_METHOD_MKCOL          0x0040
+#define AHTTP_METHOD_COPY           0x0080
+#define AHTTP_METHOD_MOVE           0x0100
+#define AHTTP_METHOD_OPTIONS        0x0200
+
+/**
+ * Compare
+ *
+ * @brief
+ */
+#define ahttp_compare_str3(m, c0, c1, c2)       \
+    *(uint32_t *) m == ((c2 << 16) | (c1 << 8) | c0)
+
+/**
  * ahttp_socket_t
  *
  * @brief
@@ -48,11 +72,13 @@ ahttp_header_t;
  */
 typedef struct ahttp_request_t
 {
-  ahttp_header_t headers[AHTTP_MAX_HEADERS];
-  char *version;
-  char *method;
-  char *uri;
-  char *body;
+  unsigned int method;
+  char *url;
+
+  //ahttp_header_t headers[AHTTP_MAX_HEADERS];
+  //char *version;
+  //char *uri;
+  //char *body;
 }
 ahttp_request_t;
 
@@ -101,5 +127,31 @@ enum
  * @return A newly formed (a)http request object.
  */
 ahttp_request_t *ahttp_core_parse(char *data);
+
+/**
+ * ahttp_core_parse_method
+ *
+ * @brief
+ *
+ * @param request A pointer to the request object.
+ * @param data The incoming data.
+ * @param len The length of the method from the data.
+ * @return
+ */
+int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len);
+
+/**
+ * ahttp_core_parse_url
+ *
+ * @brief
+ *
+ * @param request A pointer to the request object.
+ * @param data The incoming data.
+ * @param len The length of the method from the data.
+ * @return
+ */
+int ahttp_core_parse_url(ahttp_request_t *request, const char *data, int len);
+
+
 
 #endif // AHTTP_CORE_H

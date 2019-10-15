@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 // Instead of returnin the request, perhaps pass in the memory allocation
 // and set it.  Instead return u_int of some sort.
 //
@@ -19,43 +20,120 @@
 // then first_major_digit, major_digit, first_minor_digit, minor_digit
 //
 // Then headers are turned to lowercase and read
+//
+// Hex -> Binary -> value
+//      f -> 1111 -> 15
+//      e -> 1110 -> 14
+//      d -> 1101 -> 13
+//      c -> 1100 -> 12
+//      b -> 1011 -> 11
+//      a -> 1010 -> 10
+//      9 -> 1001 -> 9
+//      8 -> 1000 -> 8
+//      7 -> 0111 -> 7
+//      6 -> 0110 -> 6
+//      5 -> 0101 -> 5
+//      4 -> 0100 -> 4
+//      3 -> 0011 -> 3
+//      2 -> 0010 -> 2
+//      1 -> 0001 -> 1
+//      0 -> 0000 -> 0
+//
+//      19 -> 0001 1111 -> 31
+//      20 -> 0010 0000 -> 32
+//      21 -> 0010 0001 -> 33
+//
+// char is actually an 8-bit integral value from 0-255, (similar to 00-FF)
+//
+// Use 0xFF for hex
+// Use 0b00100000 for binary, but not supported for older cc
+//
+// FINAL:
+// This method is going to iterate over each char in the data,
+// and once it hits a space, it will see what the previous data was.
 ahttp_request_t *ahttp_core_parse(char *data)
 {
-  int state;
-  char *line;
+  ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
 
-  //
+  // 0 -> start
+  // 1 -> method
+  // 2 -> uri
+  // 3 -> version
+  int state = 0;
 
-  line = strstr(data, "\r\n");
-  while (line != NULL)
+  // i for counting the data string, and where it started.
+  int start = 0, i, len;
+
+  for (i = 0; i < strlen(data); i++)
   {
-    if (i == 0)
+    switch (state)
     {
-      printf("Status: %s\n", line);
-    }
+      /**
+       * METHOD
+       */
+      case 0:
+        if (data[i] == ' ')
+        {
+          len = i - start;
+          ahttp_core_parse_method(request, data, len);
+        }
+        start = i;
+        break;
 
-    i++;
+      /**
+       * URL
+       */
+      case 1:
+        if (data[i] == ' ')
+        {
+          len = i - start;
+          ahttp_core_parse_url(request, data, len);
+        }
+        start = i;
+        break;
+    }
   }
 
+  //printf("TEMP: %d\n", (1 << 14));
+  //printf("Method: %d\n", request->method);
 
-  //ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
-  //char *line = strtok(data, "\r\n");
-
-  //while (line != NULL)
-  //{
-  //  printf("Line: %s\n", line);
-  //  line = strtok(NULL, "\r\n");
-  //}
-
-  // Parse first line as METHOD, URI, VERSION
-  // Parse next lines as HEADER -> KEY, VALUE
-  // Parse body after \r\n\r\n
-
-  //const char *body = strstr(data, "\r\n\r\n");
-  //printf("data: %s\n", data);
-  //printf("Test: %s\n", body);
+  free(request);
 
   return NULL;
+}
+
+/**
+ * ahttp_core_parse_method
+ *
+ * @brief
+ */
+int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len)
+{
+  unsigned char *method = malloc(sizeof(char) * len);
+  strncpy((char *) method, data, len);
+
+  switch (len)
+  {
+    case 3:
+      if (ahttp_compare_str3(method, 'G', 'E', 'T'))
+      {
+        request->method = AHTTP_METHOD_GET;
+      }
+      break;
+  }
+  return 0;
+}
+
+/**
+ * ahttp_core_parse_url
+ *
+ * @brief
+ */
+int ahttp_core_parse_url(ahttp_request_t *request, const char *data, int len)
+{
+  char buffer[1024];
+  strncpy(buffer, data, len);
+  return 0;
 }
 
 // -----------------------------------------------------------------------------
