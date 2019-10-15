@@ -23,6 +23,14 @@
 #define AHTTP_METHOD_OPTIONS        0x0200
 
 /**
+ * Compare
+ *
+ * @brief
+ */
+#define ahttp_compare_str3(m, c0, c1, c2)       \
+    *(uint32_t *) m == ((c2 << 16) | (c1 << 8) | c0)
+
+/**
  * ahttp_socket_t
  *
  * @brief
@@ -65,6 +73,7 @@ ahttp_header_t;
 typedef struct ahttp_request_t
 {
   unsigned int method;
+  char *url;
 
   //ahttp_header_t headers[AHTTP_MAX_HEADERS];
   //char *version;
@@ -118,5 +127,31 @@ enum
  * @return A newly formed (a)http request object.
  */
 ahttp_request_t *ahttp_core_parse(char *data);
+
+/**
+ * ahttp_core_parse_method
+ *
+ * @brief
+ *
+ * @param request A pointer to the request object.
+ * @param data The incoming data.
+ * @param len The length of the method from the data.
+ * @return
+ */
+int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len);
+
+/**
+ * ahttp_core_parse_url
+ *
+ * @brief
+ *
+ * @param request A pointer to the request object.
+ * @param data The incoming data.
+ * @param len The length of the method from the data.
+ * @return
+ */
+int ahttp_core_parse_url(ahttp_request_t *request, const char *data, int len);
+
+
 
 #endif // AHTTP_CORE_H

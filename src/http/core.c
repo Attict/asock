@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ahttp_str3_cmp(m, c0, c1, c2)       \
-    *(uint32_t *) m == ((c2 << 16) | (c1 << 8) | c0)
 
 // Instead of returnin the request, perhaps pass in the memory allocation
 // and set it.  Instead return u_int of some sort.
@@ -68,40 +66,74 @@ ahttp_request_t *ahttp_core_parse(char *data)
 
   for (i = 0; i < strlen(data); i++)
   {
-    if (data[i] == ' ')
+    switch (state)
     {
-      len = i - start;
-      if (len == 3)
-      {
-        unsigned char *m = malloc(sizeof(char) * 3);
-        strncpy((char *)m, data, 3);
-        if (ahttp_str3_cmp(m, 'G', 'E', 'T')) {
-          request->method = AHTTP_METHOD_GET;
-          printf("GET METHOD: %d\n", request->method);
+      /**
+       * METHOD
+       */
+      case 0:
+        if (data[i] == ' ')
+        {
+          len = i - start;
+          ahttp_core_parse_method(request, data, len);
         }
-      }
-      else if (len == 4)
-      {
+        start = i;
+        break;
 
-      }
-
-      //printf("Space found at %d, method len = %d\n", i, len);
-
-      start = i;
+      /**
+       * URL
+       */
+      case 1:
+        if (data[i] == ' ')
+        {
+          len = i - start;
+          ahttp_core_parse_url(request, data, len);
+        }
+        start = i;
+        break;
     }
   }
 
+  //printf("TEMP: %d\n", (1 << 14));
+  //printf("Method: %d\n", request->method);
 
-
-  // This works, but doesn't count.
-  //char *d = data;
-  //while (*d != '\0')
-  //{
-  //  printf("%c", *d);
-  //  d++;
-  //}
+  free(request);
 
   return NULL;
+}
+
+/**
+ * ahttp_core_parse_method
+ *
+ * @brief
+ */
+int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len)
+{
+  unsigned char *method = malloc(sizeof(char) * len);
+  strncpy((char *) method, data, len);
+
+  switch (len)
+  {
+    case 3:
+      if (ahttp_compare_str3(method, 'G', 'E', 'T'))
+      {
+        request->method = AHTTP_METHOD_GET;
+      }
+      break;
+  }
+  return 0;
+}
+
+/**
+ * ahttp_core_parse_url
+ *
+ * @brief
+ */
+int ahttp_core_parse_url(ahttp_request_t *request, const char *data, int len)
+{
+  char buffer[1024];
+  strncpy(buffer, data, len);
+  return 0;
 }
 
 // -----------------------------------------------------------------------------
