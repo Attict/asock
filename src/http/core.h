@@ -138,10 +138,11 @@ enum
  *
  * @brief
  *
+ * @param request The pointer to be assigned
  * @param data
- * @return A newly formed (a)http request object.
+ * @return
  */
-ahttp_request_t *ahttp_core_parse(char *data);
+int ahttp_core_parse(ahttp_request_t *request, char *data);
 
 /**
  * ahttp_core_parse_method
