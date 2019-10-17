@@ -21,14 +21,27 @@
 #define AHTTP_METHOD_COPY           0x0080
 #define AHTTP_METHOD_MOVE           0x0100
 #define AHTTP_METHOD_OPTIONS        0x0200
+#define AHTTP_METHOD_PROPFIND       0x0400
+#define AHTTP_METHOD_PROPPATCH      0x0800
+#define AHTTP_METHOD_LOCK           0x1000
+#define AHTTP_METHOD_UNLOCK         0x2000
+#define AHTTP_METHOD_PATCH          0x4000
+#define AHTTP_METHOD_TRACE          0x8000
 
 /**
  * Compare
  *
  * @brief
  */
-#define ahttp_compare_str3(m, c0, c1, c2)       \
+#define ahttp_compare_str3(m, c0, c1, c2)                           \
     *(uint32_t *) m == ((c2 << 16) | (c1 << 8) | c0)
+
+#define ahttp_compare_str4(m, c0, c1, c2, c3)                       \
+    *(uint32_t *) m == ((c3 << 24) | (c2 << 16) | (c1 << 8) | c0)
+
+#define ahttp_compare_str5(m, c0, c1, c2, c3, c4)                   \
+    *(uint32_t *) m == ((c3 << 24) | (c2 << 16) | (c1 << 8) | c0) && m[4] == c4
+
 
 /**
  * ahttp_socket_t
@@ -74,6 +87,8 @@ typedef struct ahttp_request_t
 {
   unsigned int method;
   char *url;
+  unsigned int major_version;
+  unsigned int minor_version;
 
   //ahttp_header_t headers[AHTTP_MAX_HEADERS];
   //char *version;
@@ -138,7 +153,7 @@ ahttp_request_t *ahttp_core_parse(char *data);
  * @param len The length of the method from the data.
  * @return
  */
-int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len);
+int ahttp_core_parse_method(int *method, const char *data, int len);
 
 /**
  * ahttp_core_parse_url
@@ -150,8 +165,19 @@ int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len)
  * @param len The length of the method from the data.
  * @return
  */
-int ahttp_core_parse_url(ahttp_request_t *request, const char *data, int len);
+int ahttp_core_parse_url(char *url, const char *data, int start, int len);
 
-
+/**
+ * ahttp_core_parse_version
+ *
+ * @brief
+ *
+ * @param major
+ * @param minor
+ * @param data
+ * @param len
+ * @return
+ */
+int ahttp_core_parse_version(int *major, int *minor, const char *data, int len);
 
 #endif // AHTTP_CORE_H
