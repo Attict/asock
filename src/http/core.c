@@ -51,9 +51,8 @@
 // FINAL:
 // This method is going to iterate over each char in the data,
 // and once it hits a space, it will see what the previous data was.
-ahttp_request_t *ahttp_core_parse(char *data)
+int ahttp_core_parse(ahttp_request_t *request, char *data)
 {
-  ahttp_request_t *request = malloc(sizeof(ahttp_request_t));
 
   // 0 -> start
   // 1 -> method
@@ -63,6 +62,12 @@ ahttp_request_t *ahttp_core_parse(char *data)
 
   // i for counting the data string, and where it started.
   int start = 0, i, len;
+
+  // Set these, for the request object
+  int method, major, minor;
+  char *url;
+
+
 
   for (i = 0; i < strlen(data); i++)
   {
@@ -75,9 +80,10 @@ ahttp_request_t *ahttp_core_parse(char *data)
         if (data[i] == ' ')
         {
           len = i - start;
-          ahttp_core_parse_method(request, data, len);
+          ahttp_core_parse_method(&method, data, len);
+          start = i;
+          state++;
         }
-        start = i;
         break;
 
       /**
@@ -87,19 +93,33 @@ ahttp_request_t *ahttp_core_parse(char *data)
         if (data[i] == ' ')
         {
           len = i - start;
-          ahttp_core_parse_url(request, data, len);
+          url = malloc(sizeof(char) * len);
+          ahttp_core_parse_url(url, data, start, len);
+          start = i;
+          state++;
         }
-        start = i;
+        break;
+
+      /**
+       * Version
+       */
+      case 2:
+        //if (data[i] == '\r' && data[i+1] == '\n')
+        //{
+        //  len = i - start;
+        //}
         break;
     }
   }
 
-  //printf("TEMP: %d\n", (1 << 14));
-  //printf("Method: %d\n", request->method);
+  request = malloc(sizeof(ahttp_request_t) + sizeof(url));
+  request->method = method;
+  request->url = url;
+  printf("request url: %s\n", request->url);
+  //request->major_version = major;
+  //request->minor_version = minor;
 
-  free(request);
-
-  return NULL;
+  return 0;
 }
 
 /**
@@ -107,17 +127,65 @@ ahttp_request_t *ahttp_core_parse(char *data)
  *
  * @brief
  */
-int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len)
+int ahttp_core_parse_method(int *method, const char *data, int len)
 {
-  unsigned char *method = malloc(sizeof(char) * len);
-  strncpy((char *) method, data, len);
+  unsigned char *m = malloc(sizeof(char) * len);
+  strncpy((char *) m, data, len);
 
   switch (len)
   {
     case 3:
-      if (ahttp_compare_str3(method, 'G', 'E', 'T'))
+      if (ahttp_compare_str3(m, 'G', 'E', 'T'))
       {
-        request->method = AHTTP_METHOD_GET;
+        method = (int *) AHTTP_METHOD_GET;
+      }
+      else if (ahttp_compare_str3(m, 'P', 'U', 'T'))
+      {
+        method = (int *) AHTTP_METHOD_PUT;
+      }
+      break;
+
+    case 4:
+      if (m[1] == 'O')
+      {
+        if (ahttp_compare_str4(m, 'P', 'O', 'S', 'T'))
+        {
+          method = (int *) AHTTP_METHOD_POST;
+        }
+        else if (ahttp_compare_str4(m, 'C', 'O', 'P', 'Y'))
+        {
+          method = (int *) AHTTP_METHOD_COPY;
+        }
+        else if (ahttp_compare_str4(m, 'M', 'O', 'V', 'E'))
+        {
+          method = (int *) AHTTP_METHOD_MOVE;
+        }
+        else if (ahttp_compare_str4(m, 'L', 'O', 'C', 'K'))
+        {
+          method = (int *) AHTTP_METHOD_LOCK;
+        }
+      }
+      else
+      {
+        if (ahttp_compare_str4(m, 'H', 'E', 'A', 'D'))
+        {
+          method = (int *) AHTTP_METHOD_HEAD;
+        }
+      }
+      break;
+
+    case 5:
+      if (ahttp_compare_str5(m, 'P', 'A', 'T', 'C', 'H'))
+      {
+        method = (int *) AHTTP_METHOD_PATCH;
+      }
+      else if (ahttp_compare_str5(m, 'M', 'K', 'C', 'O', 'L'))
+      {
+        method = (int *) AHTTP_METHOD_MKCOL;
+      }
+      else if (ahttp_compare_str5(m, 'T', 'R', 'A', 'C', 'E'))
+      {
+        method = (int *) AHTTP_METHOD_TRACE;
       }
       break;
   }
@@ -129,10 +197,22 @@ int ahttp_core_parse_method(ahttp_request_t *request, const char *data, int len)
  *
  * @brief
  */
-int ahttp_core_parse_url(ahttp_request_t *request, const char *data, int len)
+int ahttp_core_parse_url(char *url, const char *data, int start, int len)
 {
-  char buffer[1024];
-  strncpy(buffer, data, len);
+  strncpy(url, data + start, len);
+  return 0;
+}
+
+/**
+ * ahttp_core_parse_version
+ *
+ * @brief
+ */
+int ahttp_core_parse_version(int *major, int *minor, const char *data, int len)
+{
+  major = (int *) 1;
+  minor = (int *) 1;
+
   return 0;
 }
 
@@ -189,7 +269,9 @@ asock_socket_t *ahttp_core_on_data(asock_socket_t *s, char *data, int length)
       (ahttp_context_t *) asock_context_ext(0, asock_context(0, s));
 
   // Parse data into `ahttp_request_t`
-  ahttp_core_parse(data);
+  ahttp_request_t *request;
+  ahttp_core_parse(request, data);
+  if (request) free(request);
 
   const char body[] = "<html><body><h1>Something completely new!</h1></body></html>";
   context->response =
