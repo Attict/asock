@@ -3,7 +3,14 @@
 
 #include "../asock.h"
 #include <stdalign.h>
+
+#ifdef ASOCK_USE_EPOLL
+#include <sys/epoll.h>
+#include <sys/timerfd.h>
+#include <sys/eventfd.h>
+#else
 #include <sys/event.h>
+#endif
 
 /** FIXME **/
 typedef struct asock_loop_data_t
@@ -46,7 +53,11 @@ typedef struct asock_loop_t
   int fd;
 
   // The list of ready polls
+#ifdef ASOCK_USE_EPOLL
+  struct epoll_event ready_polls[1024];
+#else
   struct kevent ready_polls[1024];
+#endif
 }
 asock_loop_t;
 

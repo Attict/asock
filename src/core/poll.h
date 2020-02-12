@@ -25,8 +25,13 @@
  *
  * @brief todo
  */
+#ifdef ASOCK_USE_EPOLL
+#define ASOCK_SOCKET_READABLE EPOLLIN
+#define ASOCK_SOCKET_WRITABLE EPOLLOUT
+#else
 #define ASOCK_SOCKET_READABLE 1
 #define ASOCK_SOCKET_WRITABLE 2
+#endif
 
 /**
  * ASOCK_POLL ENUM
